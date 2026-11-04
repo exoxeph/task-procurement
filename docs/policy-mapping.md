@@ -3,11 +3,11 @@
 The source of truth is
 `sample-data/engineer/task1-procurement/company-rules.md`.
 `config/company-rules.json` is its manually reviewed machine-readable companion.
-Block 1 loads and validates that companion. Blocks 7 and 8 will implement the
+references.py loads and validates that companion. rules.py implements the
 comparisons and decisions below; the loader does not enforce supplier policy.
 
 Percent settings use percentage points: `3.0` means 3%, not 0.03. For example,
-the later price check will calculate `(quoted - maximum) / maximum * 100`.
+the price difference can be expressed as `(quoted - maximum) / maximum * 100`.
 
 | Source rule | Setting or future check | Outcome |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ findings will still be retained, even when one determines the final verdict.
 The source requires a penalty of at least 0.5% per week but explicitly lists
 only a *missing* penalty clause as a rejection. It does not assign a severity
 to an existing clause with a lower penalty. Our documented interpretation for
-Block 7 is human review under the source's uncertainty instruction. Do not
+rules.py is human review under the source's uncertainty instruction. Do not
 silently turn that into an automatic rejection.
 
 ## Keeping the files in sync

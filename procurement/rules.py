@@ -53,6 +53,10 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
             code = "payment" if name == "payment_days" else f"extraction_{name}"
             add(code, REVIEW, f"Cannot confidently read {name}: {fields[name].status}.", name)
     for name, field in fields.items():
+        # VAT figures, registrations and penalty fields have dedicated checks
+        # below. The optional price note also needs an uncertainty check.
+        if name == "unit_price_tax_note" and field.status in ("ambiguous", "unrecognized"):
+            add(f"extraction_{name}", REVIEW, f"Cannot confidently read {name}: {field.status}.", name)
         if field.status == "found" and requirements["exact_evidence"] and not field.evidence:
             add("missing_evidence", REVIEW, f"No supporting excerpt for {name}.")
 
@@ -68,6 +72,11 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
             value = Decimal(field.value.replace(",", ""))
             if not value.is_finite() or value < 0:
                 raise ValueError("expected a finite nonnegative number")
+            # This baseline supports up to 12 integer and 6 fractional digits.
+            # Bounding input keeps multiplication/cent rounding within Decimal's
+            # default precision; larger values require a person, not a crash.
+            if value >= Decimal("1e12") or value.as_tuple().exponent < -6:
+                raise ValueError("number exceeds supported size or precision")
             if name in ("quantity", "payment_days", "delivery_days", "validity_days") and value != value.to_integral_value():
                 raise ValueError("expected a whole number")
             if name == "quantity" and value == 0:

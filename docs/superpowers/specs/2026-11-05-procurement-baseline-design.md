@@ -1,3 +1,6 @@
+> Historical ten-block design. Superseded by 2026-11-05-simple-baseline-design.md
+> after the user requested a simpler baseline and authorized all three stages.
+
 # Procurement baseline design
 
 ## Agreed scope

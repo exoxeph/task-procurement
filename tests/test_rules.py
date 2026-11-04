@@ -106,6 +106,35 @@ class RuleTests(unittest.TestCase):
         self.assertEqual(result.verdict, 'Reject')
         self.assertTrue({'advance','payment'}.issubset(self.codes(result)))
 
+    def test_qualified_delivery_or_payment_does_not_approve(self):
+        for old, new in [('the purchase order.\n3. Delay', 'the purchase order provided stock is available.\n3. Delay'),
+                         ('after delivery and\nacceptance of goods.', 'after delivery or immediately on demand.')]:
+            self.assertEqual(self.review([(old,new)]).verdict, 'Needs a person to check')
+
+    def test_contradictory_advance_does_not_approve(self):
+        result = self.review([('10% advance','No advance payment required. 40% advance')])
+        self.assertEqual(result.fields['advance_percent'].status, 'ambiguous')
+        self.assertEqual(result.verdict, 'Needs a person to check')
+
+    def test_signed_or_malformed_percentages_are_not_accepted_as_positive_suffixes(self):
+        for value in ('-0.5', '+0.5', '1,0.5', '.0.5'):
+            for old, new in [('penalty: 1%', f'penalty: {value}%'), ('10% advance',f'{value}% advance')]:
+                with self.subTest(value=value, field=old):
+                    self.assertEqual(self.review([(old,new)]).verdict, 'Needs a person to check')
+
+    def test_conflicting_tax_notes_require_review(self):
+        text = self.clean.pages[0].text
+        included = text.replace('Unit price (BDT)', 'Unit price (BDT, VAT included)')
+        excluded = text.replace('Unit price (BDT)', 'Unit price (BDT, VAT excluded)')
+        document = PdfDocument(Path('fixture.pdf'), (PdfPage(1,included),PdfPage(2,excluded)), ())
+        result = self.review(document=document)
+        self.assertEqual(result.fields['unit_price_tax_note'].status, 'ambiguous')
+        self.assertEqual(result.verdict, 'Needs a person to check')
+
+    def test_oversized_amount_requires_review_without_crashing(self):
+        result = self.review([('5,664,000.00', '999999999999999999999999999999999999999.00')])
+        self.assertEqual(result.verdict, 'Needs a person to check')
+
 
 if __name__ == '__main__':
     unittest.main()

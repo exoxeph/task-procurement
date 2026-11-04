@@ -1,0 +1,15 @@
+{
+  "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+  "documents": {
+    "supplier-pack-01.pdf": {"verdict": "Approve", "rules": [], "reason": "All supplied requirements pass."},
+    "supplier-pack-02.pdf": {"verdict": "Approve", "rules": [], "reason": "No advance, 30-day payment, 21-day delivery, acceptable figures and penalty."},
+    "supplier-pack-03.pdf": {"verdict": "Reject", "rules": ["price"], "reason": "229 exceeds the thread maximum 210 by more than 3%."},
+    "supplier-pack-04.pdf": {"verdict": "Needs a person to check", "rules": ["price"], "reason": "6.65 exceeds 6.50 by about 2.31%."},
+    "supplier-pack-05.pdf": {"verdict": "Reject", "rules": ["advance"], "reason": "40% advance exceeds 20%."},
+    "supplier-pack-06.pdf": {"verdict": "Reject", "rules": ["penalty_missing"], "reason": "Recognized complete terms omit the late-delivery penalty."},
+    "supplier-pack-07.pdf": {"verdict": "Needs a person to check", "rules": ["quantity"], "reason": "16,500 zippers versus 20,000 requested: 17.5% difference."},
+    "supplier-pack-08.pdf": {"verdict": "Reject", "rules": ["registration_missing", "penalty_basis"], "reason": "TIN/BIN withheld as available on request; penalty does not state the order-value basis."},
+    "supplier-pack-09.pdf": {"verdict": "Needs a person to check", "rules": ["payment", "line_arithmetic"], "reason": "30-to-90-day payment as agreed lacks a clear delivery anchor; 50,000 x 6.40 is 320,000, not 322,000."},
+    "supplier-pack-10.pdf": {"verdict": "Reject", "rules": ["delivery", "vat_display"], "reason": "60-day delivery exceeds 45; VAT-inclusive total has no separate VAT breakdown."}
+  }
+}

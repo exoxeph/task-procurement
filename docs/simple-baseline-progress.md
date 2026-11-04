@@ -23,3 +23,29 @@ Spec: docs/superpowers/specs/2026-11-05-simple-baseline-design.md
   terms section with no penalty wording. Unknown wording requires human review.
 - Ruling: Decimal arithmetic rounds calculated monetary amounts to cents using
   ROUND_HALF_UP; raw stated figures are retained. All applicable findings remain.
+- Stage 2 committed: ed868f4.
+- Stage 3: report tests failed for missing evaluation/report modules. Implemented
+  standalone escaped HTML, batch CLI, manually labelled verdict/rule comparison,
+  README, sample-results table, one-page note and Loom script.
+- Independent whole-change review found five Important issues: qualified clauses
+  accepted by substring, contradictory advance zero hiding a positive amount,
+  malformed percentages matched as positive suffixes, conflicting price tax notes
+  ignored, and oversized Decimal values causing arithmetic failure. No minor
+  findings were reported.
+- Final fixes: five new regression tests failed first (including percentage
+  subcases), then passed. Match complete supported payment/delivery/validity/penalty
+  wording, collect every advance candidate, validate full percentage tokens,
+  review uncertain tax notes, and bound numeric size/precision before arithmetic.
+- Ruling: numbers below 1 trillion and up to six decimal places are supported;
+  larger values require review. Cost: unusually large valid quotations need a
+  person rather than automatic approval. This keeps Decimal calculations safe.
+- Ruling: dedicated penalty/VAT/registration checks report their own uncertainty;
+  avoid duplicating the same problem under generic extraction codes. Price-note
+  uncertainty gets its own check. Cost: findings are grouped by business rule.
+- Final suite: 94 tests passed. Actual default batch: 10/10 verdict matches and
+  10/10 triggered-rule set matches; two Approve, five Reject, three human review.
+- Verification: Git reports no sample-data changes and all ten PDFs match their
+  original committed bytes. A raw text-file byte comparison encountered normal
+  Windows CRLF checkout conversion; use Git's normalized diff for those files.
+  All field and finding evidence matches its source page on all ten PDFs.
+  Generated reports are ignored. video/ remains untouched and outside commits.

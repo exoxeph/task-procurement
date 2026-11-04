@@ -36,13 +36,13 @@ wrong request identity, conflicting values, HTML escaping, and malformed inputs.
 
 ### Stage 3: Report and evaluation
 
-- [ ] Write failing tests for a report containing reasons/excerpts and escaped
+- [x] Write failing tests for a report containing reasons/excerpts and escaped
   HTML, mixed invalid/valid PDFs, and manual expected verdicts/triggered rules.
-- [ ] Implement python -m procurement.review [paths] --output report.html, default
+- [x] Implement python -m procurement.review [paths] --output report.html, default
   all ten supplied PDFs, one local HTML report with readable document details.
-- [ ] Add manual labels and evaluation; report sample accuracy as development
+- [x] Add manual labels and evaluation; report sample accuracy as development
   results. Add a one-page note and presentation script; rewrite README as a
   concise run guide and code map matching the final implementation.
-- [ ] Run the full suite and actual batch command; independent final code review,
+- [x] Run the full suite and actual batch command; independent final code review,
   fix substantive findings with regression tests, verify samples unchanged.
-- [ ] Commit feat: add review report and sample evaluation; report outcomes.
+- [x] Commit feat: add review report and sample evaluation; report outcomes.
