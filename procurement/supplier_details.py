@@ -1,13 +1,10 @@
 """Block 3: extract supplier and quotation facts using explicit text patterns."""
 
-import argparse
 import re
-import sys
 from datetime import date
-from pathlib import Path
 
-from procurement.extraction import Evidence, ExtractedField
-from procurement.pdf_text import PdfDocument, PdfReadError, read_pdf
+from procurement.extraction import Evidence, ExtractedField, preview, resolve_field
+from procurement.pdf_text import PdfDocument
 
 
 # These patterns locate labels, not expected answers or supplier filenames.
@@ -20,21 +17,6 @@ FIELD_LABELS = {
     "tin": r"\bTIN(?=[ \t]*:|[ \t]*$)",
     "bin": r"\bBIN(?=[ \t]*:|[ \t]*$)",
 }
-
-
-def _resolve_field(candidates: list, unsupported: list) -> ExtractedField:
-    """Keep a value only when all occurrences are supported and agree."""
-    evidence = tuple(excerpt for value, excerpt in candidates) + tuple(unsupported)
-    if unsupported:
-        return ExtractedField(value=None, status="unrecognized", evidence=evidence)
-
-    values = {value for value, excerpt in candidates}
-    if not values:
-        return ExtractedField(value=None, status="not_found", evidence=())
-    if len(values) > 1:
-        return ExtractedField(value=None, status="ambiguous", evidence=evidence)
-
-    return ExtractedField(value=candidates[0][0], status="found", evidence=evidence)
 
 
 def _value_is_supported(field_name: str, value: str) -> bool:
@@ -80,7 +62,7 @@ def _extract_labelled_field(document: PdfDocument, field_name: str) -> Extracted
             else:
                 unsupported.append(excerpt)
 
-    return _resolve_field(candidates, unsupported)
+    return resolve_field(candidates, unsupported)
 
 
 def _extract_supplier_name(document: PdfDocument) -> ExtractedField:
@@ -117,7 +99,7 @@ def _extract_supplier_name(document: PdfDocument) -> ExtractedField:
                 if value:
                     candidates.append((value, Evidence(page.page_number, line)))
 
-    return _resolve_field(candidates, unsupported)
+    return resolve_field(candidates, unsupported)
 
 
 def extract_supplier_details(document: PdfDocument) -> dict[str, ExtractedField]:
@@ -129,38 +111,7 @@ def extract_supplier_details(document: PdfDocument) -> dict[str, ExtractedField]
 
 
 def main() -> int:
-    """Preview extracted fields and evidence without making policy decisions."""
-    parser = argparse.ArgumentParser(description="Extract supplier details with page evidence.")
-    parser.add_argument("paths", nargs="+", type=Path, help="PDF files to inspect.")
-    arguments = parser.parse_args()
-    needs_attention = False
-
-    for path in arguments.paths:
-        try:
-            document = read_pdf(path)
-        except PdfReadError as error:
-            print(f"Extraction error: {error}", file=sys.stderr)
-            needs_attention = True
-            continue
-
-        print(f"\nPDF: {document.source_path.name}")
-        for issue in document.issues:
-            print(f"Extraction issue: {issue}")
-            needs_attention = True
-
-        fields = extract_supplier_details(document)
-        for name, field in fields.items():
-            if field.status == "found":
-                print(f"{name}: {field.value}")
-            else:
-                print(f"{name}: {field.status}")
-                needs_attention = True
-            for evidence in field.evidence:
-                print(f"  Page {evidence.page_number}: {evidence.text!r}")
-
-    if needs_attention:
-        return 1
-    return 0
+    return preview(extract_supplier_details, ("supplier_name", *FIELD_LABELS))
 
 
 if __name__ == "__main__":
