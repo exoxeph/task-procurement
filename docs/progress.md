@@ -33,7 +33,7 @@ through all tasks. The ten-block plan in chat is the approved scope.
 
 ## Block 2
 
-- Status: complete; paused before Block 3.
+- Status: complete; explanation and requested pause delivered.
 - Plan: `docs/superpowers/plans/2026-11-05-block-02-pdf-text.md`.
 - Pre-flight: independent of Block 1; later extraction blocks will consume
   the source path, page numbers, text, and extraction issues.
@@ -54,3 +54,36 @@ through all tasks. The ten-block plan in chat is the approved scope.
 - Deferred minor: optional direct equality test against native extraction output
   and a mixed valid/missing-path CLI continuation test. Current tests cover
   extracted evidence, page ordering, clean CLI success, and individual failures.
+
+## Block 3
+
+- Status: complete; paused before Block 4.
+- Plan: docs/superpowers/plans/2026-11-05-block-03-supplier-details.md.
+- Pre-flight: consumes the unchanged PdfDocument/PdfPage interface from Block 2;
+  no modifications to the PDF reader or reference loaders are needed.
+- Ruling: continue on main with a single commit and pause as explicitly requested.
+- Ruling: declare baseline template assumptions and unsupported identifier/date
+  formats rather than claim arbitrary-layout support or legal ID validation.
+- Ruling: not_found is an extraction state, not a confirmed policy violation;
+  missing-registration policy interpretation belongs to Blocks 6-8.
+- Test-first record: new tests failed because procurement.supplier_details did
+  not exist. The first implementation then passed all 48 tests (16 new).
+- Verification: hand-checked six fields for all ten supplied documents; pack 08
+  retains missing TIN/BIN without invented evidence. Exact page excerpts,
+  filename independence, conflicts, unsupported values, and CLI issues are tested.
+- Regression: a new test showed ordinary words `tin 123` and `bin 456` could
+  become registration fields. Root cause was overly broad label patterns.
+  Restrict TIN/BIN labels to a following colon or line end; document that
+  supported syntax and verify the regression changes from failing to passing.
+- Independent review: no critical or important findings in the original 48-test
+  implementation. The final label-context fix is additionally verified by the
+  new regression test and full suite.
+- Deferred minor: extend exact-evidence assertions to all ten packs and add a
+  two-page conflicting-value fixture. Current tests check all six values across
+  the ten packs, exact evidence on pack 01, conflicts, and explicit page numbers.
+- Final verification: all 49 tests passed. A separate verification pass checked
+  every evidence substring against its referenced page across all ten PDFs and
+  confirmed their original bytes are unchanged. All present fields matched;
+  pack 08 correctly has four found fields and two not_found registration fields.
+- Preview: pack 01 exits 0 with values and evidence; pack 08 exits 1 with
+  not_found TIN/BIN. This signals extraction attention, not a policy verdict.

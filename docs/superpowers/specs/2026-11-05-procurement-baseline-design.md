@@ -80,3 +80,35 @@ and configuration, plus small malformed-input unit fixtures (not additional
 supplier evaluation documents). Run the full test suite and the reference-data
 preview before committing. Record progress, explain the files and Python
 concepts, then pause. No remote push is requested.
+
+## Block 3 design
+
+- `procurement/extraction.py` defines Evidence(page_number, text) and
+  ExtractedField(value, status, evidence) records for later extraction blocks.
+- `procurement/supplier_details.py` exposes
+  `extract_supplier_details(document: PdfDocument) -> dict[str, ExtractedField]`.
+- Extract supplier_name, quotation_number, quotation_date,
+  purchase_request_reference, tin, and bin from page text, never filenames.
+- Supplier name uses an explicit `Supplier name:` / `Supplier:` line, the
+  nonempty line immediately preceding a QUOTATION heading, or a `For ...`
+  signoff. These are declared baseline template assumptions, not universal
+  supplier recognition. Conflicting candidates require attention.
+- Other fields use label-based parsing, supporting values on the same line
+  or following whitespace. Recognize Quotation no./number/#, Date/Quotation
+  date, Reference/Purchase request reference, TIN, and BIN case-insensitively.
+- Quote and PR identifiers must be alphanumeric tokens containing a digit;
+  registration identifiers accept digits and hyphens. TIN/BIN labels require
+  a following colon or line end to avoid matching ordinary nouns.
+  Dates accept only valid
+  ISO YYYY-MM-DD calendar dates. Unsupported formats are flagged, not guessed.
+  These are parser format assumptions, not legal registration validation.
+- Status is found, not_found (no recognized label/candidate), unrecognized
+  (a label has unsupported/missing content), or ambiguous (conflicting values).
+  Only found supplies a value. Repeated identical values retain all evidence.
+- Evidence contains exact extracted page substrings. Never invent a quotation
+  for a missing field. Never treat not_found as proof of legal/policy absence.
+- Preserve Block 2 issues alongside field results: callers keep PdfDocument,
+  and the CLI prints its issues and uses a nonzero exit code when attention
+  is needed. No supplier policy decisions, item parsing, or AI in this block.
+- All ten originals are checked. Small modified in-memory text fixtures test
+  parser behavior, not unseen supplier accuracy or benchmark generalization.

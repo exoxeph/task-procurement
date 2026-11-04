@@ -1,9 +1,10 @@
 # Supplier document reviewer
 
 A readable Python implementation of the Task 1 procurement workflow.
-The project is being built one block at a time. **Blocks 1 and 2 are implemented.**
-It loads the reference inputs and reads PDF text with page references.
-It does not extract supplier facts or issue procurement decisions yet.
+The project is being built one block at a time. **Blocks 1-3 are implemented.**
+It loads reference inputs, reads PDFs, and extracts supplier/quotation details
+with page evidence. It does not extract financial/contract terms or issue
+procurement decisions yet.
 
 ## Requirements
 
@@ -125,6 +126,100 @@ review or an OCR step. Nonempty text is not proof that every part of a page was
 read correctly. Native content order can differ from visual reading order on
 complex layouts. Page references identify the source page, not bounding boxes
 or exact evidence spans; later parsers must select supporting quotations.
+
+## Block 3: supplier and quotation details
+
+```powershell
+python -m procurement.supplier_details sample-data/engineer/task1-procurement/supplier-pack-01.pdf
+```
+
+This extracts supplier name, quotation number, quotation date, purchase-request
+reference, TIN, and BIN. Each found value includes the source page and exact
+supporting text. Pack 08 prints `not_found` for TIN and BIN and exits with code 1
+to request attention. That is an extraction result, not a rejection verdict.
+
+The two new files have separate jobs:
+
+- `procurement/extraction.py` defines the small `Evidence` and `ExtractedField`
+  records. Other extraction blocks can reuse them.
+- `procurement/supplier_details.py` contains the parsing functions and preview.
+
+The flow is:
+
+```text
+read_pdf(path)                         Block 2
+    -> A document containing pages
+    -> extract_supplier_details(document)
+        -> Find supplier-name candidates
+        -> Find each labelled quotation/registration field
+        -> Check whether the value has a supported format
+        -> Compare repeated occurrences
+        -> Return six named field results with evidence
+    -> Preview prints fields AND existing document extraction issues
+```
+
+Try the function directly:
+
+```python
+from pathlib import Path
+from procurement.pdf_text import read_pdf
+from procurement.supplier_details import extract_supplier_details
+
+document = read_pdf(Path("sample-data/engineer/task1-procurement/supplier-pack-01.pdf"))
+fields = extract_supplier_details(document)
+
+quotation = fields["quotation_number"]
+print(quotation.value)                    # QT-2026-901
+print(quotation.status)                   # found
+print(quotation.evidence[0].page_number)   # 1
+print(quotation.evidence[0].text)          # Exact label/value text from the page
+```
+
+The four statuses mean:
+
+| Status | Meaning | Value returned |
+| --- | --- | --- |
+| found | Recognized occurrences agree | The extracted text |
+| not_found | No supported label/name candidate was located | None |
+| unrecognized | A label exists, but its content is missing or unsupported | None |
+| ambiguous | Recognized occurrences contain conflicting values | None |
+
+Identical repeated values retain all evidence. If even one labelled occurrence
+is unrecognized, the result stays unresolved. A missing field has no invented
+evidence. Keep `document.issues` alongside the field dictionary: the dictionary
+does not replace the original document's extraction warnings.
+
+### Reading the helper functions
+
+Start at `extract_supplier_details()`, the public entry point. Its loop calls
+`_extract_labelled_field()` for each field in `FIELD_LABELS`. The leading
+underscore is a naming convention for an internal helper, not special syntax.
+
+`_extract_labelled_field()` uses regular expressions (text search patterns) to
+find labels and the token following them. It preserves the original label/value
+substring as evidence. `_value_is_supported()` checks parser formats, and
+`_resolve_field()` decides whether candidates agree or need attention.
+
+The supplier has no explicit name label in the samples. `_extract_supplier_name()`
+therefore checks the line above QUOTATION and the `For ...` signoff, as well as
+explicit Supplier/Supplier name labels. These candidates must agree.
+
+### Baseline parser assumptions
+
+This parser supports the provided template and declared wording variations;
+it is not an arbitrary document-understanding system. Names may be in the
+declared heading/signoff positions. Quote/PR identifiers are single tokens
+containing a digit; registration identifiers use digits and hyphens, and their
+TIN/BIN labels must be followed by a colon or line break. Dates
+must be valid YYYY-MM-DD dates. Unsupported formats are flagged rather than
+interpreted. Registration formatting is not legal or registry validation.
+
+`not_found` does not prove a supplier omitted a legally required identifier:
+the parser might not support the wording or layout. Later validation and policy
+blocks must distinguish extraction limitations from verified document absence.
+
+Tests use all ten supplied PDFs and small in-memory text changes to check parser
+behavior. Those checks are not an unseen supplier-document benchmark.
 
 ## Policy and scope
 
