@@ -1,0 +1,2 @@
+# PDF text extraction. All other Block 1-2 dependencies are Python built-ins.
+PyMuPDF==2.0

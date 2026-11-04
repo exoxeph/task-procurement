@@ -9,7 +9,7 @@ through all tasks. The ten-block plan in chat is the approved scope.
 
 ## Block 1
 
-- Status: complete; paused before Block 2.
+- Status: complete; explanation and requested pause delivered.
 - Plan: `docs/superpowers/plans/2026-11-05-block-01-reference-data.md`.
 - Pre-flight: no existing application or shared code interfaces.
 - Ruling: initialize Git on main because this directory was not a repository.
@@ -30,3 +30,27 @@ through all tasks. The ten-block plan in chat is the approved scope.
   limits, and an incorrect uncertainty decision; those validations already exist.
 - Git handling: mark PDFs binary to preserve their bytes and avoid text
   normalization of the supplied ASCII-encoded PDF files.
+
+## Block 2
+
+- Status: complete; paused before Block 3.
+- Plan: `docs/superpowers/plans/2026-11-05-block-02-pdf-text.md`.
+- Pre-flight: independent of Block 1; later extraction blocks will consume
+  the source path, page numbers, text, and extraction issues.
+- Ruling: continue inline on main and pause at this block's boundary, as requested.
+- Baseline: all 18 existing tests passed before changes.
+- Ruling: use native PDF content order and preserve extracted text unchanged;
+  this is not a guarantee of visual reading order for arbitrary layouts.
+- Test-first record: new PDF tests failed because `procurement.pdf_text` did
+  not exist, then passed after implementing the reader.
+- Verification: full suite passed 32 tests (18 existing, 14 new).
+- Ruling: repaired PDFs return available text with an explicit extraction issue;
+  unreadable or locked PDFs raise PdfReadError. Neither produces a supplier verdict.
+- Verification: preview printed sample 01 with its page reference. All ten
+  supplied PDFs read as one page each with no known extraction issues.
+- Verification: all 16 sample files are unchanged; all ten PDF byte sequences
+  match the originals in the previous commit.
+- Independent review: no critical or important issues; reviewer reran all 32 tests.
+- Deferred minor: optional direct equality test against native extraction output
+  and a mixed valid/missing-path CLI continuation test. Current tests cover
+  extracted evidence, page ordering, clean CLI success, and individual failures.

@@ -51,6 +51,28 @@ assign a verdict for an existing clause below that minimum. Preserve this
 ambiguity. In Block 7, use human review under the uncertainty rule rather than
 inventing an automatic rejection. A missing clause is explicitly a rejection.
 
+## Block 2 design
+
+- Use PyMuPDF to read native PDF text. Pin the locally verified version in
+  `requirements.txt`; do not introduce OCR or AI.
+- `procurement/pdf_text.py` exposes `read_pdf(path) -> PdfDocument`.
+- A `PdfDocument` stores the resolved source path, a tuple of `PdfPage` records,
+  and extraction issues. Each page has a one-based page number and its text.
+- Preserve native extraction output without stripping, rewriting, or merging
+  pages. Use PDF content order, which may differ from visual reading order in
+  complex layouts; the provided templates will be checked individually.
+- A page with no selectable text stays in the page list and creates an issue.
+  Do not silently skip it or assume OCR has occurred.
+- Flag repaired PDFs as extraction issues. Missing, empty, invalid, non-PDF,
+  password-protected, or unreadable files raise a readable `PdfReadError`.
+- A command-line preview takes one or more PDF paths, prints page text, and
+  supports a summary option. Failed or flagged extraction has a nonzero exit
+  code. Neither the reader nor preview makes a procurement decision.
+- Test all ten supplied documents. Temporary blank, combined, damaged, and
+  encrypted fixtures exercise file handling, not supplier benchmark accuracy.
+- Nonempty text alone does not establish complete or correct extraction. OCR,
+  difficult layouts, and evidence span matching remain outside this block.
+
 ## Verification and delivery
 
 Use test-first development for input handling. Check the actual supplied CSV
