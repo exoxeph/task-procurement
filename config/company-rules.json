@@ -1,0 +1,35 @@
+{
+  "source_document": "sample-data/engineer/task1-procurement/company-rules.md",
+  "thresholds": {
+    "price_review_tolerance_percent": 3.0,
+    "maximum_advance_percent": 20.0,
+    "quantity_review_tolerance_percent": 5.0,
+    "minimum_payment_days": 30,
+    "maximum_payment_days": 60,
+    "maximum_automatic_delivery_days": 30,
+    "maximum_delivery_days": 45,
+    "required_vat_percent": 15.0,
+    "minimum_quotation_validity_days": 30,
+    "minimum_weekly_penalty_percent": 0.5
+  },
+  "requirements": {
+    "late_delivery_penalty": true,
+    "tin": true,
+    "bin": true,
+    "separate_vat": true,
+    "correct_totals": true,
+    "exact_evidence": true
+  },
+  "decision_priority": [
+    "Reject",
+    "Needs a person to check",
+    "Approve"
+  ],
+  "on_uncertainty": "Needs a person to check",
+  "notes": [
+    "Percentages are percentage points: 3.0 means 3%, not 0.03.",
+    "Payment days are after delivery; delivery days are after the purchase order.",
+    "The source requires a minimum weekly penalty but does not explicitly assign a verdict for a clause below that minimum. Treat that policy ambiguity as human review.",
+    "This is a manual transcription. Review this file and docs/policy-mapping.md whenever the source Markdown changes."
+  ]
+}

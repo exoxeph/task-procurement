@@ -1,0 +1,2 @@
+# Keep PDF bytes intact; Git must not normalize their line endings.
+*.pdf binary
