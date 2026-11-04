@@ -1,128 +1,138 @@
-# Supplier document reviewer
+# Supplier document reviewer: structural Python baseline
 
-A simple Python baseline: **read PDF -> extract facts -> check rules -> show evidence**.
-The workflow uses ordinary functions in a fixed order, with no agent or workflow framework.
+**Read PDF -> Extract cautious facts -> Check policy -> Show evidence.**
+This is a deterministic comparison baseline, with no AI or workflow framework.
+It is not a general contract reader and does not yet meet the brief's AI requirement.
 
-## Run the full demo
+## Run
 
-From this project folder, using Python 3.11 or newer:
+Python 3.11 or newer, from the project folder:
 
 ```powershell
 python -m pip install -r requirements.txt
 python -m procurement.review
 Invoke-Item reports/procurement-review.html
+python -m unittest discover -s tests -q
 ```
 
-The command reviews all ten supplied PDFs. The report opens locally in your browser;
-it needs no server, API key, or internet connection after dependencies are installed.
-Expand a document to see findings, exact page evidence, extracted facts, and source text.
+The standalone HTML report needs no server, API key, or internet connection after
+installation. It shows decisions, findings, original excerpts, raw clauses, parsed
+reference events and full source text. Expand the manual-label comparison to see
+actual differences; expected answers never feed extraction or policy decisions.
 
-To review specific PDFs or choose the output:
+Review particular files or choose an output:
 
 ```powershell
 python -m procurement.review sample-data/engineer/task1-procurement/supplier-pack-09.pdf --output reports/example.html
 ```
 
-A rejected document is a successful review, so it does not itself cause a terminal
-error. Exit code 1 means a file/reference/report failure or a sample-label mismatch.
-Valid PDFs still get reviewed when another file cannot be opened.
-
-## Results and testing
+Normal exit code 1 means a file/reference/report error. Approve, Reject and human
+review are valid execution outcomes. To additionally fail on sample-label differences:
 
 ```powershell
-python -m unittest discover -s tests -q
+python -m procurement.review --check-labels
 ```
 
-The ten development-visible samples match **10/10 expected verdicts** and
-**10/10 sets of triggered rules**: two approvals, five rejections, three human reviews.
-Manual labels include reasons in config/manual-labels.json. Evaluation is separate
-from extraction and never feeds expected answers into decisions. Labels are applied
-only to the original sample paths, not arbitrary files with the same names.
+That strict check currently exits 1 because the cautious baseline escalates four
+samples rather than matching every manual decision. The report is still written.
 
-Supplier, financial, and contract-term tests also compare extracted fields with
-hand-checked values. Regression tests cover policy boundaries, malformed values,
-conditional/contradictory wording, PDF errors, and HTML escaping. These development
-results do not establish accuracy on unseen supplier documents.
-See docs/sample-results.md for each document's outcome.
+## Measured results
 
-## Understand the code
+Manual policy labels are unchanged in config/manual-labels.json. On the ten supplied,
+development-visible samples:
 
-Start with **procurement/review.py -> review_document()**:
+| Metric | Actual |
+| --- | --- |
+| Exact verdict matches | 6/10 |
+| Exact triggered-rule set matches | 6/10 |
+| Automatic decisions | 3/10, all Reject |
+| Human review | 7/10 |
+| Additional conservative escalations | 4 |
+| Incorrect automatic decisions | 0/3 |
+| Unsafe approvals | 0; the baseline makes no approvals on this set |
 
-```python
-document = read_pdf(path)
-fields = {}
-fields.update(extract_supplier_details(document))
-fields.update(extract_financial_details(document))
-fields.update(extract_terms(document))
-return check_rules(document, fields, items, policy)
-```
+Packs 03, 05, 10 reject. All others need a person. Packs 01 and 02 contain wording
+outside the small term grammar; packs 06 and 08 lack confidently extracted required
+facts. They are escalations, not successful matches to their manual labels.
+See docs/sample-results.md for reasons and expected-vs-actual decisions.
 
-That is the business workflow. Read its parts only when needed:
+The old 10/10 result came from a template-shaped parser. It is not the current
+result. This version improves specific structural properties, not proven unseen
+accuracy. All ten PDFs remained visible during development.
+
+## What changed in Approach 1
+
+- Table cells come from PDF grid boundaries and word coordinates, not a fixed run
+  of text lines. Explicit column concepts map fields regardless of column order.
+- A small documented vocabulary covers labels such as Qty/Quantity and Unit/UOM.
+  It is not a growing list of full supplier sentences.
+- Terms locate labelled clauses with or without numbering. Durations, units,
+  time operators and reference events are separate components. Whole unexplained
+  words, conditions, negation, ranges or conflicting statements prevent a confident
+  interpretation. Raw clauses and reference events remain visible.
+- Sample-specific available-on-request and complete-template absence heuristics
+  are removed. Failure to extract a registration/penalty means review. An explicit
+  labelled absence can still establish a policy rejection.
+- Policy thresholds, Decimal calculations and decision priority remain ordinary
+  Python. Clear violations can reject even when other facts require review.
+
+## Read the code
+
+Start at procurement/review.py, review_document(). It calls the following steps:
 
 | File | Responsibility |
 | --- | --- |
-| procurement/pdf_text.py | Read text and page numbers; flag file problems |
-| procurement/supplier_details.py | Supplier, quote, purchase request, TIN and BIN |
-| procurement/financial_details.py | Walk lines: read a table, then stated totals |
-| procurement/terms.py | Read the supported numbered contract clauses |
-| procurement/rules.py | Convert numbers, check policy, and choose the verdict |
-| procurement/report.py | Render one standalone HTML report |
-| procurement/evaluation.py | Compare results with manual sample labels |
-| procurement/extraction.py | Shared field/evidence records and terminal preview |
-| procurement/references.py | Load purchase request and policy settings |
+| procurement/pdf_text.py | Original page text, structural table data and file issues |
+| procurement/table_layout.py | Ruled grid boundaries and words inside cells |
+| procurement/financial_details.py | Map column concepts and read labelled totals |
+| procurement/terms.py | Labelled clauses, explicit components and unexplained-word checks |
+| procurement/supplier_details.py | Limited metadata/registration label heuristics |
+| procurement/rules.py | Convert numbers, compare requests, check policy and decide |
+| procurement/report.py | Standalone HTML with escaped source text |
+| procurement/evaluation.py | Compare actual results with unchanged manual labels |
+| procurement/extraction.py | Shared value/status/evidence records and preview |
+| procurement/references.py | Purchase request and policy configuration |
 
-The supplier and financial extractors keep their original public function names.
-The financial parser now has one table reader and one page-walking function, rather
-than separate line records, header/amount collectors, and table-line tracking.
+Fields retain found, not_found, unrecognized or ambiguous statuses. Only found
+supplies a value. found means extracted, not policy-compliant. Source excerpts are
+exact page text. Spatially read cells cite the entire original page because native
+PDF insertion order can differ from visual cell order; excerpts are not reconstructed
+or presented as invented contiguous quotations.
 
-Every field carries its value, status, and original page excerpts:
+## Limits and policy choices
 
-- found: one supported value; repeated identical values keep all evidence.
-- not_found: no recognized occurrence. This alone does not prove legal absence.
-- unrecognized: relevant wording exists but cannot be safely interpreted.
-- ambiguous: conflicting supported values; no value is selected.
+The table reader supports simple ruled rectangular grids with shared vertical spans
+and horizontal row separators. Borderless, merged, rotated or incomplete grids need
+review. Column order, PDF insertion order, descriptions wrapping within a cell and
+harmless extra columns are supported. Multiple item rows require review because
+this version still has a single-item decision schema. Currency must explicitly be
+BDT. Unclear price qualifiers require review.
 
-Financial values stay as printed strings until the checks convert them to Decimal.
-Pack 09's wrong 322,000.00 is preserved and flagged. Pack 10 gets no invented VAT.
-Amounts are calculated to cents with ROUND_HALF_UP. This baseline supports numbers
-below 1 trillion with up to six decimal places; larger values require review.
+The small English term-component grammar is intentionally cautious. It has no
+semantic model and cannot establish the meaning of arbitrary prose. Unrecognized
+English or other-language qualifications remain unresolved. Metadata label parsing
+is still heuristic. There is no OCR or legal TIN/BIN verification. Delivery is an
+interval after PO, not a guessed calendar date.
 
-## Decisions and policy
+Company-rules.md is authoritative; config/company-rules.json is its manual companion.
+Update both together. A weak penalty gets human review because severity is unspecified.
+An explicitly absent penalty rejects; a missing extraction alone cannot prove absence.
+Numbers below 1 trillion and up to six decimal places are supported; calculated
+amounts use Decimal with ROUND_HALF_UP to cents. Raw incorrect figures remain intact.
+Reject takes priority over review, and all findings remain visible.
 
-The source is sample-data/engineer/task1-procurement/company-rules.md.
-config/company-rules.json is a manually reviewed transcription; update it with the
-Markdown. docs/policy-mapping.md explains each rule and boundary.
+Tests cover policy boundaries, malformed/conflicting values, file errors, HTML
+escaping and structural transformations. Synthetic fixtures are property checks,
+not extra supplier evaluation documents or a held-out benchmark. The next useful
+comparison is AI extraction feeding the same rules and the same evaluation.
 
-All findings remain visible. Final priority: **Reject > Needs a person to check > Approve**.
-Unknown required facts require human review. Missing registrations or penalty clauses
-are distinguished from an unreadable layout: explicit absence or an inspected complete
-supported section can establish absence, while unknown structure requires review.
-A weak or unclear penalty clause needs human review because policy does not specify
-an automatic rejection for that case.
-
-## Limits and interview scope
-
-This is a **deterministic baseline, with no AI model**. The brief requests an AI system;
-this baseline alone does not satisfy that aspect. The planned AI comparison should
-replace fact extraction while sharing the same policy engine and evaluation.
-
-Supported: native selectable text, BDT prices, known column headings, one item per
-table, and numbered Payment/Delivery/Delay/Validity terms. Complete supported payment,
-delivery, validity and penalty wording is checked; unfamiliar qualifications need review.
-Delivery is an interval after PO, not a guessed calendar date.
-No OCR, arbitrary layouts, legal TIN/BIN verification, or general contract understanding.
-A person still needs to resolve flagged cases. The HTML report does not record approvals
-or edit documents. No publishing or external service is involved.
-
-Original samples and unrelated video/ files remain unchanged. Generated reports are
-ignored by Git. The old ten-block docs are historical; the current three-stage design
-is docs/superpowers/specs/2026-11-05-simple-baseline-design.md.
-
-## Presentation materials
+## Materials
 
 - docs/submission-note.md: one-page implementation/results/limitations note.
-- docs/presentation-script.md: suggested Loom walkthrough under five minutes.
-- docs/sample-results.md: the ten expected and actual outcomes.
+- docs/presentation-script.md: suggested Loom walkthrough.
+- docs/sample-results.md: current outcomes and reasons.
+- docs/superpowers/specs/2026-11-05-structural-baseline-design.md: current design.
 
-The user must record the Loom video and publish the repository/demo separately.
+Original sample files and unrelated video/ remain untouched. Generated reports
+are ignored by Git. Older block/simple-baseline documents describe prior versions.
+Record Loom and publish the repository/demo separately.

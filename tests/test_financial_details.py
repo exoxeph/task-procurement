@@ -10,6 +10,7 @@ import pymupdf
 
 from procurement.financial_details import extract_financial_details
 from procurement.pdf_text import PdfDocument, PdfPage, read_pdf
+from procurement.table_layout import PdfTable
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -40,8 +41,17 @@ TABLE = (
 TOTALS = "Subtotal\n5,664,000.00\nVAT 15%\n849,600.00\nTotal\n6,513,600.00\n"
 
 
-def document_from_text(text: str, page_number: int = 1) -> PdfDocument:
-    return PdfDocument(Path("financial-fixture.pdf"), (PdfPage(page_number, text),), ())
+def table_fixture(**changes):
+    values=dict(zip(FIELD_NAMES[:6],EXPECTED[0][:6]))
+    values.update(changes)
+    return PdfTable(('Item','Description','Qty','Unit','Unit price (BDT)','Amount (BDT)'),
+                    (tuple(values[name] for name in FIELD_NAMES[:6]),),(0,0,600,100))
+
+
+def document_from_text(text: str, page_number: int = 1, *, tables=(), outside_text=None) -> PdfDocument:
+    # Geometry is explicit fixture input. Production never infers these cells
+    # from native text order; actual coordinate extraction has separate PDF tests.
+    return PdfDocument(Path("financial-fixture.pdf"), (PdfPage(page_number,text,tables,outside_text),), ())
 
 
 class FinancialDetailsTests(unittest.TestCase):
@@ -82,7 +92,7 @@ class FinancialDetailsTests(unittest.TestCase):
 
     def test_wrapped_description_keeps_its_original_line_break(self):
         text = (TABLE + TOTALS).replace("Cotton twill fabric, 280 gsm", "Cotton twill fabric,\n280 gsm")
-        field = extract_financial_details(document_from_text(text))["description"]
+        field = extract_financial_details(document_from_text(text,tables=(table_fixture(description='Cotton twill fabric,\n280 gsm'),),outside_text=TOTALS))["description"]
 
         self.assertEqual(field.value, "Cotton twill fabric,\n280 gsm")
         self.assertIn(field.value, field.evidence[0].text)
@@ -94,7 +104,7 @@ class FinancialDetailsTests(unittest.TestCase):
         ):
             with self.subTest(description=description):
                 text = (TABLE + TOTALS).replace("Cotton twill fabric, 280 gsm", description)
-                fields = extract_financial_details(document_from_text(text))
+                fields = extract_financial_details(document_from_text(text,tables=(table_fixture(description=description),),outside_text=TOTALS))
 
                 self.assertEqual(fields["description"].value, description)
                 self.assertTrue(all(fields[name].status == "found" for name in FIELD_NAMES[:6]))
@@ -104,7 +114,7 @@ class FinancialDetailsTests(unittest.TestCase):
 
     def test_blank_lines_and_case_variations_keep_exact_evidence(self):
         text = (TABLE + TOTALS).replace("Description", "DESCRIPTION").replace("\n", "\n\n")
-        fields = extract_financial_details(document_from_text(text, page_number=3))
+        fields = extract_financial_details(document_from_text(text,page_number=3,tables=(table_fixture(),),outside_text=TOTALS.replace('\n','\n\n')))
 
         self.assertEqual(fields["unit_price"].value, "472.00")
         self.assertEqual(fields["total"].value, "6,513,600.00")
@@ -126,7 +136,7 @@ class FinancialDetailsTests(unittest.TestCase):
         for replacement in ("12,00", "12,000 pieces", "-12,000", "12.5"):
             with self.subTest(value=replacement):
                 text = (TABLE + TOTALS).replace("12,000", replacement)
-                fields = extract_financial_details(document_from_text(text))
+                fields = extract_financial_details(document_from_text(text,tables=(table_fixture(quantity=replacement),),outside_text=TOTALS))
 
                 self.assertEqual(fields["quantity"].status, "unrecognized")
                 self.assertIsNone(fields["quantity"].value)
@@ -146,20 +156,24 @@ class FinancialDetailsTests(unittest.TestCase):
 
     def test_extra_item_row_is_not_silently_combined_with_the_first(self):
         extra_row = "B\nMetal zipper, 18 cm\n20,000\npiece\n36.00\n720,000.00\n"
-        fields = extract_financial_details(document_from_text(TABLE + extra_row + TOTALS))
+        table=table_fixture()
+        table=PdfTable(table.headers,table.rows+(('B','Metal zipper, 18 cm','20,000','piece','36.00','720,000.00'),),table.bounds)
+        fields = extract_financial_details(document_from_text(TABLE+extra_row+TOTALS,tables=(table,),outside_text=TOTALS))
 
         for name in FIELD_NAMES[:6]:
             self.assertEqual(fields[name].status, "unrecognized", name)
             self.assertIsNone(fields[name].value, name)
 
     def test_incomplete_or_unsupported_header_is_not_guessed(self):
-        fields = extract_financial_details(document_from_text((TABLE + TOTALS).replace("Qty", "Something else")))
+        table=table_fixture()
+        table=PdfTable(tuple(h.replace('Qty','Something else') for h in table.headers),table.rows,table.bounds)
+        fields = extract_financial_details(document_from_text((TABLE+TOTALS).replace('Qty','Something else'),tables=(table,),outside_text=TOTALS))
 
         self.assertEqual(fields["unit_price"].status, "unrecognized")
         self.assertIsNone(fields["unit_price"].value)
 
     def test_repeated_identical_tables_and_totals_keep_evidence(self):
-        fields = extract_financial_details(document_from_text((TABLE + TOTALS) * 2))
+        fields = extract_financial_details(document_from_text((TABLE+TOTALS)*2,tables=(table_fixture(),table_fixture()),outside_text=TOTALS*2))
 
         self.assertEqual(fields["unit_price"].status, "found")
         self.assertEqual(fields["unit_price"].value, "472.00")
@@ -167,8 +181,9 @@ class FinancialDetailsTests(unittest.TestCase):
         self.assertEqual(len(fields["total"].evidence), 2)
 
     def test_conflicting_prices_and_totals_are_ambiguous(self):
-        first_page = PdfPage(1, TABLE + TOTALS)
-        second_page = PdfPage(2, (TABLE + TOTALS).replace("472.00", "473.00").replace("6,513,600.00", "6,514,600.00"))
+        first_page = PdfPage(1,TABLE+TOTALS,(table_fixture(),),TOTALS)
+        second_page = PdfPage(2,(TABLE+TOTALS).replace('472.00','473.00').replace('6,513,600.00','6,514,600.00'),
+                              (table_fixture(unit_price='473.00'),),TOTALS.replace('6,513,600.00','6,514,600.00'))
         document = PdfDocument(Path("two-pages.pdf"), (first_page, second_page), ())
         fields = extract_financial_details(document)
 

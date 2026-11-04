@@ -26,6 +26,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('paths', nargs='*', type=Path, help='Defaults to the ten supplied PDFs.')
     parser.add_argument('--output', type=Path, default=Path('reports/procurement-review.html'))
+    parser.add_argument('--check-labels',action='store_true',help='Exit 1 if development results differ from manual labels.')
     arguments = parser.parse_args()
     if arguments.output.suffix.lower() != '.html':
         parser.error('--output must be an .html report path')
@@ -50,6 +51,9 @@ def main() -> int:
     if evaluation['total']:
         print(f"Development samples - Verdicts: {evaluation['verdict_matches']}/{evaluation['total']}; "
               f"Rule sets: {evaluation['rule_matches']}/{evaluation['total']}")
+        print(f"Automatic decisions: {evaluation['automatic_decisions']}/{evaluation['total']}; "
+              f"Conservative escalations: {evaluation['conservative_escalations']}; "
+              f"Unsafe approvals: {evaluation['unsafe_approvals']}")
     try:
         arguments.output.parent.mkdir(parents=True, exist_ok=True)
         arguments.output.write_text(render_report(results, errors, evaluation), encoding='utf-8')
@@ -58,7 +62,7 @@ def main() -> int:
     print(f'Report: {arguments.output.resolve()}')
     # Reject and review are valid business decisions, not execution failures.
     mismatch = evaluation['verdict_matches'] != evaluation['total'] or evaluation['rule_matches'] != evaluation['total']
-    return int(bool(errors) or mismatch)
+    return int(bool(errors) or (arguments.check_labels and mismatch))
 
 
 if __name__ == '__main__':

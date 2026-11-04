@@ -34,6 +34,15 @@ This version uses no AI. Every displayed excerpt comes from the document.</p>'''
         parts.append(f"<p>Sample verdict matches: {evaluation['verdict_matches']}/{evaluation['total']}"
                      f" · Triggered-rule set matches: {evaluation['rule_matches']}/{evaluation['total']}</p>"
                      f"<p class='muted'>{escape(evaluation['note'])}</p>")
+        parts.append(f"<p>Automatic decision coverage: {evaluation['automatic_decisions']}/{evaluation['total']}"
+                     f" · Conservative escalations: {evaluation['conservative_escalations']}"
+                     f" · Unsafe approvals on these samples: {evaluation['unsafe_approvals']}</p>"
+                     '<details><summary>Compare with unchanged manual labels</summary><div class="scroll"><table>'
+                     '<tr><th>Document</th><th>Manual label</th><th>Actual decision</th><th>Triggered rules match</th></tr>')
+        for row in evaluation['rows']:
+            parts.append(f"<tr><td>{escape(row['file'])}</td><td>{escape(row['expected'])}</td>"
+                         f"<td>{escape(row['actual'])}</td><td>{'Yes' if row['rule_match'] else 'No'}</td></tr>")
+        parts.append('</table></div></details>')
     parts.append('</div><div class="scroll"><table><tr><th>Document</th><th>Supplier</th><th>Decision</th><th>Findings</th></tr>')
     for index, result in enumerate(results):
         supplier = result.fields['supplier_name'].value or 'Unresolved supplier'

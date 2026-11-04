@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pymupdf
 
+from procurement.table_layout import PdfTable, read_tables, text_outside_tables
+
 
 class PdfReadError(ValueError):
     """The document cannot be read safely and needs human attention."""
@@ -18,6 +20,8 @@ class PdfPage:
 
     page_number: int
     text: str
+    tables: tuple[PdfTable, ...] = ()
+    outside_tables_text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -54,7 +58,8 @@ def read_pdf(path: Path) -> PdfDocument:
             for page_number, page in enumerate(pdf, start=1):
                 # Keep native content order and whitespace for later evidence.
                 text = page.get_text("text", sort=False)
-                pages.append(PdfPage(page_number=page_number, text=text))
+                tables = read_tables(page)
+                pages.append(PdfPage(page_number, text, tables, text_outside_tables(page, tables)))
 
                 # Check for empty text without changing the stored text.
                 if not text.strip():

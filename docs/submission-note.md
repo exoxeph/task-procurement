@@ -2,57 +2,54 @@
 
 ## What I built
 
-A local Python baseline that reviews supplier quotations in four fixed steps:
-read PDF text, extract facts, check purchase-request/company rules, and show the
-decision with exact page excerpts. A single command reviews all supplied PDFs
-and writes an HTML report that opens directly in a browser. No server is needed.
+A deterministic Python comparison baseline: read PDF text and table geometry,
+extract cautious facts, check purchase-request/company rules, then show a local
+HTML report with decisions and original page evidence. Uncertain cases require
+human review. No autonomous agent or framework is needed for this fixed workflow.
+This version has no AI model; an AI extractor is still needed for the intended
+AI comparison and the brief's AI-system aspect.
 
-The report shows Approve, Reject, or Needs a person to check, all triggered rules,
-the extracted fields and their statuses, and the original extracted page text.
-Rejection takes priority, while other findings remain visible. Unknown extraction
-does not silently pass a check. No missing figures or evidence are fabricated.
+## Why I changed the first baseline
 
-## Why this approach
+The previous parser matched native text positions and complete sample sentences.
+Its 10/10 development result did not demonstrate generalization. I replaced item
+reading with ruled-grid boundaries, word coordinates and semantic column labels.
+Contract extraction separates duration, unit, operator and reference event, with
+raw clauses retained. Unexplained wording stays unresolved. Sample-specific
+registration and missing-clause inference rules were removed. Policy conditions
+remain deterministic because they directly express the supplied business rules.
 
-The supplied documents share a readable template. A deterministic parser gives
-an explainable baseline for measuring the additional value of AI extraction.
-Python functions make the workflow explicit. No agent runs freely and no workflow
-framework is necessary for this short sequence. Rules and verdict selection stay
-together so changes can be demonstrated live.
+## Actual results and tests
 
-This version does **not use AI**. The brief requests an AI system, so this baseline
-alone does not fully satisfy that aspect of the submission. The intended next
-comparison replaces extraction with an AI reader while keeping policy and
-evaluation unchanged. A model would extract facts, never decide company policy.
+Manual gold policy labels are unchanged. On all ten development-visible PDFs,
+the revised baseline matches 6/10 verdicts and 6/10 triggered-rule sets. It makes
+three automatic rejections (03, 05, 10) and seven human-review decisions. Four are
+additional conservative escalations: 01, 02, 06, 08. Those are not counted as
+correct verdicts. There are zero wrong automatic decisions in this run and zero
+approvals; zero unsafe approvals therefore does not establish overall safety.
 
-## Testing and results
+01's delivery-and-acceptance payment condition and 02's factory-location wording
+are outside the small term grammar. 06's missing penalty and 08's missing TIN/BIN
+can be judged by a person, but the parser no longer assumes it can prove absence
+from a familiar template. Clear price, advance and delivery violations still reject.
 
-All ten supplied PDFs were manually reviewed and were available during development.
-The baseline matches 10/10 expected verdicts: two Approve, five Reject, three
-Needs a person to check. It also matches all ten manually labelled sets of
-triggered rule codes, including secondary review findings on rejected documents.
-Separate tests compare supplier, financial and term fields with hand-checked values.
-
-Regression tests cover exact policy boundaries, malformed figures, conflicting
-values, missing clauses, arithmetic, PDF reading failures, and escaped HTML.
-Small synthetic text/PDF fixtures test behavior; they are not additional supplier
-benchmark data. Sample accuracy is a development result, not unseen accuracy.
+Tests cover policy boundaries, exact raw figures, missing/ambiguous values,
+conditional or malformed terms, PDF failures and HTML escaping. Structural
+transformations cover column reorder, reversed PDF insertion order, wrapped
+cells, aliases, extra columns, numeric changes and unsupported rows/currencies.
+Synthetic transformations are property tests, not unseen supplier examples.
 
 ## Limitations and next steps
 
-The parser supports native-text BDT quotations with the known table headings,
-one item per table, and numbered terms. It does not perform OCR or understand
-arbitrary layouts, legal registration validity, or every contractual phrasing.
-Unclear formats require human review. Delivery is interpreted as elapsed days
-after the purchase order, not an invented calendar date.
+Simple ruled BDT tables and a small English clause-component vocabulary are
+supported. Borderless/merged/skewed tables, multiple item rows, OCR, unfamiliar
+contract prose and legal registration verification are outside scope. Metadata
+extraction remains heuristic. Spatial fields cite original page text rather than
+invented reconstructed quotations. Weak penalty severity is unspecified in policy,
+so it requires review. Delivery is relative to PO, not a fabricated calendar date.
 
-The policy does not assign severity to an existing penalty below its minimum;
-this implementation uses human review. Missing penalty rejects only when absence
-is explicit or the complete supported terms can be inspected. Missing TIN/BIN in
-an unknown layout requires review; the supplied explicit available-on-request
-statement establishes their absence for pack 08.
-
-Next: compare an AI extractor on the same ten visible samples, collect genuinely
-new documents for an independent evaluation, and add OCR/multi-item support only
-with evidence that the business needs them. Record the Loom presentation and
-publish the repository/demo separately; neither action is performed by this code.
+This change reduces specific template dependencies; it does not prove general
+accuracy. Next compare AI fact extraction against this baseline using the same
+policy engine, labels and coverage metrics, then obtain genuinely new documents
+for independent evaluation. Record the Loom video and publish the code/demo
+separately. No source samples were changed.

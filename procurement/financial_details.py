@@ -1,4 +1,4 @@
-"""Read the stated item and money figures in the supported single-item template."""
+"""Read item cells by table geometry and column meaning, then labelled totals."""
 
 import re
 
@@ -19,109 +19,111 @@ SUMMARY = re.compile(
     r"(?:[ \t]*:[ \t]*(?P<colon>.*)|[ \t]+(?P<inline>[+-]?[0-9].*)|[ \t]*)$", re.I,
 )
 VAT_LABEL = re.compile(r"^VAT(?:[ \t]*:|[ \t]*$|[ \t]+[+-]?[0-9]|\b.*%)", re.I)
-SECTION = re.compile(r"^(?:Supplier\s+(?:TIN\b|BIN\b|registration\b)|TERMS AND CONDITIONS\b|Item$)", re.I)
+# This small vocabulary describes column concepts, not whole supplier templates.
+COLUMN_NAMES = {
+    "item_code": {"item", "item code", "sku", "code"},
+    "description": {"description", "product", "item description"},
+    "quantity": {"qty", "quantity"},
+    "unit": {"unit", "uom"},
+    "unit_price": {"unit price", "price per unit"},
+    "line_amount": {"amount", "line total", "line amount"},
+}
 
 
-def _read_table(texts: list[str]) -> dict | None:
-    """Read headers, then code / description / quantity / unit / price / amount."""
-    if [text.casefold() for text in texts[:4]] != ["item", "description", "qty", "unit"]:
-        return None
-    if len(texts) < 5:
-        return None
-    price_header = texts[4]
-    if not re.fullmatch(
-        r"Unit price\s*\(BDT(?:,\s*VAT\s+(?:included|excluded))?\)(?:\s+Amount\s*\(BDT\))?",
-        price_header, re.I,
-    ):
-        return None
-    body_start = 5
-    if "amount" not in price_header.casefold():
-        if len(texts) < 6 or texts[5].casefold() != "amount (bdt)":
+def _read_table(table) -> dict | None:
+    """Map labelled columns, whatever their order; reject an uncertain mapping."""
+    columns = {}
+    for index, header in enumerate(table.headers):
+        label = re.sub(r"\([^)]*\)", "", header).strip().casefold()
+        label = " ".join(label.split())
+        for name, aliases in COLUMN_NAMES.items():
+            if label in aliases:
+                if name in columns:
+                    return None
+                columns[name] = index
+    if set(columns) != set(ITEM_FIELDS) or len(table.rows) != 1:
+        return None  # Multiple rows need a future item-list schema, not selection.
+    for name in ("unit_price", "line_amount"):
+        header = table.headers[columns[name]]
+        if re.search(r"\b(?:USD|EUR|GBP|INR|CNY)\b|[$\u20ac\u00a3]", header, re.I):
             return None
-        body_start = 6
-    body = texts[body_start:]
-    if len(body) < 6:
-        return None
-    description = body[1:-4]
-    if any(re.fullmatch(NUMBER, line) for line in description):
-        return None  # A numeric-only description may actually be another item row.
-    values = dict(zip(ITEM_FIELDS, (body[0], "\n".join(description), *body[-4:])))
-    patterns = {"item_code": r"[A-Za-z0-9][A-Za-z0-9_-]*", "quantity": INTEGER,
-                "unit": r"[A-Za-z][A-Za-z0-9 /_-]*", "unit_price": NUMBER, "line_amount": NUMBER}
-    if not any(letter.isalpha() for letter in values["description"]):
-        return None
-    for name, pattern in patterns.items():
-        if not re.fullmatch(pattern, values[name]):
+        if not re.search(r"\bBDT\b|\u09f3", header, re.I):
+            return None  # Currency must be explicit; do not assume BDT.
+        # Extra price bases such as 'BDT per kg' cannot be discarded as decoration.
+        qualifier = re.sub(r"^[^(]*",'',header)
+        qualifier = re.sub(r"\bBDT\b|\u09f3|VAT\s+(?:included|excluded)",'',qualifier,flags=re.I)
+        if re.sub(r"[\s(),]",'',qualifier):
             return None
-    note = re.search(r"VAT\s+(?:included|excluded)", price_header, re.I)
+    values = {name: table.rows[0][index].strip() for name,index in columns.items()}
+    if not all(values.values()) or not any(letter.isalpha() for letter in values['description']):
+        return None
+    for name in ("quantity", "unit_price", "line_amount"):
+        if not re.fullmatch(INTEGER if name == "quantity" else NUMBER, values[name]):
+            return None
+    note = re.search(r"VAT\s+(?:included|excluded)", table.headers[columns['unit_price']], re.I)
     if note:
-        values["unit_price_tax_note"] = note.group()
+        values['unit_price_tax_note'] = note.group()
     return values
 
 
 def extract_financial_details(document: PdfDocument) -> dict[str, ExtractedField]:
-    """Walk each page in order: read tables, then read labelled financial totals."""
+    """Read structural item cells and explicit totals, keeping original page evidence."""
     candidates = {name: [] for name in FIELD_NAMES}
     unsupported = {name: [] for name in FIELD_NAMES}
     for page in document.pages:
-        # Match objects provide original positions without a separate line class.
-        lines = list(re.finditer(r"^[^\S\r\n]*\S[^\r\n]*", page.text, re.M))
-        texts = [line.group().strip() for line in lines]
-        index = 0
-        while index < len(lines):
-            text = texts[index]
-            if text.casefold() == "item":
-                end = index + 1
-                while end < len(lines):
-                    if SUMMARY.fullmatch(texts[end]) or VAT_LABEL.match(texts[end]) or SECTION.match(texts[end]):
-                        break
-                    end += 1
-                excerpt = Evidence(page.page_number, page.text[lines[index].start():lines[end - 1].end()])
-                values = _read_table(texts[index:end])
-                if values is None:
-                    for name in ITEM_FIELDS + ("unit_price_tax_note",):
-                        unsupported[name].append(excerpt)
-                else:
-                    # Preserve the description's original whitespace in its value.
-                    header_length = 6 if texts[index + 5].casefold() == "amount (bdt)" else 5
-                    first = index + header_length + 1
-                    values["description"] = page.text[lines[first].start():lines[end - 5].end()].strip()
-                    for name, value in values.items():
-                        candidates[name].append((value, excerpt))
-                index = end  # Consume the table; its descriptions cannot become totals.
-                continue
-
-            summary = SUMMARY.fullmatch(text)
-            vat_label = VAT_LABEL.match(text)
-            if summary or vat_label:
-                name = "subtotal" if summary and summary.group("label").casefold() == "subtotal" else "total"
-                value = (summary.group("colon") or summary.group("inline") or "") if summary else ""
-                if vat_label:
-                    name = "vat_amount"
-                    vat = re.fullmatch(rf"VAT\s+(?P<rate>{NUMBER})\s*%\s*:?[ \t]*(?P<amount>.*)", text, re.I)
-                    if vat is None:
-                        excerpt = Evidence(page.page_number, lines[index].group())
-                        unsupported["vat_rate"].append(excerpt)
-                        unsupported["vat_amount"].append(excerpt)
-                        index += 1
-                        continue
-                    candidates["vat_rate"].append((vat.group("rate"), Evidence(page.page_number, lines[index].group())))
-                    value = vat.group("amount")
-                last = index
-                if not value and index + 1 < len(lines):
-                    last = index + 1
-                    value = texts[last]
-                excerpt = Evidence(page.page_number, page.text[lines[index].start():lines[last].end()])
-                if re.fullmatch(NUMBER, value):
-                    candidates[name].append((value, excerpt))
-                else:
+        # A page excerpt remains exact even when cells were inserted out of order.
+        excerpt = Evidence(page.page_number, page.text)
+        for table in page.tables:
+            values = _read_table(table)
+            if values is None:
+                for name in ITEM_FIELDS + ("unit_price_tax_note",):
                     unsupported[name].append(excerpt)
-            index += 1
-    return {name: resolve_field(candidates[name], unsupported[name]) for name in FIELD_NAMES}
+            else:
+                for name,value in values.items():
+                    candidates[name].append((value,excerpt))
+        text = page.outside_tables_text if page.outside_tables_text is not None else page.text
+        # Detect an apparent item table that geometry could not consume. Do not
+        # extract its row from text order or let a different valid table hide it.
+        concepts = set()
+        for name,aliases in COLUMN_NAMES.items():
+            if any(re.search(r"\b"+re.escape(alias).replace(r"\ ",r"\s+")+r"\b",text,re.I) for alias in aliases):
+                concepts.add(name)
+        if 'quantity' in concepts and 'unit_price' in concepts and len(concepts) >= 3:
+            for name in ITEM_FIELDS:
+                unsupported[name].append(excerpt)
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
+        for index,line in enumerate(lines):
+            summary = SUMMARY.fullmatch(line)
+            vat_label = VAT_LABEL.match(line)
+            if not summary and not vat_label:
+                continue
+            name = "subtotal" if summary and summary.group('label').casefold() == 'subtotal' else 'total'
+            if summary:
+                qualifier = re.search(r"\(([^)]*)\)",summary.group('label'))
+                if qualifier and not set(re.findall(r"\w+",qualifier.group(1).casefold())) <= {'bdt','all','taxes','vat','included','excluded'}:
+                    unsupported[name].append(excerpt)
+                    continue
+            value = (summary.group('colon') or summary.group('inline') or '') if summary else ''
+            if vat_label:
+                name = 'vat_amount'
+                vat = re.fullmatch(rf"VAT\s+(?P<rate>{NUMBER})\s*%\s*:?[ \t]*(?P<amount>.*)",line,re.I)
+                if vat is None:
+                    unsupported['vat_rate'].append(excerpt)
+                    unsupported['vat_amount'].append(excerpt)
+                    continue
+                candidates['vat_rate'].append((vat.group('rate'),excerpt))
+                value = vat.group('amount')
+            if not value and index+1 < len(lines):
+                value = lines[index+1]
+            if re.fullmatch(NUMBER,value):
+                candidates[name].append((value,excerpt))
+            else:
+                unsupported[name].append(excerpt)
+    return {name: resolve_field(candidates[name],unsupported[name]) for name in FIELD_NAMES}
 
 
 def main() -> int:
-    return preview(extract_financial_details, REQUIRED_FIELDS)
+    return preview(extract_financial_details,REQUIRED_FIELDS)
 
 
 if __name__ == "__main__":

@@ -12,7 +12,10 @@ SAMPLES = Path(__file__).resolve().parents[1] / "sample-data/engineer/task1-proc
 class TermsTests(unittest.TestCase):
     def test_all_ten_terms_and_exact_evidence(self):
         # advance, payment days, delivery days, penalty percent, validity days
-        expected = [(10,45,24,"1",45),(0,30,21,"0.75",30),(15,40,20,"0.5",30),
+        # Uninterpreted source values stay unresolved, even though a person can
+        # read them: acceptance wording and factory-location wording are outside
+        # the small component grammar. Manual gold verdicts remain unchanged.
+        expected = [(10,None,24,"1",45),(0,30,None,"0.75",30),(15,40,20,"0.5",30),
                     (10,30,28,"0.6",40),(40,30,25,"1",30),(10,60,27,None,30),
                     (0,45,22,"0.5",35),(10,30,18,"0.5",30),(5,None,28,"0.5",30),
                     (10,45,60,"0.5",30)]

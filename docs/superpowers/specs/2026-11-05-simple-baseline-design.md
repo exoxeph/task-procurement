@@ -1,3 +1,6 @@
+> Historical design. Extraction and evaluation are superseded by
+> 2026-11-05-structural-baseline-design.md after the overfitting correction.
+
 # Simple Python baseline
 
 The user chose a simpler Python baseline and authorized completing all three

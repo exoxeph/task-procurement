@@ -2,6 +2,7 @@
 
 import unittest
 from pathlib import Path
+from dataclasses import replace
 
 from procurement.financial_details import extract_financial_details
 from procurement.pdf_text import PdfDocument, PdfPage, read_pdf
@@ -18,24 +19,36 @@ class RuleTests(unittest.TestCase):
     def setUpClass(cls):
         cls.items = load_purchase_request()
         cls.policy = load_company_rules()
-        cls.clean = read_pdf(SAMPLES / 'supplier-pack-01.pdf')
+        source = read_pdf(SAMPLES / 'supplier-pack-01.pdf')
+        # A controlled unqualified payment statement isolates policy boundaries.
+        # The original sample's acceptance wording is now intentionally unresolved.
+        page = replace(source.pages[0], text=source.pages[0].text.replace('after delivery and\nacceptance of goods.', 'after delivery.'))
+        cls.clean = replace(source, pages=(page,))
 
     def review(self, replacements=(), document=None):
         if document is None:
-            text = self.clean.pages[0].text
+            page = self.clean.pages[0]
+            text = page.text
+            tables = page.tables
+            outside = page.outside_tables_text
             for old, new in replacements:
                 self.assertIn(old, text)
                 text = text.replace(old, new)
-            document = PdfDocument(Path('fixture.pdf'), (PdfPage(1, text),), ())
+                def change_cell(cell):
+                    return new.strip() if old.startswith('\n') and cell == old.strip() else cell.replace(old,new)
+                tables = tuple(replace(table,headers=tuple(change_cell(cell) for cell in table.headers),
+                                       rows=tuple(tuple(change_cell(cell) for cell in row) for row in table.rows)) for table in tables)
+                outside = outside.replace(old,new) if outside is not None else None
+            document = PdfDocument(Path('fixture.pdf'), (replace(page,text=text,tables=tables,outside_tables_text=outside),), ())
         fields = {**extract_supplier_details(document), **extract_financial_details(document), **extract_terms(document)}
         return check_rules(document, fields, self.items, self.policy)
 
     def codes(self, result):
         return {finding.code for finding in result.findings}
 
-    def test_all_ten_verdicts(self):
-        expected = ['Approve','Approve','Reject','Needs a person to check','Reject',
-                    'Reject','Needs a person to check','Reject','Needs a person to check','Reject']
+    def test_all_ten_actual_verdicts_include_conservative_escalations(self):
+        expected = ['Needs a person to check','Needs a person to check','Reject','Needs a person to check','Reject',
+                    'Needs a person to check','Needs a person to check','Needs a person to check','Needs a person to check','Reject']
         for number, verdict in enumerate(expected, 1):
             with self.subTest(pack=number):
                 result = self.review(document=read_pdf(SAMPLES / f'supplier-pack-{number:02}.pdf'))
@@ -108,7 +121,7 @@ class RuleTests(unittest.TestCase):
 
     def test_qualified_delivery_or_payment_does_not_approve(self):
         for old, new in [('the purchase order.\n3. Delay', 'the purchase order provided stock is available.\n3. Delay'),
-                         ('after delivery and\nacceptance of goods.', 'after delivery or immediately on demand.')]:
+                         ('after delivery.', 'after delivery or immediately on demand.')]:
             self.assertEqual(self.review([(old,new)]).verdict, 'Needs a person to check')
 
     def test_contradictory_advance_does_not_approve(self):
@@ -126,7 +139,11 @@ class RuleTests(unittest.TestCase):
         text = self.clean.pages[0].text
         included = text.replace('Unit price (BDT)', 'Unit price (BDT, VAT included)')
         excluded = text.replace('Unit price (BDT)', 'Unit price (BDT, VAT excluded)')
-        document = PdfDocument(Path('fixture.pdf'), (PdfPage(1,included),PdfPage(2,excluded)), ())
+        page = self.clean.pages[0]
+        def tax_page(number,text,note):
+            tables=tuple(replace(table,headers=tuple(h.replace('Unit price (BDT)',f'Unit price (BDT, VAT {note})') for h in table.headers)) for table in page.tables)
+            return replace(page,page_number=number,text=text,tables=tables)
+        document = PdfDocument(Path('fixture.pdf'), (tax_page(1,included,'included'),tax_page(2,excluded,'excluded')), ())
         result = self.review(document=document)
         self.assertEqual(result.fields['unit_price_tax_note'].status, 'ambiguous')
         self.assertEqual(result.verdict, 'Needs a person to check')
@@ -134,6 +151,37 @@ class RuleTests(unittest.TestCase):
     def test_oversized_amount_requires_review_without_crashing(self):
         result = self.review([('5,664,000.00', '999999999999999999999999999999999999999.00')])
         self.assertEqual(result.verdict, 'Needs a person to check')
+
+    def test_missing_penalty_and_registration_do_not_use_template_absence_heuristics(self):
+        for pack in (6,8):
+            result=self.review(document=read_pdf(SAMPLES / f'supplier-pack-{pack:02}.pdf'))
+            self.assertEqual(result.verdict,'Needs a person to check')
+            self.assertNotIn('penalty_missing',self.codes(result))
+            self.assertNotIn('registration_missing',self.codes(result))
+
+    def test_explicit_labelled_missing_registration_still_rejects(self):
+        result=self.review([('TIN: 101458013391','TIN: not provided;')])
+        self.assertEqual(result.verdict,'Reject')
+        self.assertIn('registration_missing',self.codes(result))
+
+    def test_every_percentage_must_be_interpreted_and_consistent(self):
+        for old,new in [('10% advance','10% advance 40%'),('Balance payable','Balance 190% payable'),
+                        ('Balance payable','Balance 10% payable')]:
+            with self.subTest(text=new):
+                self.assertEqual(self.review([(old,new)]).verdict,'Needs a person to check')
+
+    def test_one_obligation_cannot_supply_another_obligations_deadline(self):
+        result=self.review([('Delivery within 24 days of receiving the purchase order.',
+                             'Payment within 24 days of receiving the purchase order.')])
+        self.assertEqual(result.verdict,'Needs a person to check')
+
+    def test_unreadable_extra_item_table_does_not_hide_behind_supported_table(self):
+        page=PdfPage(2,'Item\nDescription\nQty\nUnit\nUnit price (BDT)\nAmount (BDT)\nB\nPolyester\n100\npiece\n50\n5000\n')
+        result=self.review(document=replace(self.clean,pages=self.clean.pages+(page,)))
+        self.assertEqual(result.verdict,'Needs a person to check')
+
+    def test_foreign_currency_summary_cannot_be_used_as_bdt(self):
+        self.assertEqual(self.review([('Total','Total (USD)')]).verdict,'Needs a person to check')
 
 
 if __name__ == '__main__':

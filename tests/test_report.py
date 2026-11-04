@@ -16,13 +16,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReportTests(unittest.TestCase):
-    def test_all_ten_match_manual_verdicts_and_rule_codes(self):
+    def test_actual_results_preserve_gold_labels_and_report_escalations(self):
         results = [review_document(path, load_purchase_request(), load_company_rules())
                    for path in sorted(SAMPLE_DIRECTORY.glob('supplier-pack-*.pdf'))]
         evaluation = evaluate_samples(results)
         self.assertEqual(evaluation['total'], 10)
-        self.assertEqual(evaluation['verdict_matches'], 10)
-        self.assertEqual(evaluation['rule_matches'], 10, evaluation)
+        self.assertEqual(evaluation['verdict_matches'],6)
+        self.assertEqual(evaluation['rule_matches'],6,evaluation)
+        self.assertEqual(evaluation['automatic_decisions'],3)
+        self.assertEqual(evaluation['conservative_escalations'],4)
+        self.assertEqual(evaluation['unsafe_approvals'],0)
+        self.assertEqual(evaluation['incorrect_automatic_decisions'],0)
+        self.assertEqual(evaluation['rows'][0]['expected'],'Approve')
 
     def test_report_contains_exact_evidence_and_escapes_untrusted_text(self):
         result = review_document(SAMPLE_DIRECTORY / 'supplier-pack-09.pdf', load_purchase_request(), load_company_rules())
@@ -52,8 +57,9 @@ class ReportTests(unittest.TestCase):
             result = subprocess.run([sys.executable,'-m','procurement.review','--output',str(output)],
                                     cwd=ROOT, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn('Verdicts: 10/10', result.stdout)
-            self.assertIn('Rule sets: 10/10', result.stdout)
+            self.assertIn('Verdicts: 6/10',result.stdout)
+            self.assertIn('Rule sets: 6/10',result.stdout)
+            self.assertIn('Automatic decisions: 3/10',result.stdout)
             self.assertIn('development', output.read_text(encoding='utf-8'))
 
     def test_evaluation_counts_a_wrong_rule_even_when_verdict_is_right(self):
@@ -62,6 +68,18 @@ class ReportTests(unittest.TestCase):
         evaluation = evaluate_samples([result])
         self.assertEqual(evaluation['verdict_matches'], 1)
         self.assertEqual(evaluation['rule_matches'], 0)
+
+    def test_strict_label_check_reports_mismatches_as_nonzero(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result=subprocess.run([sys.executable,'-m','procurement.review','--check-labels','--output',str(Path(directory)/'report.html')],
+                                  cwd=ROOT,capture_output=True,text=True)
+            self.assertEqual(result.returncode,1,result.stderr)
+
+    def test_metrics_count_a_wrong_approval_as_unsafe(self):
+        result=review_document(SAMPLE_DIRECTORY/'supplier-pack-03.pdf',load_purchase_request(),load_company_rules())
+        evaluation=evaluate_samples([replace(result,verdict='Approve')])
+        self.assertEqual(evaluation['unsafe_approvals'],1)
+        self.assertEqual(evaluation['incorrect_automatic_decisions'],1)
 
 
 if __name__ == '__main__':

@@ -1,53 +1,39 @@
 # Suggested Loom walkthrough (under five minutes)
 
-## 0:00–0:40 — The problem
+## 0:00-0:40: Problem and fixed workflow
 
-“A procurement employee receives supplier quotations and has to compare prices,
-quantities and contract terms with company policy. A small mistake can mean
-paying too much or accepting an unsafe contract. This tool reviews each document
-in fixed steps and shows the evidence behind every decision.”
+Procurement staff compare supplier quotations with a purchase request and company
+policy. Show review_document(): read PDF, extract facts, check rules, show evidence.
+This is the Python baseline, with no AI model yet.
 
-## 0:40–1:20 — Run it
+## 0:40-1:30: Run the real batch
 
-Run `python -m procurement.review`, then open the printed HTML report path.
-Show the batch summary: two approvals, five rejections, three human reviews.
+Run python -m procurement.review and open reports/procurement-review.html.
+Show three rejections and seven human reviews. Expand the unchanged manual-label
+comparison: six exact verdict matches. Explain four conservative escalations.
+Do not present human-review escalation as a correct match or hide the denominator.
 
-“This is the deterministic Python baseline. The documents share a template, so I
-first measured what ordinary code could handle. I have not added an AI model yet.
-An AI version would replace the reader while using the same company checks.”
+## 1:30-2:30: Show useful findings
 
-## 1:20–2:40 — Three useful examples
+Pack03: price229 exceeds maximum210 by more than3%.
+Pack05:40% advance exceeds20%.
+Pack09: the document states322,000, while50,000 times6.40 is320,000.
+Open each original page excerpt. The parser preserves wrong figures, never repairs
+source text or invents a missing value.
 
-Open pack 03: show the price rejection and original table evidence.
-“The quoted price is 229; the maximum is 210. It exceeds the allowed tolerance.”
+## 2:30-3:30: Explain the correction
 
-Open pack 09: show the wrong line amount and unclear payment finding.
-“The supplier wrote 322,000. The tool preserves that statement, calculates
-50,000 times 6.40 separately, and flags the difference. It does not repair the
-document and hide the mistake.”
+The earlier baseline reached10/10 by depending on document-specific text order and
+sentence patterns. I replaced that with table boundaries/column concepts and
+explicit term components. Reordering columns or PDF insertion order no longer
+changes field meanings in the tested structures. Unknown wording stays unresolved.
+Policy still uses ordinary Python checks. The model will not choose business rules.
 
-Open pack 10: show the delivery rejection and separate VAT review finding.
-“Even when one condition rejects a document, all other findings remain visible.
-Missing VAT rows are never invented.”
+## 3:30-4:30: Honest limits and next comparison
 
-## 2:40–3:35 — Explain the code
-
-Open `procurement/review.py` and its `review_document()` function.
-“Read PDF, extract supplier details, item figures and terms, then check rules.
-These are ordinary functions in a fixed order. There is no autonomous agent.”
-
-Open `procurement/rules.py`. Point to delivery thresholds and verdict priority.
-“Numbers use Decimal so boundary comparisons are reliable. A human reviews
-unknown wording. The source policy is separate from document extraction.”
-
-## 3:35–4:30 — Testing and honest limits
-
-Show `docs/sample-results.md` and the test command.
-“The ten expected verdicts and triggered-rule sets match. All ten documents were
-visible during development, so this is not an unseen-document accuracy claim.
-I also test boundary values and extraction failures. The current parser handles
-the supplied template; OCR and arbitrary contract language are outside its scope.”
-
-“Next I would compare AI extraction with this baseline using the same policy
-engine, then evaluate both on new documents. AI's value would be more flexible
-reading, while business decisions remain explicit and auditable.”
+All ten PDFs were visible during development. Property tests check transformations,
+not unseen accuracy. A small deterministic grammar cannot understand arbitrary
+contract wording. The current baseline escalates unfamiliar wording and unproven
+absence, and produces no approvals on this set. That limits automatic coverage.
+Next compare an AI extractor with this baseline through exactly the same rules
+and evaluate both on new documents. Record Loom yourself; this is a speaking guide.

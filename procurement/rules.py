@@ -110,12 +110,11 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
 
     # 4. Registration absence is different from an unknown extraction format.
     text = "\n".join(page.text for page in document.pages)
-    explicit_missing = re.search(r"Supplier registration details available on request\.", text, re.I)
     for name in ("tin", "bin"):
         if requirements[name] and fields[name].status != "found":
-            confirmed = fields[name].status == "not_found" and explicit_missing is not None
+            confirmed = re.search(rf"\b{name}\s*:\s*(?:missing|none|not provided|not available)(?:[.;]|$)",text,re.I | re.M) is not None
             add("registration_missing" if confirmed else "registration_unclear", REJECT if confirmed else REVIEW,
-                f"{name.upper()} is not supplied; registration details are available on request." if confirmed
+                f"{name.upper()} is explicitly marked as not supplied." if confirmed
                 else f"Cannot establish {name.upper()} from this document.", name)
 
     # 5. Payment, delivery, and quotation validity thresholds.
@@ -137,13 +136,9 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
     # 6. Penalty: reject confirmed absence, review an unclear or weak clause.
     if requirements["late_delivery_penalty"]:
         clause = fields["penalty_clause"]
-        section = re.search(r"TERMS AND CONDITIONS\s+(.*?)^For[ \t]+", text, re.M | re.S | re.I)
-        labels = re.findall(r"^\d+\. (\w+)\.", section.group(1), re.M) if section else []
-        complete = {label.lower() for label in labels} == {"payment", "delivery", "validity", "quality", "disputes"}
-        no_penalty_words = section is not None and not re.search(r"penalty|delay|late delivery", section.group(1), re.I)
-        absent = clause.value == "absent" or (clause.status == "not_found" and complete and no_penalty_words)
+        absent = clause.value == "absent"
         if absent:
-            add("penalty_missing", REJECT, "No late-delivery penalty clause in the inspected supported terms.", "penalty_clause")
+            add("penalty_missing", REJECT, "Document explicitly states no late-delivery penalty.", "penalty_clause")
         elif clause.value != "present":
             add("penalty_unclear", REVIEW, "Could not establish a late-delivery penalty clause.", "penalty_clause")
         else:

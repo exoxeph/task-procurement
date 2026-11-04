@@ -40,8 +40,9 @@ findings will still be retained, even when one determines the final verdict.
 - Delivery at 45 days requires review; delivery above 45 days is rejected.
 - A confirmed missing registration field differs from unreadable text that a
   parser could not interpret. Extraction uncertainty requires human review.
-- A missing clause has no supporting quotation to invent. Record the missing
-  clause and the inspected document/page; preserve other available evidence.
+- An explicitly absent clause has no supporting quotation to invent. Preserve the
+  actual absence statement and inspected page. Missing extraction alone requires
+  review; the structural baseline no longer infers absence from known section sets.
 
 ## Ambiguous severity of a weak penalty
 
