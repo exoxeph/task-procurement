@@ -112,3 +112,39 @@ concepts, then pause. No remote push is requested.
   is needed. No supplier policy decisions, item parsing, or AI in this block.
 - All ten originals are checked. Small modified in-memory text fixtures test
   parser behavior, not unseen supplier accuracy or benchmark generalization.
+
+## Block 4 design
+
+- `procurement/financial_details.py` exposes
+  `extract_financial_details(document: PdfDocument) -> dict[str, ExtractedField]`.
+  Reuse the Evidence and ExtractedField records without changing Block 3.
+- Extract item_code, description, quantity, unit, unit_price, line_amount,
+  subtotal, vat_rate, vat_amount, total, and unit_price_tax_note.
+- Locate the ordered Item / Description / Qty / Unit / Unit price (BDT) /
+  Amount (BDT) table headers in native PDF text. The last two headers may
+  share one line, as in pack 10. Case and blank-line differences are accepted.
+- Support one item per table in native cell-per-line order. The description
+  may wrap, but may not contain a standalone numeric line. Extra rows,
+  incomplete tables, or unsupported structures remain unrecognized rather
+  than silently selecting a row. Repeated agreeing tables retain evidence;
+  conflicting occurrences remain unresolved.
+- Raw numbers accept plain or correctly comma-grouped non-negative decimal
+  notation; quantity is a whole-number token. Do not normalize values or fix
+  arithmetic in this block. Block 6 converts types; Block 7 checks arithmetic.
+- Item fields cite the exact table header/body excerpt, so the assigned
+  column has context. Totals cite their exact label/value excerpts.
+- Subtotal, VAT rate, and VAT amount use explicit labels. Missing rows have
+  not_found status without invented evidence or calculated replacements.
+- Distinguish summary labels from ordinary description words, and exclude
+  table lines from totals parsing. Descriptions starting with Total, Subtotal,
+  VAT, or Supplier must not alone terminate the item row or create totals.
+- unit_price_tax_note captures explicit `VAT included` / `VAT excluded`
+  wording in the price header. A plain price header has no explicit tax note;
+  do not assume an exclusion statement. Preserve the total's parenthesized
+  wording in its evidence, including `all taxes included` in pack 10.
+- Preview uses the existing CLI conventions. Required item fields and total
+  must be found; missing optional subtotal/VAT/tax-note rows alone are not an
+  extraction failure. Any ambiguous/unrecognized field or PDF issue still
+  requires attention. Company policy may later flag a missing VAT breakdown.
+- No company-rule decisions, currency conversion, AI, or new dependencies.
+- User's untracked video/ directory is outside this block and its commit.

@@ -1,10 +1,10 @@
 # Supplier document reviewer
 
 A readable Python implementation of the Task 1 procurement workflow.
-The project is being built one block at a time. **Blocks 1-3 are implemented.**
-It loads reference inputs, reads PDFs, and extracts supplier/quotation details
-with page evidence. It does not extract financial/contract terms or issue
-procurement decisions yet.
+The project is being built one block at a time. **Blocks 1-4 are implemented.**
+It loads reference inputs, reads PDFs, and extracts supplier, quotation, item,
+and financial details with page evidence. It does not extract contract terms,
+check financial arithmetic, or issue procurement decisions yet.
 
 ## Requirements
 
@@ -220,6 +220,100 @@ blocks must distinguish extraction limitations from verified document absence.
 
 Tests use all ten supplied PDFs and small in-memory text changes to check parser
 behavior. Those checks are not an unseen supplier-document benchmark.
+
+## Block 4: item and financial details
+
+```powershell
+python -m procurement.financial_details sample-data/engineer/task1-procurement/supplier-pack-09.pdf
+python -m procurement.financial_details sample-data/engineer/task1-procurement/supplier-pack-10.pdf
+```
+
+The first preview preserves the stated (incorrect) line amount of `322,000.00`.
+The second shows `VAT included` and not_found for subtotal, VAT rate, and VAT
+amount. No figures are calculated or repaired during extraction.
+
+Read `procurement/financial_details.py` starting at
+`extract_financial_details()`. The flow is:
+
+```text
+PdfDocument from Block 2
+    -> Read nonempty lines while remembering their original text positions
+    -> Locate the supported item-table headers
+    -> Read the item code, description, quantity, unit, price, and amount
+    -> Preserve an explicit VAT included/excluded note in the price header
+    -> Read separately labelled subtotal, VAT rate, VAT amount, and total
+    -> Resolve repeated/conflicting values
+    -> Return eleven ExtractedField records with page evidence
+```
+
+Example:
+
+```python
+from pathlib import Path
+from procurement.pdf_text import read_pdf
+from procurement.financial_details import extract_financial_details
+
+document = read_pdf(Path("sample-data/engineer/task1-procurement/supplier-pack-09.pdf"))
+fields = extract_financial_details(document)
+
+print(fields["quantity"].value)       # "50,000", still text
+print(fields["unit_price"].value)     # "6.40"
+print(fields["line_amount"].value)    # "322,000.00", as written in the PDF
+print(fields["line_amount"].status)   # found means extracted, not correct arithmetic
+```
+
+The six item fields are `item_code`, `description`, `quantity`, `unit`,
+`unit_price`, and `line_amount`. The other fields are `subtotal`, `vat_rate`,
+`vat_amount`, `total`, and `unit_price_tax_note`. They use the same four statuses
+and evidence records as Block 3. Keep `document.issues` alongside them.
+
+### Reading the helpers
+
+- `_page_lines()` stores each nonempty line with its start/end positions in
+  the original page text. This lets matching ignore blank lines while evidence
+  still includes the original whitespace.
+- `_header_end()` checks the expected column headers. It supports separate
+  price/amount headers and pack 10's combined header line.
+- `_item_values()` reads a supported single-item body. The final four cells
+  must be quantity, unit, unit price, and line amount. Description text can wrap.
+- `_summary_value()` and `_is_vat_label()` distinguish financial labels from
+  descriptions such as `Total protection cotton fabric` or `VAT resistant fabric`.
+- `_collect_item_tables()` puts recognized row values into candidate lists.
+  Item evidence includes the full table header/body, giving the columns context.
+  It also remembers which lines belong to tables.
+- `_collect_amount()` reads a whole amount after a label, either on the same
+  line or the next nonempty line. It does not accept a partial numeric match.
+- `_collect_totals()` finds explicit subtotal, VAT, and total labels outside
+  those table lines, so descriptions do not become financial summary entries.
+- `_resolve_field()` uses the same uncertainty rules as Block 3. It is kept
+  local so this block does not change the supplier parser already explained.
+- `main()` reads paths, calls the reader and extractor, and prints the results.
+
+### Supported format and limits
+
+This baseline expects the native cell-per-line order of the supplied tables:
+Item, Description, Qty, Unit, Unit price (BDT), Amount (BDT), then a single item.
+The last two headers may share a line. Blank lines and case variations are
+accepted. A description may wrap but cannot contain a standalone numeric line:
+that would be indistinguishable from an extra item row in this simple parser.
+Unsupported/incomplete or multi-row bodies are flagged instead of guessing.
+
+Numbers stay as strings, with their commas and decimal places. Supported forms
+are non-negative plain numbers or correctly comma-grouped numbers; quantity
+must be a whole-number token. Block 6 will normalize types and Block 7 will
+check arithmetic. These formats do not establish generalization to arbitrary
+tables, currencies, OCR, or invoice layouts.
+
+An explicit `VAT included` or `VAT excluded` price-header note is preserved.
+A plain header has no such statement, so its tax note is not_found; no exclusion
+claim is invented. Parenthesized total wording, such as `all taxes included`,
+remains in the total's evidence. Missing subtotal or VAT rows are never derived.
+
+The preview needs attention for missing required item fields/total, unsupported
+or conflicting fields, or PDF extraction issues. Missing optional subtotal,
+VAT, or tax-note fields alone do not indicate a parser failure. Thus pack 10
+can exit 0 for extraction while later policy checks still flag its VAT display.
+No preview exit code is a supplier approval.
 
 ## Policy and scope
 

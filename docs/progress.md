@@ -57,7 +57,7 @@ through all tasks. The ten-block plan in chat is the approved scope.
 
 ## Block 3
 
-- Status: complete; paused before Block 4.
+- Status: complete; explanation and requested pause delivered.
 - Plan: docs/superpowers/plans/2026-11-05-block-03-supplier-details.md.
 - Pre-flight: consumes the unchanged PdfDocument/PdfPage interface from Block 2;
   no modifications to the PDF reader or reference loaders are needed.
@@ -87,3 +87,28 @@ through all tasks. The ten-block plan in chat is the approved scope.
   pack 08 correctly has four found fields and two not_found registration fields.
 - Preview: pack 01 exits 0 with values and evidence; pack 08 exits 1 with
   not_found TIN/BIN. This signals extraction attention, not a policy verdict.
+
+## Block 4
+
+- Status: complete; commit, explanation, and requested pause follow verification.
+- Plan: docs/superpowers/plans/2026-11-05-block-04-financial-details.md.
+- Pre-flight: reuse unchanged PdfDocument, Evidence, and ExtractedField records.
+- Baseline: all 49 existing tests pass.
+- Ruling: raw numeric text stays unchanged until normalization and arithmetic
+  checks in Blocks 6 and 7; never correct pack 09 during extraction.
+- Ruling: preserve explicit VAT-inclusive wording and optional missing totals;
+  do not derive pack 10's subtotal, VAT amount, or VAT rate.
+- Ruling: untracked video/ belongs to other work and is excluded from this commit.
+- Test-first record: new tests failed because procurement.financial_details did
+  not exist. Implementation then passed all 67 tests (18 new).
+- Verification: all eleven raw fields match hand-checked expectations for all
+  ten documents, with every evidence excerpt checked on its source page.
+- Ruling: keep the small field-resolution helper local rather than refactor
+  Block 3's code during this teaching block; shared records remain unchanged.
+- Independent review found one important issue: descriptions beginning with
+  Total, Subtotal, VAT, or Supplier could be mistaken for section/summary labels.
+- Regression: four description examples failed before the fix. Tighten label
+  recognition and exclude table lines from totals parsing; all four now pass.
+- Final verification: all 68 tests pass (19 new). Pack 09 retains its stated
+  incorrect amount; pack 10 retains missing subtotal/VAT fields and its explicit
+  VAT-inclusive note. Preview success is extraction success, not approval.
