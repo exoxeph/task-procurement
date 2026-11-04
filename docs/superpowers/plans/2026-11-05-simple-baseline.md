@@ -26,13 +26,13 @@ wrong request identity, conflicting values, HTML escaping, and malformed inputs.
 
 ### Stage 2: Rules and decisions
 
-- [ ] Write failing tests for check_rules(document, fields, items, policy),
+- [x] Write failing tests for check_rules(document, fields, items, policy),
   exact price/quantity/payment/delivery/advance/validity/penalty boundaries,
   arithmetic, missing registrations, ambiguity, and verdict precedence.
-- [ ] Implement rules.py with Finding and ReviewResult records; Decimal conversion
+- [x] Implement rules.py with Finding and ReviewResult records; Decimal conversion
   and rule checks stay together. Retain all findings with source evidence.
-- [ ] Add review_document(path, items, policy) in review.py as the four-step entry.
-- [ ] Run all tests and commit feat: check procurement rules and explain verdicts.
+- [x] Add review_document(path, items, policy) in review.py as the four-step entry.
+- [x] Run all tests and commit feat: check procurement rules and explain verdicts.
 
 ### Stage 3: Report and evaluation
 
