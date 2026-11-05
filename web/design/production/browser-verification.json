@@ -1,0 +1,18 @@
+[
+  {
+    "check": "axe dark",
+    "violations": []
+  },
+  {
+    "check": "axe light",
+    "violations": []
+  },
+  {
+    "check": "desktop, matrix, keyboard, quote highlighting, mock streaming, cancellation, offline replay",
+    "passed": true
+  },
+  {
+    "check": "live HTTPS header only, baseline omission, memory only, forget/reload, mapped 401/402/429/500/504",
+    "passed": true
+  }
+]

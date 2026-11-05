@@ -1,0 +1,86 @@
+[
+  {
+    "file": "dir-1.html",
+    "matrixMatches": [
+      6,
+      5,
+      7,
+      9
+    ],
+    "explicitMismatches": 13,
+    "keyboardDialog": true,
+    "focusInsideDialog": true,
+    "escapeCloses": true,
+    "replayVerdict": "Reject",
+    "themes": [
+      {
+        "theme": "light",
+        "contrastProblems": 0
+      },
+      {
+        "theme": "dark",
+        "contrastProblems": 0
+      },
+      {
+        "theme": "light",
+        "contrastProblems": 0
+      }
+    ]
+  },
+  {
+    "file": "dir-2.html",
+    "matrixMatches": [
+      6,
+      5,
+      7,
+      9
+    ],
+    "explicitMismatches": 13,
+    "keyboardDialog": true,
+    "focusInsideDialog": true,
+    "escapeCloses": true,
+    "replayVerdict": "Reject",
+    "themes": [
+      {
+        "theme": "dark",
+        "contrastProblems": 0
+      },
+      {
+        "theme": "light",
+        "contrastProblems": 0
+      },
+      {
+        "theme": "dark",
+        "contrastProblems": 0
+      }
+    ]
+  },
+  {
+    "file": "dir-3.html",
+    "matrixMatches": [
+      6,
+      5,
+      7,
+      9
+    ],
+    "explicitMismatches": 13,
+    "keyboardDialog": true,
+    "focusInsideDialog": true,
+    "escapeCloses": true,
+    "replayVerdict": "Reject",
+    "themes": [
+      {
+        "theme": "light",
+        "contrastProblems": 0
+      },
+      {
+        "theme": "dark",
+        "contrastProblems": 0
+      },
+      {
+        "theme": null,
+        "contrastProblems": 0
+      }
+    ]
+  }
+]

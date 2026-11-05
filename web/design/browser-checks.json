@@ -1,0 +1,101 @@
+[
+  {
+    "file": "dir-1.html",
+    "width": 1440,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-1.html",
+    "width": 768,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-1.html",
+    "width": 360,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-2.html",
+    "width": 1440,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-2.html",
+    "width": 768,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-2.html",
+    "width": 360,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 10,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-3.html",
+    "width": 1440,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 11,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-3.html",
+    "width": 768,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 11,
+    "pageErrors": [],
+    "externalRequests": []
+  },
+  {
+    "file": "dir-3.html",
+    "width": 360,
+    "overflow": false,
+    "smallProse": [],
+    "smallLabels": [],
+    "contrast": [],
+    "rows": 11,
+    "pageErrors": [],
+    "externalRequests": []
+  }
+]
