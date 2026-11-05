@@ -1,4 +1,5 @@
-# PDF text extraction. All other Block 1-2 dependencies are Python built-ins.
-PyMuPDF==2.0
+# Native PDF text and geometry only; 2.x adds an unnecessary layout/ONNX stack.
+# Keep the standalone wheel so Vercel's Python function stays below 500 MB.
+PyMuPDF==1.28.2
 # Fixed workflow graphs (procurement/workflow.py). Pulls in langchain-core.
 langgraph==1.2.20
