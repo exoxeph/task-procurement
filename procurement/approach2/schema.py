@@ -1,10 +1,9 @@
 """The AI response contract and readable local validation; no model calls here."""
 
 from dataclasses import replace
-import json
 
 from procurement.shared.extraction import (
-    Evidence, ExtractedField, ExtractionRun, FACT_NAMES, STATUSES, validate_fields,
+    ExtractedField, ExtractionRun, FACT_NAMES, STATUSES, parse_json, read_fact, validate_fields,
 )
 from procurement.shared.pdf_text import PdfDocument
 
@@ -40,31 +39,6 @@ OUTPUT_SCHEMA = {
 }
 
 
-def _read_fact(data: dict) -> ExtractedField:
-    """Check JSON types before constructing the common Python record."""
-    if not isinstance(data, dict) or set(data) != set(FACT_PROPERTIES):
-        raise ValueError("fact keys do not match the schema")
-    for name in ("value", "raw_value", "reference_event", "minimum_value", "maximum_value"):
-        if data[name] is not None and not isinstance(data[name], str):
-            raise ValueError(f"{name} must be text or null")
-    if data["status"] not in STATUSES:
-        raise ValueError("unknown extraction status")
-    if not isinstance(data["conditions"], list) or not all(isinstance(item, str) and item.strip() for item in data["conditions"]):
-        raise ValueError("conditions must be a list of nonempty text")
-    if not isinstance(data["evidence"], list):
-        raise ValueError("evidence must be a list")
-    evidence = []
-    for excerpt in data["evidence"]:
-        if (not isinstance(excerpt, dict) or set(excerpt) != {"page_number", "text"}
-                or type(excerpt["page_number"]) is not int or excerpt["page_number"] < 1
-                or not isinstance(excerpt["text"], str)):
-            raise ValueError("invalid evidence entry")
-        evidence.append(Evidence(excerpt["page_number"], excerpt["text"]))
-    return ExtractedField(data["value"], data["status"], tuple(evidence),
-                          data["raw_value"], data["reference_event"], tuple(data["conditions"]),
-                          data["minimum_value"], data["maximum_value"])
-
-
 def validate_response(payload: dict, document: PdfDocument) -> ExtractionRun:
     """Reject broken documents; retain individual fact errors as review issues."""
     if not isinstance(payload, dict) or set(payload) != {"fields", "issues", "item_count"}:
@@ -80,7 +54,7 @@ def validate_response(payload: dict, document: PdfDocument) -> ExtractionRun:
         issues.append("This workflow requires exactly one item; do not select one row from multiple items.")
     for name, data in payload["fields"].items():
         try:
-            fields[name] = _read_fact(data)
+            fields[name] = read_fact(data)
         except ValueError as error:
             fields[name] = ExtractedField(None, "unrecognized", ())
             issues.append(f"{name}: {error}")
@@ -91,24 +65,6 @@ def validate_response(payload: dict, document: PdfDocument) -> ExtractionRun:
         for name in ('item_code', 'description', 'quantity', 'unit', 'unit_price', 'line_amount'):
             run.fields[name] = replace(run.fields[name], value=None, status='unrecognized')
     return replace(run, issues=tuple(issues) + run.issues, metadata={"schema_version": SCHEMA_VERSION})
-
-
-def _unique_keys(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
-def _reject_constant(value):
-    raise ValueError(f"nonfinite JSON value: {value}")
-
-
-def parse_json(text: str):
-    """Decode strict JSON for either an Ollama envelope or its extracted facts."""
-    return json.loads(text, object_pairs_hook=_unique_keys, parse_constant=_reject_constant)
 
 
 def parse_response(text: str, document: PdfDocument) -> ExtractionRun:

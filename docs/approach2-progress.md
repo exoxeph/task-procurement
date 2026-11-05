@@ -150,3 +150,53 @@ https://docs.ollama.com/capabilities/structured-outputs
 
 Next: Block 4, visible workflow stages and auditable human questions/corrections.
 The full repeated ten-PDF AI comparison remains Block 5.
+
+
+## Block 4 completed: workflow stages and recorded corrections
+
+- Added shared/human_review.py: build_questions turns review findings into
+  source-backed questions; apply_corrections validates and records a new assisted
+  extraction. response_template supplies a deliberately incomplete starter.
+- HTML now shows five workflow stages, affected facts, original page excerpts,
+  response-file instructions, reviewer details and the corrected facts. All
+  external text is escaped. Execution status is not a claim of semantic truth.
+- Added --source-run and --review-response, together for exactly one explicit
+  PDF. The saved extraction is loaded without inference. A valid response needs
+  matching run ID and live PDF SHA-256, reviewer, ISO timestamp with offset,
+  reason and corrections in the common fact shape. No policy/verdict overrides.
+- Reused the strict JSON and fact readers in shared/extraction.py for both AI
+  and review inputs. Shared code has no dependency on the AI extractor/schema.
+- Original artifacts/raw responses remain unchanged; assisted runs have new IDs,
+  source links and audit details. Only corrected fields' old validation errors
+  are replaced; unrelated and whole-document problems remain. Rules run again.
+- Findings now retain their existing affected-field names so questions do not
+  guess from prose. No policy comparisons or verdict priorities changed.
+- Successful assisted results and failed correction attempts are excluded from
+  unassisted sample scores. No timer or automatic approval was added.
+
+Verification: 159 tests passed with `python -m unittest discover -s tests -q`.
+The real baseline CLI still produces 6/10 verdict and rule-set matches, three
+rejects and seven reviews. Sample PDFs and config files are unchanged.
+
+Demonstration: replayed the actual Block 3 AI artifact for pack 09 (no model call).
+It remained pending with seven questions before correction. A response explicitly
+labelled **Codex demonstration, not an actual human review** fixed its literal
+payment excerpts and delivery reference, while preserving ambiguous 30-90 day
+payment terms and the condition 'as agreed by both parties'. Delivery became 28
+days after PO. Printed line amount stayed 322000.0; arithmetic still failed.
+All three extraction-validation issues were resolved, but payment ambiguity and
+line arithmetic still require a person. The assisted result was excluded from
+unassisted scores. Its report is reports/block4-assisted.html; demonstration
+response and artifacts are under ignored reports/block4-smoke/. The original
+artifact SHA-256 before and after was
+9c50529239b59af12e0cb27880a099e2f321eb01d333ebe4998bf746837c9cd0.
+
+Ruling: require an explicit --source-run alongside --review-response, instead of
+rerunning extraction or guessing an artifact by UUID. This makes the original
+review target unambiguous and avoids inference; it costs one additional CLI flag.
+Ruling: a correction may replace its own old field-validation issue, while
+unrelated/whole-document issues survive. Correcting one fact must not clear an
+unsupported input or unrelated ambiguity. Some cases therefore remain pending.
+
+Next: pause for explanation. Block 5 is the full AI comparison and interview
+materials; it has not been run as part of this block.

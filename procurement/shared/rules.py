@@ -20,6 +20,7 @@ class Finding:
     severity: str
     reason: str
     evidence: tuple[Evidence, ...]
+    field_names: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -47,7 +48,7 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
             excerpts.extend(fields[name].evidence)
         # Absence has no fabricated quote: cite the actual pages inspected.
         evidence = tuple(dict.fromkeys(excerpts)) or inspected_pages
-        findings.append(Finding(code, severity, reason, evidence))
+        findings.append(Finding(code, severity, reason, evidence, tuple(field_names)))
 
     # 1. Extraction uncertainty must never silently turn into approval.
     for issue in document.issues:

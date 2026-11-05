@@ -9,7 +9,11 @@ from procurement.shared.references import PROJECT_ROOT, SAMPLE_DIRECTORY
 def evaluate_samples(results: list, errors=()) -> dict:
     labels = json.loads((PROJECT_ROOT / 'config/manual-labels.json').read_text(encoding='utf-8'))
     rows = []
+    assisted_excluded = 0
     for result in results:
+        if result.extraction_run is not None and result.extraction_run.metadata.get('assisted'):
+            assisted_excluded += 1
+            continue
         path = result.document.source_path
         expected = labels['documents'].get(path.name)
         # Labels apply to the original sample paths, never to arbitrary uploads
@@ -32,7 +36,8 @@ def evaluate_samples(results: list, errors=()) -> dict:
                      'verdict_match': False, 'rule_match': False, 'input_error': True, 'extraction_error': False,
                      'expected_rules': expected['rules'], 'actual_rules': [], 'error': str(error)})
     review = 'Needs a person to check'
-    return {'total': len(rows), 'verdict_matches': sum(row['verdict_match'] for row in rows),
+    return {'total': len(rows), 'assisted_excluded': assisted_excluded,
+            'verdict_matches': sum(row['verdict_match'] for row in rows),
             'rule_matches': sum(row['rule_match'] for row in rows), 'rows': rows,
             'input_failures': sum(row['input_error'] for row in rows),
             'extraction_failures': sum(row['extraction_error'] for row in rows),

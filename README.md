@@ -162,6 +162,37 @@ is semantically correct. Policy checks keep unsupported conditions and ranges fo
 human review and do not apply delivery-based thresholds to invoice-based deadlines.
 Missing or unsupported currency prevents monetary comparison against BDT limits.
 
+## Human review and corrections
+
+The HTML shows five steps: read PDF, extract facts, validate facts, check the
+purchase request/company rules, and report the decision or handoff. States describe
+execution and unresolved issues, not guaranteed semantic correctness.
+
+A pending result includes specific questions, affected fields and PDF excerpts.
+Open **Prepare a review-response JSON file** in that document's report card. Copy
+the starter and fact-shape example into a JSON file. Supply the reviewer name,
+review time with timezone offset, reason and source-backed corrected facts. Keep
+real conditions, ranges and uncertainty; changing extraction cannot authorize a
+policy exception. The local file records the reviewer identity supplied; it does
+not authenticate that identity.
+
+Apply the response to its saved extraction, without another model call:
+
+```powershell
+python -m procurement.review sample-data/engineer/task1-procurement/supplier-pack-09.pdf --source-run reports/runs/SAVED_RUN.json --review-response RESPONSE.json --output reports/assisted.html
+```
+
+Use the actual saved-run path shown in the original report. Exactly one explicit
+PDF is required. The response must match both the original run ID and the PDF's
+SHA-256 hash. Invalid evidence, unknown fields, missing audit details, verdict
+overrides and policy overrides are rejected.
+
+The original extraction stays unchanged. A new assisted run stores the correction,
+reviewer details and source-run link, then the same Python rules run again. A valid
+correction can still require review or produce rejection. Assisted decisions and
+failed correction attempts do not enter unassisted development accuracy scores.
+Nothing automatically approves while waiting for a response.
+
 ## Limits and policy choices
 
 The table reader supports simple ruled rectangular grids with shared vertical spans

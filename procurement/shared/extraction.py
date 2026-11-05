@@ -3,6 +3,7 @@
 from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 import argparse
+import json
 from pathlib import Path
 import re
 import sys
@@ -62,6 +63,51 @@ class ExtractionRun:
     issues: tuple[str, ...]
     metadata: dict
     raw_response: str | None = None
+
+
+def _unique_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_constant(value):
+    raise ValueError(f"nonfinite JSON value: {value}")
+
+
+def parse_json(text: str):
+    """Decode run, model or review JSON without duplicate keys or nonfinite numbers."""
+    return json.loads(text, object_pairs_hook=_unique_keys, parse_constant=_reject_constant)
+
+
+def read_fact(data: dict) -> ExtractedField:
+    """Check JSON types before constructing the common Python record."""
+    required = {"value", "status", "raw_value", "reference_event", "conditions",
+                "minimum_value", "maximum_value", "evidence"}
+    if not isinstance(data, dict) or set(data) != required:
+        raise ValueError("fact keys do not match the schema")
+    for name in ("value", "raw_value", "reference_event", "minimum_value", "maximum_value"):
+        if data[name] is not None and not isinstance(data[name], str):
+            raise ValueError(f"{name} must be text or null")
+    if data["status"] not in STATUSES:
+        raise ValueError("unknown extraction status")
+    if not isinstance(data["conditions"], list) or not all(isinstance(item, str) and item.strip() for item in data["conditions"]):
+        raise ValueError("conditions must be a list of nonempty text")
+    if not isinstance(data["evidence"], list):
+        raise ValueError("evidence must be a list")
+    evidence = []
+    for excerpt in data["evidence"]:
+        if (not isinstance(excerpt, dict) or set(excerpt) != {"page_number", "text"}
+                or type(excerpt["page_number"]) is not int or excerpt["page_number"] < 1
+                or not isinstance(excerpt["text"], str)):
+            raise ValueError("invalid evidence entry")
+        evidence.append(Evidence(excerpt["page_number"], excerpt["text"]))
+    return ExtractedField(data["value"], data["status"], tuple(evidence),
+                          data["raw_value"], data["reference_event"], tuple(data["conditions"]),
+                          data["minimum_value"], data["maximum_value"])
 
 
 def read_number(value: str, name: str) -> Decimal:

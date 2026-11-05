@@ -1,6 +1,10 @@
 """A standalone local HTML review screen, with no server or frontend framework."""
 
 from html import escape
+import json
+from dataclasses import asdict
+
+from procurement.shared.human_review import build_questions, response_template
 
 
 def render_report(results: list, errors: list, evaluation: dict | None = None) -> str:
@@ -23,7 +27,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600}.muted{color:#61767
 .scroll{overflow-x:auto}td{overflow-wrap:anywhere}footer{font-size:13px;color:#617671}
 </style><h1>Supplier document review</h1>
 <p class="intro">Read PDF → Extract facts → Check company rules → Review the evidence.</p>
-<p class="intro">Python baseline for the supplied document format. Unclear information needs a person.
+<p class="intro">Unclear information needs a person.
 Every displayed excerpt comes from the document; an exact excerpt alone does not prove correct interpretation.</p>''']
     approaches = {result.extraction_run.metadata.get('approach') for result in results if result.extraction_run}
     if 'approach2' in approaches:
@@ -51,6 +55,8 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
         parts.append('</table></div></details>')
         parts.append(f"<p>Input failures: {evaluation.get('input_failures', 0)}"
                      f" · Extraction failures: {evaluation.get('extraction_failures', 0)}</p>")
+    if evaluation and evaluation.get('assisted_excluded'):
+        parts.append(f"<p>Assisted runs excluded from unassisted sample scores: {evaluation['assisted_excluded']}</p>")
     parts.append('</div><div class="scroll"><table><tr><th>Document</th><th>Supplier</th><th>Decision</th><th>Findings</th></tr>')
     for index, result in enumerate(results):
         supplier = result.fields['supplier_name'].value or 'Unresolved supplier'
@@ -59,20 +65,58 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
     parts.append('</table></div>')
     for path, error in errors:
         parts.append(f'<article><h2>{escape(str(path))}</h2><span class="badge review">Needs a person to check</span>'
-                     f'<p>PDF could not be reviewed: {escape(str(error))}</p></article>')
+                     f'<p>Review workflow failed: {escape(str(error))}</p></article>')
     for index, result in enumerate(results):
         style = {'Approve': 'approve', 'Reject': 'reject'}.get(result.verdict, 'review')
         parts.append(f'<article id="document-{index}"><h2>{escape(result.document.source_path.name)}</h2>'
                      f'<span class="badge {style}">{escape(result.verdict)}</span>')
+        if result.steps:
+            parts.append('<h3>Fixed workflow</h3><p class="muted">These states describe execution, '
+                         'not guaranteed factual correctness. A completed rules check can reject a quotation.</p><ol>')
+            for step in result.steps:
+                parts.append(f"<li>{escape(step['name'])}: <b>{escape(step['status'])}</b></li>")
+            parts.append('</ol>')
         if not result.findings:
             parts.append('<p>All configured checks passed for the facts extracted from this supported format.</p>')
         if result.extraction_run:
             parts.append('<details><summary>Extraction run</summary>')
-            for name in ('approach', 'model', 'status', 'run_id', 'elapsed_seconds', 'artifact_path'):
+            for name in ('approach', 'model', 'status', 'run_id', 'elapsed_seconds', 'artifact_path',
+                         'assisted', 'source_run_id', 'source_status'):
                 value = result.extraction_run.metadata.get(name)
                 if value is not None:
                     parts.append(f'<p>{escape(name.replace("_", " "))}: {escape(str(value))}</p>')
+            if result.extraction_run.metadata.get('assisted'):
+                parts.append('<p>Human-assisted result; excluded from unassisted sample scores.</p>')
+                audit = result.extraction_run.metadata.get('human_review', {})
+                parts.append(f'<pre>{escape(json.dumps(audit, ensure_ascii=False, indent=2))}</pre>')
+                changes = result.extraction_run.metadata.get('corrections', {})
+                parts.append(f'<pre>{escape(json.dumps(changes, ensure_ascii=False, indent=2))}</pre>')
             parts.append('</details>')
+        questions = build_questions(result)
+        if questions:
+            parts.append('<h3>Human review questions</h3><p>Pending until a person reviews the source. '
+                         'Waiting never approves a quotation. Corrections change extracted facts; '
+                         'the same company rules run again.</p>')
+            for question in questions:
+                parts.append(f"<p><b>{escape(question['code'])}</b>: {escape(question['question'])}</p>")
+                if question['fields']:
+                    parts.append(f"<p>Affected facts: {escape(', '.join(question['fields']))}</p>")
+                for excerpt in question['evidence']:
+                    parts.append(f"<details><summary>Page {excerpt['page_number']}</summary>"
+                                 f"<pre>{escape(excerpt['text'])}</pre></details>")
+            if result.extraction_run:
+                template = json.dumps(response_template(result.extraction_run), ensure_ascii=False, indent=2)
+                example = json.dumps({'line_amount': asdict(result.fields['line_amount'])},
+                                     ensure_ascii=False, indent=2)
+                parts.append('<details><summary>Prepare a review-response JSON file</summary>'
+                             '<p>Copy this starter. Enter reviewer, reviewed_at (ISO 8601 with timezone offset), '
+                             'reason, and one or more corrections using the fact shape below. '
+                             'Every found fact needs an exact PDF excerpt and page. '
+                             'An excerpt validates traceability; the reviewer must check its meaning.</p>'
+                             f'<pre>{escape(template)}</pre><p>Fact-shape example copied from this run; '
+                             f'check and edit it against the PDF:</p><pre>{escape(example)}</pre>'
+                             '<p>Run: python -m procurement.review PDF --source-run SAVED_RUN.json '
+                             '--review-response RESPONSE.json --output reports/assisted.html</p></details>')
         for finding in result.findings:
             parts.append(f'<div class="finding"><h3>{escape(finding.code.replace("_", " ").title())}</h3>'
                          f'<p><b>{escape(finding.severity)}</b> — {escape(finding.reason)}</p>'
