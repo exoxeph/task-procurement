@@ -4,6 +4,8 @@ Checks supplier quotes and contracts step by step and never guesses. For each PD
 **Approve**, **Reject** or **Needs a person to check**, with the reason and the exact text it relied on.
 Built for the BIAI AI Engineer Round 2, Task 1.
 
+**Live demo:** https://task-procurement.vercel.app/ (Mock needs no key; Live needs your own OpenRouter key)
+
 The steps are fixed and run one after another as a [LangGraph](https://github.com/langchain-ai/langgraph)
 graph: **read PDF → extract facts → validate → decide → save → report**. Nothing runs freely.
 A model only fills in an answer inside its own step, and any failure ends as "Needs a person to check".
