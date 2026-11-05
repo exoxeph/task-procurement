@@ -80,8 +80,8 @@ def _server_metadata(endpoint: str, model: str, timeout: float) -> dict:
     return metadata
 
 
-def extract_document(document: PdfDocument, *, model='qwen2.5:7b',
-                     endpoint='http://localhost:11434', timeout=180.0) -> ExtractionRun:
+def extract_document(document: PdfDocument, *, model='qwen3:14b',
+                     endpoint='http://localhost:11434', timeout=600.0) -> ExtractionRun:
     """Return validated facts or a visible failed run; never guess or switch models."""
     started = perf_counter()
     metadata = {'approach': 'approach2', 'model': model, 'schema_version': SCHEMA_VERSION,

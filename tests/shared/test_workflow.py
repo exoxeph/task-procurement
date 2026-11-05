@@ -77,7 +77,7 @@ class WorkflowTests(unittest.TestCase):
                 if len(chats) == 1:
                     from http.client import BadStatusLine
                     raise BadStatusLine('temporary malformed HTTP response')
-                response = {'model': 'qwen2.5:7b', 'done': True, 'done_reason': 'stop',
+                response = {'model': 'qwen3:14b', 'done': True, 'done_reason': 'stop',
                             'prompt_eval_count': 1000, 'eval_count': 2000,
                             'message': {'role': 'assistant', 'content': json.dumps(payload)}}
             elif request.full_url.endswith('/version'):
@@ -97,6 +97,7 @@ class WorkflowTests(unittest.TestCase):
                 status = main()
             self.assertEqual(status, 1)
             self.assertEqual(len(chats), 2)
+            self.assertTrue(all(json.loads(request.data)['model'] == 'qwen3:14b' for request in chats))
             self.assertTrue(output.with_name('report-approach1.html').is_file())
             ai_html = output.with_name('report-approach2.html').read_text(encoding='utf-8')
             self.assertIn('local Ollama', ai_html)

@@ -18,8 +18,8 @@ from procurement.shared.rules import check_rules
 from procurement.shared.runs import read_run, stamp_run, write_run
 
 
-def review_document(path, items, policy, *, approach='approach1', model='qwen2.5:7b',
-                    endpoint='http://localhost:11434', timeout=180.0, artifact_dir=None,
+def review_document(path, items, policy, *, approach='approach1', model=None,
+                    endpoint='http://localhost:11434', timeout=600.0, artifact_dir=None,
                     source_run=None, review_response=None):
     started = perf_counter()
     document = read_pdf(path)
@@ -35,7 +35,7 @@ def review_document(path, items, policy, *, approach='approach1', model='qwen2.5
                                      'elapsed_seconds': perf_counter() - started})
     elif approach == 'approach2':
         from procurement.approach2.extractor import extract_document as extract_ai
-        run = extract_ai(document, model=model, endpoint=endpoint, timeout=timeout)
+        run = extract_ai(document, model=model or 'qwen3:14b', endpoint=endpoint, timeout=timeout)
     else:
         raise ValueError(f'Unknown extraction approach: {approach}')
     validation = validate_fields(run.fields, document)
@@ -68,9 +68,9 @@ def main() -> int:
     parser.add_argument('--output', type=Path, default=Path('reports/procurement-review.html'))
     parser.add_argument('--check-labels',action='store_true',help='Exit 1 if development results differ from manual labels.')
     parser.add_argument('--approach', choices=('approach1', 'approach2', 'both'), default='approach1')
-    parser.add_argument('--model', default='qwen2.5:7b', help='Installed local Ollama model.')
+    parser.add_argument('--model', help='Installed local Ollama model (Approach 2 defaults to qwen3:14b).')
     parser.add_argument('--ollama-url', default='http://localhost:11434')
-    parser.add_argument('--timeout', type=float, default=180.0, help='Seconds per extraction call.')
+    parser.add_argument('--timeout', type=float, default=600.0, help='Seconds per extraction call.')
     parser.add_argument('--artifacts', type=Path, default=Path('reports/runs'))
     parser.add_argument('--source-run', type=Path, help='Saved extraction JSON to correct; does not call AI again.')
     parser.add_argument('--review-response', type=Path, help='Attributed, source-backed corrections JSON.')

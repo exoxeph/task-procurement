@@ -40,7 +40,7 @@ samples rather than matching every manual decision. The report is still written.
 
 ## Run local AI extraction
 
-Start your local Ollama service with qwen2.5:7b installed. No external API key or
+Start your local Ollama service with qwen3:14b installed (the current Approach 2 default). No external API key or
 extra Python SDK is required. Check availability using `ollama list`.
 
 ```powershell
@@ -48,13 +48,16 @@ python -m procurement.review sample-data/engineer/task1-procurement/supplier-pac
 python -m procurement.review --approach both --output reports/comparison.html
 ```
 
+To use the model from the recorded Qwen2.5 7B experiment below, pass `--model qwen2.5:7b`.
+Changing the default model does not change those historical results.
+
 Both mode writes comparison.html, comparison-approach1.html,
 comparison-approach2.html and machine-readable comparison.json. Each invocation saves unique
 JSON run artifacts under ignored reports/runs/, including original source, validated
 facts, raw model answer, document hash, model identity, timing and token usage.
 Use --artifacts PATH to choose a directory, --model to select an installed model,
 --ollama-url for a loopback base URL, and --timeout for the per-call limit (default
-180 seconds). No remote fallback, model download or extraction retry happens. The HTTP client
+600 seconds, allowing for the larger model). No remote fallback, model download or extraction retry happens. The HTTP client
 ignores ambient proxies and refuses redirects, so validated local destinations
 remain local. Malformed HTTP responses become saved failed runs and do not stop
 the remaining documents.
