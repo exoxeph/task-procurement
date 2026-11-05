@@ -1,2 +1,4 @@
 # PDF text extraction. All other Block 1-2 dependencies are Python built-ins.
 PyMuPDF==2.0
+# Fixed workflow graphs (procurement/workflow.py). Pulls in langchain-core.
+langgraph==1.2.20
