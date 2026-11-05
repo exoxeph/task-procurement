@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd web && npm ci && STATIC_EXPORT=1 API_MODE=live npm run build",
+  "buildCommand": "sh scripts/build_web.sh",
   "outputDirectory": "web/out",
   "functions": {
     "api/run.py": {
