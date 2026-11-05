@@ -32,6 +32,8 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
     approaches = {result.extraction_run.metadata.get('approach') for result in results if result.extraction_run}
     if 'approach2' in approaches:
         parts.append('<p class="intro">Approach 2: local Ollama extracts facts; Python applies company rules.</p>')
+    elif 'approach3' in approaches:
+        parts.append('<p class="intro">Approach 3: local Ollama with a typed schema and format-focused prompt; Python applies company rules.</p>')
     else:
         parts.append('<p class="intro">Approach 1: Python extraction. This run uses no AI.</p>')
     counts = {verdict: sum(result.verdict == verdict for result in results)

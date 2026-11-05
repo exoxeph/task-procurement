@@ -48,6 +48,12 @@ def review_document(path, items, policy, *, approach='approach1', model=None,
     elif approach == 'approach2':
         from procurement.approach2.extractor import extract_document as extract_ai
         run = extract_ai(document, model=model or 'qwen3:14b', endpoint=endpoint, timeout=timeout)
+    elif approach == 'approach3' and provider == 'openrouter':
+        from procurement.approach3.openrouter import extract_document as extract_openrouter3
+        run = extract_openrouter3(document, model=model, timeout=timeout)
+    elif approach == 'approach3':
+        from procurement.approach3.extractor import extract_document as extract_ai3
+        run = extract_ai3(document, model=model or 'qwen2.5:7b', endpoint=endpoint, timeout=timeout)
     else:
         raise ValueError(f'Unknown extraction approach: {approach}')
     validation = validate_fields(run.fields, document)
@@ -80,7 +86,7 @@ def main() -> int:
     parser.add_argument('paths', nargs='*', type=Path, help='Defaults to the ten supplied PDFs.')
     parser.add_argument('--output', type=Path, default=Path('reports/procurement-review.html'))
     parser.add_argument('--check-labels',action='store_true',help='Exit 1 if development results differ from manual labels.')
-    parser.add_argument('--approach', choices=('approach1', 'approach2', 'both'), default='approach1')
+    parser.add_argument('--approach', choices=('approach1', 'approach2', 'approach3', 'both'), default='approach1')
     parser.add_argument('--provider', choices=('ollama', 'gemini', 'openrouter'), default='ollama',
                         help='Model service for approach2; hosted providers need their API key in .env.')
     parser.add_argument('--model', help='Installed local Ollama model (Approach 2 defaults to qwen3:14b).')
@@ -92,7 +98,9 @@ def main() -> int:
     load_env()
     arguments = parser.parse_args()
     if arguments.provider != 'ollama' and arguments.approach == 'approach1':
-        parser.error('--provider gemini/openrouter applies to approach2')
+        parser.error('--provider gemini/openrouter applies to approach2 or approach3')
+    if arguments.provider == 'gemini' and arguments.approach == 'approach3':
+        parser.error('approach3 supports --provider ollama (default) or openrouter, not gemini')
     if bool(arguments.source_run) != bool(arguments.review_response):
         parser.error('--source-run and --review-response must be supplied together')
     if arguments.review_response and (len(arguments.paths) != 1 or arguments.approach == 'both'):

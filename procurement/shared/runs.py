@@ -44,7 +44,7 @@ def read_run(path: Path, document: PdfDocument) -> ExtractionRun:
     metadata, fields, issues = payload['metadata'], payload['fields'], payload['issues']
     if (not isinstance(metadata, dict) or not isinstance(metadata.get('run_id'), str)
             or not isinstance(metadata.get('document_sha256'), str)
-            or metadata.get('approach') not in ('approach1', 'approach2')
+            or metadata.get('approach') not in ('approach1', 'approach2', 'approach3')
             or not isinstance(fields, dict) or set(fields) != set(FACT_NAMES)
             or not isinstance(issues, list) or not all(isinstance(issue, str) for issue in issues)
             or (payload['raw_response'] is not None and not isinstance(payload['raw_response'], str))):

@@ -11,7 +11,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from procurement.approach2.schema import OUTPUT_SCHEMA, SCHEMA_VERSION, parse_json, parse_response
+from procurement.approach3.schema import OUTPUT_SCHEMA, SCHEMA_VERSION, parse_json, parse_response
 from procurement.shared.extraction import ExtractedField, ExtractionRun, FACT_NAMES
 from procurement.shared.pdf_text import PdfDocument
 from procurement.shared.runs import stamp_run
@@ -51,7 +51,7 @@ def build_request(document: PdfDocument, model: str) -> dict:
     document_input = {'pages': pages, 'read_issues': list(document.issues)}
     return {'model': model, 'stream': False, 'format': OUTPUT_SCHEMA, 'options': dict(OPTIONS),
             'messages': [
-                {'role': 'system', 'content': prompt + '\nRequired JSON schema:\n' + json.dumps(OUTPUT_SCHEMA)},
+                {'role': 'system', 'content': prompt + '\nRequired JSON schema:\n' + json.dumps(OUTPUT_SCHEMA, separators=(',', ':'))},
                 {'role': 'user', 'content': json.dumps(document_input, ensure_ascii=False)},
             ]}
 
@@ -84,7 +84,7 @@ def extract_document(document: PdfDocument, *, model='qwen2.5:7b',
                      endpoint='http://localhost:11434', timeout=180.0) -> ExtractionRun:
     """Return validated facts or a visible failed run; never guess or switch models."""
     started = perf_counter()
-    metadata = {'approach': 'approach2', 'model': model, 'schema_version': SCHEMA_VERSION,
+    metadata = {'approach': 'approach3', 'model': model, 'schema_version': SCHEMA_VERSION,
                 'options': dict(OPTIONS), 'status': 'failed'}
     raw, provider_text = None, None
     try:
