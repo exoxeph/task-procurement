@@ -24,7 +24,12 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600}.muted{color:#61767
 </style><h1>Supplier document review</h1>
 <p class="intro">Read PDF → Extract facts → Check company rules → Review the evidence.</p>
 <p class="intro">Python baseline for the supplied document format. Unclear information needs a person.
-This version uses no AI. Every displayed excerpt comes from the document.</p>''']
+Every displayed excerpt comes from the document; an exact excerpt alone does not prove correct interpretation.</p>''']
+    approaches = {result.extraction_run.metadata.get('approach') for result in results if result.extraction_run}
+    if 'approach2' in approaches:
+        parts.append('<p class="intro">Approach 2: local Ollama extracts facts; Python applies company rules.</p>')
+    else:
+        parts.append('<p class="intro">Approach 1: Python extraction. This run uses no AI.</p>')
     counts = {verdict: sum(result.verdict == verdict for result in results)
               for verdict in ('Approve', 'Reject', 'Needs a person to check')}
     parts.append('<div class="summary"><b>Batch summary</b><p>' + ' · '.join(
@@ -38,11 +43,14 @@ This version uses no AI. Every displayed excerpt comes from the document.</p>'''
                      f" · Conservative escalations: {evaluation['conservative_escalations']}"
                      f" · Unsafe approvals on these samples: {evaluation['unsafe_approvals']}</p>"
                      '<details><summary>Compare with unchanged manual labels</summary><div class="scroll"><table>'
-                     '<tr><th>Document</th><th>Manual label</th><th>Actual decision</th><th>Triggered rules match</th></tr>')
+                     '<tr><th>Document</th><th>Manual label</th><th>Actual decision</th><th>Triggered rules match</th><th>Execution</th></tr>')
         for row in evaluation['rows']:
+            execution = 'Input failed' if row.get('input_error') else 'Extraction failed' if row.get('extraction_error') else 'Completed'
             parts.append(f"<tr><td>{escape(row['file'])}</td><td>{escape(row['expected'])}</td>"
-                         f"<td>{escape(row['actual'])}</td><td>{'Yes' if row['rule_match'] else 'No'}</td></tr>")
+                         f"<td>{escape(row['actual'])}</td><td>{'Yes' if row['rule_match'] else 'No'}</td><td>{execution}</td></tr>")
         parts.append('</table></div></details>')
+        parts.append(f"<p>Input failures: {evaluation.get('input_failures', 0)}"
+                     f" · Extraction failures: {evaluation.get('extraction_failures', 0)}</p>")
     parts.append('</div><div class="scroll"><table><tr><th>Document</th><th>Supplier</th><th>Decision</th><th>Findings</th></tr>')
     for index, result in enumerate(results):
         supplier = result.fields['supplier_name'].value or 'Unresolved supplier'
@@ -58,6 +66,13 @@ This version uses no AI. Every displayed excerpt comes from the document.</p>'''
                      f'<span class="badge {style}">{escape(result.verdict)}</span>')
         if not result.findings:
             parts.append('<p>All configured checks passed for the facts extracted from this supported format.</p>')
+        if result.extraction_run:
+            parts.append('<details><summary>Extraction run</summary>')
+            for name in ('approach', 'model', 'status', 'run_id', 'elapsed_seconds', 'artifact_path'):
+                value = result.extraction_run.metadata.get(name)
+                if value is not None:
+                    parts.append(f'<p>{escape(name.replace("_", " "))}: {escape(str(value))}</p>')
+            parts.append('</details>')
         for finding in result.findings:
             parts.append(f'<div class="finding"><h3>{escape(finding.code.replace("_", " ").title())}</h3>'
                          f'<p><b>{escape(finding.severity)}</b> — {escape(finding.reason)}</p>'

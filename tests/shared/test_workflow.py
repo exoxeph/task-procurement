@@ -1,19 +1,24 @@
 """The folder split must preserve complete facts and portable reference loading."""
 
 import json
+from contextlib import redirect_stdout
+from io import BytesIO, StringIO
 from decimal import Decimal
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+from urllib.error import URLError
 
 from procurement.approach1.extractor import extract_document
 from procurement.shared.pdf_text import read_pdf
 from procurement.shared.references import (
     SAMPLE_DIRECTORY, load_company_rules, load_purchase_request,
 )
-from procurement.review import review_document
+from procurement.review import main, review_document
+from procurement.shared.extraction import FACT_NAMES
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -55,3 +60,45 @@ class WorkflowTests(unittest.TestCase):
         references = json.loads(completed.stdout)
         self.assertEqual(references["quantity"], 12000)
         self.assertEqual(Decimal(references["maximum_advance"]), Decimal("20"))
+
+    def test_baseline_does_not_contact_ollama(self):
+        with patch('urllib.request.urlopen', side_effect=AssertionError('baseline attempted network access')):
+            result = review_document(SAMPLE_DIRECTORY / 'supplier-pack-03.pdf', load_purchase_request(), load_company_rules())
+        self.assertEqual(result.verdict, 'Reject')
+
+    def test_both_mode_continues_after_an_ai_failure_and_saves_separate_reports(self):
+        chats = []
+        empty = dict(value=None, status='not_found', raw_value=None, reference_event=None,
+                     conditions=[], minimum_value=None, maximum_value=None, evidence=[])
+        payload = {'fields': {name: empty for name in FACT_NAMES}, 'issues': [], 'item_count': 1}
+        def local_service(request, timeout):
+            if request.full_url.endswith('/chat'):
+                chats.append(request)
+                if len(chats) == 1:
+                    raise URLError('temporary service failure')
+                response = {'model': 'qwen2.5:7b', 'done': True, 'done_reason': 'stop',
+                            'prompt_eval_count': 1000, 'eval_count': 2000,
+                            'message': {'role': 'assistant', 'content': json.dumps(payload)}}
+            elif request.full_url.endswith('/version'):
+                response = {'version': 'test-version'}
+            else:
+                response = {'models': []}
+            return BytesIO(json.dumps(response).encode())
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'report.html'
+            argv = ['review', str(SAMPLE_DIRECTORY / 'supplier-pack-01.pdf'),
+                    str(SAMPLE_DIRECTORY / 'supplier-pack-03.pdf'), '--approach', 'both',
+                    '--output', str(output), '--artifacts', str(Path(directory) / 'runs')]
+            console = StringIO()
+            with patch('sys.argv', argv), redirect_stdout(console), patch(
+                    'procurement.approach2.extractor.urlopen', side_effect=local_service):
+                status = main()
+            self.assertEqual(status, 1)
+            self.assertEqual(len(chats), 2)
+            self.assertTrue(output.with_name('report-approach1.html').is_file())
+            ai_html = output.with_name('report-approach2.html').read_text(encoding='utf-8')
+            self.assertIn('local Ollama', ai_html)
+            self.assertNotIn('This run uses no AI', ai_html)
+            self.assertIn('Extraction failures: 1', console.getvalue())
+            self.assertEqual(len(list((Path(directory) / 'runs').glob('*.json'))), 4)

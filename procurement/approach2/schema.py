@@ -85,6 +85,11 @@ def validate_response(payload: dict, document: PdfDocument) -> ExtractionRun:
             fields[name] = ExtractedField(None, "unrecognized", ())
             issues.append(f"{name}: {error}")
     run = validate_fields(fields, document)
+    if payload['item_count'] != 1:
+        # A flat one-item contract cannot safely represent a chosen row from
+        # multiple items, even when that row has genuine source evidence.
+        for name in ('item_code', 'description', 'quantity', 'unit', 'unit_price', 'line_amount'):
+            run.fields[name] = replace(run.fields[name], value=None, status='unrecognized')
     return replace(run, issues=tuple(issues) + run.issues, metadata={"schema_version": SCHEMA_VERSION})
 
 
@@ -101,7 +106,12 @@ def _reject_constant(value):
     raise ValueError(f"nonfinite JSON value: {value}")
 
 
+def parse_json(text: str):
+    """Decode strict JSON for either an Ollama envelope or its extracted facts."""
+    return json.loads(text, object_pairs_hook=_unique_keys, parse_constant=_reject_constant)
+
+
 def parse_response(text: str, document: PdfDocument) -> ExtractionRun:
     """Parse JSON without accepting duplicate keys, NaN or Infinity."""
-    payload = json.loads(text, object_pairs_hook=_unique_keys, parse_constant=_reject_constant)
+    payload = parse_json(text)
     return replace(validate_response(payload, document), raw_response=text)

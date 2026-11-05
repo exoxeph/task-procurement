@@ -73,6 +73,15 @@ class SchemaTests(unittest.TestCase):
             self.assertIn("Unreadable second table", run.issues)
             self.assertTrue(any("item" in issue for issue in run.issues))
 
+    def test_multiple_items_cannot_supply_one_confident_selected_quantity(self):
+        payload = response_fixture()
+        payload['item_count'] = 2
+        payload['fields']['quantity'].update(value='12,000', status='found',
+            evidence=[{'page_number': 1, 'text': 'Quantity: 12,000'}])
+        run = validate_response(payload, self.document)
+        self.assertEqual(run.fields['quantity'].status, 'unrecognized')
+        self.assertIsNone(run.fields['quantity'].value)
+
     def test_duplicate_keys_nonfinite_values_and_nonobjects_are_rejected(self):
         for text in ('{"fields": {}, "fields": {}}', '{"value": NaN}', '[]', 'not json'):
             with self.subTest(text=text), self.assertRaises(ValueError):

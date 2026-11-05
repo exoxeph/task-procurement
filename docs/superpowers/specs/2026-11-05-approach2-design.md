@@ -1,7 +1,7 @@
 # Approach 2 and shared project structure: proposed design
 
-Status: accepted for implementation. Blocks 1-2 are complete: folder split,
-shared validation, schema and prompt. Ollama calls are not implemented yet.
+Status: accepted for implementation. Blocks 1-3 are complete: folder split,
+shared validation, schema, prompt, local Ollama calls and saved runs.
 See docs/approach2-progress.md for verification.
 
 ## Intent

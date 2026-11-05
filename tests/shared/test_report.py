@@ -94,6 +94,15 @@ class ReportTests(unittest.TestCase):
         self.assertIn('&lt;acceptance required&gt;', html)
         self.assertNotIn('<acceptance required>', html)
 
+    def test_failed_extraction_is_visible_even_when_its_review_verdict_matches(self):
+        result = review_document(SAMPLE_DIRECTORY / 'supplier-pack-04.pdf', load_purchase_request(), load_company_rules())
+        run = replace(result.extraction_run, metadata={**result.extraction_run.metadata,
+                                                       'approach': 'approach2', 'status': 'failed'})
+        result = replace(result, extraction_run=run)
+        html = render_report([result], [], evaluate_samples([result]))
+        self.assertIn('Sample verdict matches: 0/1', html)
+        self.assertIn('Extraction failures: 1', html)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,9 @@
-# Supplier document reviewer: structural Python baseline
+# Supplier document reviewer: Python and local AI extraction
 
 **Read PDF -> Extract cautious facts -> Check policy -> Show evidence.**
-This is a deterministic comparison baseline, with no AI or workflow framework.
-It is not a general contract reader and does not yet meet the brief's AI requirement.
+Approach 1 uses deterministic Python extraction. Approach 2 uses local Ollama
+extraction. Both use the same Python policy checks and evidence report. The human
+correction workflow and full AI comparison are still being implemented.
 
 ## Run
 
@@ -15,8 +16,9 @@ Invoke-Item reports/procurement-review.html
 python -m unittest discover -s tests -q
 ```
 
-The standalone HTML report needs no server, API key, or internet connection after
-installation. It shows decisions, findings, original excerpts, raw clauses, parsed
+The standalone HTML report needs no server or API key to view. Approach 1 needs
+no model service; Approach 2 requires local Ollama during extraction. It shows
+decisions, findings, original excerpts, raw clauses, parsed
 reference events and full source text. Expand the manual-label comparison to see
 actual differences; expected answers never feed extraction or policy decisions.
 
@@ -26,7 +28,7 @@ Review particular files or choose an output:
 python -m procurement.review sample-data/engineer/task1-procurement/supplier-pack-09.pdf --output reports/example.html
 ```
 
-Normal exit code 1 means a file/reference/report error. Approve, Reject and human
+Normal exit code 1 means a file/reference/report or AI execution error. Approve, Reject and human
 review are valid execution outcomes. To additionally fail on sample-label differences:
 
 ```powershell
@@ -36,7 +38,39 @@ python -m procurement.review --check-labels
 That strict check currently exits 1 because the cautious baseline escalates four
 samples rather than matching every manual decision. The report is still written.
 
-## Measured results
+## Run local AI extraction
+
+Start your local Ollama service with qwen2.5:7b installed. No external API key or
+extra Python SDK is required. Check availability using `ollama list`.
+
+```powershell
+python -m procurement.review sample-data/engineer/task1-procurement/supplier-pack-09.pdf --approach approach2 --output reports/ai-example.html
+python -m procurement.review --approach both --output reports/comparison.html
+```
+
+Both mode currently writes comparison-approach1.html and comparison-approach2.html.
+A combined comparison view is planned for Block 5. Each invocation saves unique
+JSON run artifacts under ignored reports/runs/, including original source, validated
+facts, raw model answer, document hash, model identity, timing and token usage.
+Use --artifacts PATH to choose a directory, --model to select an installed model,
+--ollama-url for a loopback base URL, and --timeout for the per-call limit (default
+180 seconds). No remote fallback, model download or extraction retry happens.
+
+One extraction request is made per PDF. Optional version/model metadata requests
+are separate. Large inputs are refused rather than sliced, and token/completion
+checks flag possible context pressure or truncated output. These are conservative
+guards, not proof that the model understood every page. Local inference has no
+paid-token API bill; hardware and runtime costs still exist.
+
+The Block 3 integration run on pack 09 took about 69 seconds (including model load
+and metadata reads). It preserved the incorrect printed line amount as 322,000.
+The decision was human review, but exact evidence and reference validation caught
+additional AI mistakes, so its triggered-rule set did not match the manual label.
+This is one integration result, not an AI accuracy benchmark; full evaluation is
+planned after the human-review workflow. Failed extraction attempts stay in the
+sample denominator and are not counted as correct merely for returning review.
+
+## Measured baseline results
 
 Manual policy labels are unchanged in config/manual-labels.json. On the ten supplied,
 development-visible samples:
@@ -82,9 +116,8 @@ Start at procurement/review.py, review_document(). It calls the following steps:
 
 `approach1/` contains the Python baseline extractors. `shared/` contains PDF
 reading, evidence records, policy checks, evaluation and reporting. The
-`approach2/` package now defines the extraction prompt and JSON response schema.
-The Ollama connection is not implemented yet. Both approaches will use the same
-workflow and rules.
+`approach2/` contains the local Ollama request, extraction prompt and JSON response
+validation. Both approaches use the same workflow and rules.
 
 | File | Responsibility |
 | --- | --- |
@@ -101,6 +134,8 @@ workflow and rules.
 | procurement/shared/references.py | Purchase request and policy configuration |
 | procurement/approach2/schema.py | AI JSON shape and strict response parsing |
 | procurement/approach2/prompt.txt | General extraction instructions, without sample answers |
+| procurement/approach2/extractor.py | One local model call, validation and visible failures |
+| procurement/shared/runs.py | Unique run identity, document hash and saved JSON artifacts |
 
 The main command remains `python -m procurement.review`. Individual previews now
 use their new module paths, for example:
@@ -110,7 +145,8 @@ python -m procurement.approach1.financial_details sample-data/engineer/task1-pro
 python -m procurement.shared.pdf_text sample-data/engineer/task1-procurement/supplier-pack-01.pdf --summary
 ```
 
-Tests follow the same split under `tests/approach1/` and `tests/shared/`.
+Tests follow the same split under `tests/approach1/`, `tests/approach2/` and
+`tests/shared/`. Unit tests use a fake HTTP boundary and need no running model.
 
 Fields retain found, not_found, unrecognized or ambiguous statuses. Only found
 supplies a value. found means extracted, not policy-compliant. Source excerpts are
@@ -150,15 +186,17 @@ Reject takes priority over review, and all findings remain visible.
 
 Tests cover policy boundaries, malformed/conflicting values, file errors, HTML
 escaping and structural transformations. Synthetic fixtures are property checks,
-not extra supplier evaluation documents or a held-out benchmark. The next useful
-comparison is AI extraction feeding the same rules and the same evaluation.
+not extra supplier evaluation documents or a held-out benchmark. A full ten-document
+AI comparison and repeatability measurements are planned for Block 5.
 
 ## Materials
 
 - docs/submission-note.md: one-page implementation/results/limitations note.
 - docs/presentation-script.md: suggested Loom walkthrough.
 - docs/sample-results.md: current outcomes and reasons.
-- docs/superpowers/specs/2026-11-05-structural-baseline-design.md: current design.
+- docs/superpowers/specs/2026-11-05-structural-baseline-design.md: baseline design.
+- docs/superpowers/specs/2026-11-05-approach2-design.md: shared workflow and AI design.
+- docs/approach2-progress.md: implementation progress and actual integration results.
 
 Original sample files and unrelated video/ remain untouched. Generated reports
 are ignored by Git. Older block/simple-baseline documents describe prior versions.

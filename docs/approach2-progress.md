@@ -83,5 +83,70 @@ Use a shared JSON Schema $defs fact definition to avoid repeating the same shape
 32 times in model input; verify provider acceptance during Block 3 integration.
 No schema or evidence check guarantees that the model understood the text correctly.
 
-Next: Block 3, local Ollama calls, bounded failure handling and saved runs. No AI
-extraction results have been measured yet.
+## Block 3: local Ollama extraction and saved runs complete
+
+- Added approach2/extractor.py: one local /api/chat call per PDF using qwen2.5:7b,
+  temperature 0, a 16,384-token context and an 8,192-token output limit. The
+  original text of every page and all detected table cells go into the request.
+- The general prompt and compact JSON Schema are sent together. The real local
+  service accepted the schema's shared $defs references. No new SDK is installed.
+- Validation failures, refusals, unavailable models, connection/timeouts, duplicate
+  JSON keys, invalid responses, wrong returned models and truncation/context
+  pressure yield visible unresolved runs. No retry, remote fallback or download.
+- A conservative input-byte guard rejects large documents before sending instead
+  of slicing them. Returned prompt/output counts and completion reasons are also
+  checked. These checks do not establish that the model understood the whole text.
+- Added shared/runs.py: UUID identity, UTC creation time, SHA256 of original PDF,
+  validated facts, original source and raw model answer saved without overwrites.
+  AI metadata retains model/digest, Ollama version, prompt/schema/request hashes,
+  elapsed time, options, token counts and errors. Metadata lookup failures are
+  warnings and do not discard an otherwise valid extraction.
+- Added --approach approach1|approach2|both, --model, --ollama-url, --timeout and
+  --artifacts. Default baseline operation has no model-service dependency. Both
+  mode writes separate reports; a combined comparison view is still Block 5.
+- Batch processing continues after provider failures. CLI exits 1 for execution
+  failure, while ordinary policy review/rejection remains a valid result.
+- Evaluation retains original-path input failures in the attempted denominator.
+  A completely failed AI extraction is not scored correct merely because human
+  review happens to match the manual verdict. Failure counts appear in HTML/CLI.
+- Integration exposed a schema-contract issue: item_count != 1 could leave a
+  selected item's values found. A failing regression now ensures the six item
+  fields become unresolved instead. Independent document-wide checks remain.
+
+Verification performed:
+
+- Observed new APIs/tests fail before implementing requests, run storage and
+  failure-inclusive evaluation. Failure handling tests use a fake HTTP boundary;
+  no model is needed for the unit suite.
+- Reproduced and fixed an optional metadata parsing failure that discarded an
+  otherwise valid result, and an HTML omission of extraction failure counts.
+- Verified batch continuation after the first AI request fails, separate reports
+  in both mode, four saved artifacts for two documents/two approaches, baseline
+  operation without network, no file overwrite, and source-hash/run-ID changes.
+- All 148 tests passed. The actual ten-PDF baseline CLI remains 6/10 verdict and
+  rule-set matches, three Reject and seven human review, with no execution failures.
+- Real local service: Ollama 0.40.14, qwen2.5:7b digest
+  845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e.
+- Real pack 09 run: about 68.54 seconds end-to-end; 2,065 prompt tokens and 3,387
+  generated tokens. Printed line amount 322,000 was retained (not repaired to
+  320,000). Python reported the line arithmetic problem.
+- The same run also produced nonliteral payment excerpts and conflicting delivery
+  references; validation retained these as review issues. Its final human-review
+  verdict matched the manual label (1/1), but its rule set did not (0/1). This is
+  an integration check, not the ten-document AI benchmark or proof of generality.
+- Raw model output and validated facts are in ignored reports/block3-smoke/;
+  the HTML is reports/approach2-smoke.html. All retained excerpts were checked
+  against the original pages. Original samples and config remain unchanged.
+
+Ruling: add conservative byte preflight alongside planned provider token checks;
+this reduces silent-truncation risk without claiming to have an exact tokenizer.
+Record metadata GET requests separately from the one extraction POST. Retain
+metadata warnings without redoing inference. No prompt tuning or extra model run
+was used to replace the first integration result.
+
+API references checked during implementation:
+https://docs.ollama.com/api/chat
+https://docs.ollama.com/capabilities/structured-outputs
+
+Next: Block 4, visible workflow stages and auditable human questions/corrections.
+The full repeated ten-PDF AI comparison remains Block 5.
