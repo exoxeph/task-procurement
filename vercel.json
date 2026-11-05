@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/run.py": { "maxDuration": 300, "includeFiles": "{procurement,config,sample-data}/**" },
+    "api/samples.py": { "maxDuration": 30, "includeFiles": "{procurement,config,sample-data}/**" }
+  }
+}
