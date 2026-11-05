@@ -3,8 +3,8 @@
 import re
 from datetime import date
 
-from procurement.extraction import Evidence, ExtractedField, preview, resolve_field
-from procurement.pdf_text import PdfDocument
+from procurement.shared.extraction import Evidence, ExtractedField, preview, resolve_field
+from procurement.shared.pdf_text import PdfDocument
 
 
 # These patterns locate labels, not expected answers or supplier filenames.

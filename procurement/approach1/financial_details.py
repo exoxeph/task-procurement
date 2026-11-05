@@ -2,8 +2,8 @@
 
 import re
 
-from procurement.extraction import Evidence, ExtractedField, preview, resolve_field
-from procurement.pdf_text import PdfDocument
+from procurement.shared.extraction import Evidence, ExtractedField, preview, resolve_field
+from procurement.shared.pdf_text import PdfDocument
 
 
 ITEM_FIELDS = ("item_code", "description", "quantity", "unit", "unit_price", "line_amount")

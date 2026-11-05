@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 # Resolve defaults from this file, so changing the terminal directory is safe.
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_DIRECTORY = PROJECT_ROOT / "sample-data/engineer/task1-procurement"
 DEFAULT_PURCHASE_REQUEST = SAMPLE_DIRECTORY / "purchase-request.csv"
 DEFAULT_COMPANY_RULES = PROJECT_ROOT / "config/company-rules.json"

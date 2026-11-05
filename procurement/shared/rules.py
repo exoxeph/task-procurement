@@ -4,8 +4,8 @@ import re
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
-from procurement.extraction import Evidence, ExtractedField
-from procurement.pdf_text import PdfDocument
+from procurement.shared.extraction import Evidence, ExtractedField
+from procurement.shared.pdf_text import PdfDocument
 
 REVIEW = "Needs a person to check"
 REJECT = "Reject"

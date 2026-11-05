@@ -1,7 +1,7 @@
 # Approach 2 and shared project structure: proposed design
 
-Status: accepted for implementation planning by the user's instruction to commit
-to the plan. No implementation or folder moves yet.
+Status: accepted for implementation. Block 1's folder split is complete; AI
+extraction is not implemented yet. See docs/approach2-progress.md for verification.
 
 ## Intent
 

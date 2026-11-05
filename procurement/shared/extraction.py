@@ -5,7 +5,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from procurement.pdf_text import PdfReadError, read_pdf
+from procurement.shared.pdf_text import PdfReadError, read_pdf
 
 
 @dataclass(frozen=True)

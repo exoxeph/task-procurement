@@ -4,14 +4,14 @@ import unittest
 from pathlib import Path
 from dataclasses import replace
 
-from procurement.financial_details import extract_financial_details
-from procurement.pdf_text import PdfDocument, PdfPage, read_pdf
-from procurement.references import load_company_rules, load_purchase_request
-from procurement.rules import check_rules
-from procurement.supplier_details import extract_supplier_details
-from procurement.terms import extract_terms
+from procurement.approach1.financial_details import extract_financial_details
+from procurement.shared.pdf_text import PdfDocument, PdfPage, read_pdf
+from procurement.shared.references import load_company_rules, load_purchase_request
+from procurement.shared.rules import check_rules
+from procurement.approach1.supplier_details import extract_supplier_details
+from procurement.approach1.terms import extract_terms
 
-SAMPLES = Path(__file__).resolve().parents[1] / 'sample-data/engineer/task1-procurement'
+SAMPLES = Path(__file__).resolve().parents[2] / 'sample-data/engineer/task1-procurement'
 
 
 class RuleTests(unittest.TestCase):

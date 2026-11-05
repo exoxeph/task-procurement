@@ -80,18 +80,34 @@ accuracy. All ten PDFs remained visible during development.
 
 Start at procurement/review.py, review_document(). It calls the following steps:
 
+`approach1/` contains the Python baseline extractors. `shared/` contains PDF
+reading, evidence records, policy checks, evaluation and reporting. The
+`approach2/` package is reserved for the planned local Ollama extractor; it is
+not implemented yet. Both approaches will use the same workflow and rules.
+
 | File | Responsibility |
 | --- | --- |
-| procurement/pdf_text.py | Original page text, structural table data and file issues |
-| procurement/table_layout.py | Ruled grid boundaries and words inside cells |
-| procurement/financial_details.py | Map column concepts and read labelled totals |
-| procurement/terms.py | Labelled clauses, explicit components and unexplained-word checks |
-| procurement/supplier_details.py | Limited metadata/registration label heuristics |
-| procurement/rules.py | Convert numbers, compare requests, check policy and decide |
-| procurement/report.py | Standalone HTML with escaped source text |
-| procurement/evaluation.py | Compare actual results with unchanged manual labels |
-| procurement/extraction.py | Shared value/status/evidence records and preview |
-| procurement/references.py | Purchase request and policy configuration |
+| procurement/approach1/extractor.py | Collect supplier, financial and contract facts |
+| procurement/shared/pdf_text.py | Original page text, structural table data and file issues |
+| procurement/shared/table_layout.py | Ruled grid boundaries and words inside cells |
+| procurement/approach1/financial_details.py | Map column concepts and read labelled totals |
+| procurement/approach1/terms.py | Labelled clauses, explicit components and unexplained-word checks |
+| procurement/approach1/supplier_details.py | Limited metadata/registration label heuristics |
+| procurement/shared/rules.py | Convert numbers, compare requests, check policy and decide |
+| procurement/shared/report.py | Standalone HTML with escaped source text |
+| procurement/shared/evaluation.py | Compare actual results with unchanged manual labels |
+| procurement/shared/extraction.py | Shared value/status/evidence records and preview |
+| procurement/shared/references.py | Purchase request and policy configuration |
+
+The main command remains `python -m procurement.review`. Individual previews now
+use their new module paths, for example:
+
+```powershell
+python -m procurement.approach1.financial_details sample-data/engineer/task1-procurement/supplier-pack-09.pdf
+python -m procurement.shared.pdf_text sample-data/engineer/task1-procurement/supplier-pack-01.pdf --summary
+```
+
+Tests follow the same split under `tests/approach1/` and `tests/shared/`.
 
 Fields retain found, not_found, unrecognized or ambiguous statuses. Only found
 supplies a value. found means extracted, not policy-compliant. Source excerpts are

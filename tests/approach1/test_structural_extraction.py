@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pymupdf
 
-from procurement.financial_details import extract_financial_details
-from procurement.pdf_text import PdfDocument, PdfPage, read_pdf
-from procurement.terms import extract_terms
+from procurement.approach1.financial_details import extract_financial_details
+from procurement.shared.pdf_text import PdfDocument, PdfPage, read_pdf
+from procurement.approach1.terms import extract_terms
 
 
 def make_table(path, headers, rows, reverse_insertions=False):

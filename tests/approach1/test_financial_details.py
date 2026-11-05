@@ -8,12 +8,12 @@ from pathlib import Path
 
 import pymupdf
 
-from procurement.financial_details import extract_financial_details
-from procurement.pdf_text import PdfDocument, PdfPage, read_pdf
-from procurement.table_layout import PdfTable
+from procurement.approach1.financial_details import extract_financial_details
+from procurement.shared.pdf_text import PdfDocument, PdfPage, read_pdf
+from procurement.shared.table_layout import PdfTable
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_DIRECTORY = PROJECT_ROOT / "sample-data/engineer/task1-procurement"
 FIELD_NAMES = (
     "item_code", "description", "quantity", "unit", "unit_price", "line_amount",
@@ -207,7 +207,7 @@ class FinancialDetailsTests(unittest.TestCase):
 class FinancialPreviewTests(unittest.TestCase):
     def test_preview_prints_stated_values_with_evidence(self):
         result = subprocess.run(
-            [sys.executable, "-m", "procurement.financial_details", str(SAMPLE_DIRECTORY / "supplier-pack-09.pdf")],
+            [sys.executable, "-m", "procurement.approach1.financial_details", str(SAMPLE_DIRECTORY / "supplier-pack-09.pdf")],
             cwd=PROJECT_ROOT, capture_output=True, text=True,
         )
 
@@ -217,7 +217,7 @@ class FinancialPreviewTests(unittest.TestCase):
 
     def test_optional_missing_vat_rows_are_not_a_reader_failure(self):
         result = subprocess.run(
-            [sys.executable, "-m", "procurement.financial_details", str(SAMPLE_DIRECTORY / "supplier-pack-10.pdf")],
+            [sys.executable, "-m", "procurement.approach1.financial_details", str(SAMPLE_DIRECTORY / "supplier-pack-10.pdf")],
             cwd=PROJECT_ROOT, capture_output=True, text=True,
         )
 
@@ -232,7 +232,7 @@ class FinancialPreviewTests(unittest.TestCase):
                 source.new_page()
                 source.save(path)
             result = subprocess.run(
-                [sys.executable, "-m", "procurement.financial_details", str(path)],
+                [sys.executable, "-m", "procurement.approach1.financial_details", str(path)],
                 cwd=PROJECT_ROOT, capture_output=True, text=True,
             )
 

@@ -7,10 +7,10 @@ import unittest
 from decimal import Decimal
 from pathlib import Path
 
-from procurement.references import load_company_rules, load_purchase_request
+from procurement.shared.references import load_company_rules, load_purchase_request
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_CSV = (
     PROJECT_ROOT / "sample-data/engineer/task1-procurement/purchase-request.csv"
 )

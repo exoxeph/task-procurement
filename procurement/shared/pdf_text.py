@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pymupdf
 
-from procurement.table_layout import PdfTable, read_tables, text_outside_tables
+from procurement.shared.table_layout import PdfTable, read_tables, text_outside_tables
 
 
 class PdfReadError(ValueError):

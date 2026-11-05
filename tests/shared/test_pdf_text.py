@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pymupdf
 
-from procurement.pdf_text import PdfReadError, read_pdf
+from procurement.shared.pdf_text import PdfReadError, read_pdf
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SAMPLE_DIRECTORY = PROJECT_ROOT / "sample-data/engineer/task1-procurement"
 FIRST_PDF = SAMPLE_DIRECTORY / "supplier-pack-01.pdf"
 SECOND_PDF = SAMPLE_DIRECTORY / "supplier-pack-02.pdf"
@@ -146,7 +146,7 @@ class PdfTextTests(unittest.TestCase):
 class PdfPreviewTests(unittest.TestCase):
     def test_preview_prints_page_text(self):
         result = subprocess.run(
-            [sys.executable, "-m", "procurement.pdf_text", str(FIRST_PDF)],
+            [sys.executable, "-m", "procurement.shared.pdf_text", str(FIRST_PDF)],
             cwd=PROJECT_ROOT, capture_output=True, text=True,
         )
 
@@ -156,7 +156,7 @@ class PdfPreviewTests(unittest.TestCase):
 
     def test_summary_does_not_dump_document_text(self):
         result = subprocess.run(
-            [sys.executable, "-m", "procurement.pdf_text", str(FIRST_PDF), "--summary"],
+            [sys.executable, "-m", "procurement.shared.pdf_text", str(FIRST_PDF), "--summary"],
             cwd=PROJECT_ROOT, capture_output=True, text=True,
         )
 
@@ -167,7 +167,7 @@ class PdfPreviewTests(unittest.TestCase):
     def test_missing_pdf_preview_returns_nonzero_exit_code(self):
         with tempfile.TemporaryDirectory() as folder:
             result = subprocess.run(
-                [sys.executable, "-m", "procurement.pdf_text", str(Path(folder) / "missing.pdf")],
+                [sys.executable, "-m", "procurement.shared.pdf_text", str(Path(folder) / "missing.pdf")],
                 cwd=PROJECT_ROOT, capture_output=True, text=True,
             )
 
@@ -181,7 +181,7 @@ class PdfPreviewTests(unittest.TestCase):
                 blank.new_page()
                 blank.save(path)
             result = subprocess.run(
-                [sys.executable, "-m", "procurement.pdf_text", str(path)],
+                [sys.executable, "-m", "procurement.shared.pdf_text", str(path)],
                 cwd=PROJECT_ROOT, capture_output=True, text=True,
             )
 

@@ -7,12 +7,12 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from procurement.evaluation import evaluate_samples
-from procurement.references import load_company_rules, load_purchase_request, SAMPLE_DIRECTORY
-from procurement.report import render_report
+from procurement.shared.evaluation import evaluate_samples
+from procurement.shared.references import load_company_rules, load_purchase_request, SAMPLE_DIRECTORY
+from procurement.shared.report import render_report
 from procurement.review import review_document
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class ReportTests(unittest.TestCase):

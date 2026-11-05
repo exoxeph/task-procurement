@@ -2,7 +2,7 @@
 
 import json
 
-from procurement.references import PROJECT_ROOT, SAMPLE_DIRECTORY
+from procurement.shared.references import PROJECT_ROOT, SAMPLE_DIRECTORY
 
 
 def evaluate_samples(results: list) -> dict:

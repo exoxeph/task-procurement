@@ -3,8 +3,8 @@
 import re
 from decimal import Decimal
 
-from procurement.extraction import Evidence, preview, resolve_field
-from procurement.pdf_text import PdfDocument
+from procurement.shared.extraction import Evidence, preview, resolve_field
+from procurement.shared.pdf_text import PdfDocument
 
 FIELD_NAMES = ("advance_percent", "payment_days", "delivery_days", "penalty_clause",
                "penalty_percent", "penalty_basis", "validity_days")

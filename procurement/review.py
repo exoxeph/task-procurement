@@ -3,22 +3,17 @@
 import argparse
 from pathlib import Path
 
-from procurement.evaluation import evaluate_samples
-from procurement.financial_details import extract_financial_details
-from procurement.pdf_text import PdfReadError, read_pdf
-from procurement.references import SAMPLE_DIRECTORY, load_company_rules, load_purchase_request
-from procurement.report import render_report
-from procurement.rules import check_rules
-from procurement.supplier_details import extract_supplier_details
-from procurement.terms import extract_terms
+from procurement.shared.evaluation import evaluate_samples
+from procurement.approach1.extractor import extract_document
+from procurement.shared.pdf_text import PdfReadError, read_pdf
+from procurement.shared.references import SAMPLE_DIRECTORY, load_company_rules, load_purchase_request
+from procurement.shared.report import render_report
+from procurement.shared.rules import check_rules
 
 
 def review_document(path, items, policy):
     document = read_pdf(path)
-    fields = {}
-    fields.update(extract_supplier_details(document))
-    fields.update(extract_financial_details(document))
-    fields.update(extract_terms(document))
+    fields = extract_document(document)
     return check_rules(document, fields, items, policy)
 
 
