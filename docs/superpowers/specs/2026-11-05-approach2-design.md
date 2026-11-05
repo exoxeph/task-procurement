@@ -1,7 +1,8 @@
 # Approach 2 and shared project structure: proposed design
 
-Status: accepted for implementation. Block 1's folder split is complete; AI
-extraction is not implemented yet. See docs/approach2-progress.md for verification.
+Status: accepted for implementation. Blocks 1-2 are complete: folder split,
+shared validation, schema and prompt. Ollama calls are not implemented yet.
+See docs/approach2-progress.md for verification.
 
 ## Intent
 

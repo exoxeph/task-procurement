@@ -81,6 +81,19 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(evaluation['unsafe_approvals'],1)
         self.assertEqual(evaluation['incorrect_automatic_decisions'],1)
 
+    def test_report_preserves_term_conditions_references_and_ranges(self):
+        result = review_document(SAMPLE_DIRECTORY / 'supplier-pack-01.pdf', load_purchase_request(), load_company_rules())
+        field = replace(result.fields['delivery_days'], raw_value='four to six weeks',
+                        minimum_value='28', maximum_value='42', conditions=('<acceptance required>',))
+        result = replace(result, fields={**result.fields, 'delivery_days': field})
+        html = render_report([result], [])
+        self.assertIn('four to six weeks', html)
+        self.assertIn('purchase_order', html)
+        self.assertIn('28', html)
+        self.assertIn('42', html)
+        self.assertIn('&lt;acceptance required&gt;', html)
+        self.assertNotIn('<acceptance required>', html)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,7 @@
 """The fixed workflow: read PDF -> extract facts -> check rules -> report."""
 
 import argparse
+from dataclasses import replace
 from pathlib import Path
 
 from procurement.shared.evaluation import evaluate_samples
@@ -13,8 +14,10 @@ from procurement.shared.rules import check_rules
 
 def review_document(path, items, policy):
     document = read_pdf(path)
-    fields = extract_document(document)
-    return check_rules(document, fields, items, policy)
+    run = extract_document(document)
+    document = replace(document, issues=tuple(dict.fromkeys(document.issues + run.issues)))
+    result = check_rules(document, run.fields, items, policy)
+    return replace(result, extraction_run=run)
 
 
 def main() -> int:

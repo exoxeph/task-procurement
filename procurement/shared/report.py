@@ -68,7 +68,15 @@ This version uses no AI. Every displayed excerpt comes from the document.</p>'''
         parts.append('<details><summary>Extracted facts and their evidence</summary><div class="scroll"><table>'
                      '<tr><th>Field</th><th>Value</th><th>Status</th><th>Source</th></tr>')
         for name, field in result.fields.items():
-            parts.append(f'<tr><td>{escape(name)}</td><td>{escape(field.value or "—")}</td><td>{escape(field.status)}</td><td>')
+            parts.append(f'<tr><td>{escape(name)}</td><td>{escape(field.value or "—")}')
+            details = (("Original wording", field.raw_value), ("Starting event", field.reference_event),
+                       ("Minimum", field.minimum_value), ("Maximum", field.maximum_value))
+            for label, value in details:
+                if value is not None:
+                    parts.append(f'<div class="muted">{label}: {escape(value)}</div>')
+            for condition in field.conditions:
+                parts.append(f'<div class="muted">Condition: {escape(condition)}</div>')
+            parts.append(f'</td><td>{escape(field.status)}</td><td>')
             for excerpt in field.evidence:
                 parts.append(f'<details><summary>Page {excerpt.page_number}</summary><pre>{escape(excerpt.text)}</pre></details>')
             parts.append('</td></tr>')

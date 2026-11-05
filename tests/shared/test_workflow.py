@@ -22,7 +22,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 class WorkflowTests(unittest.TestCase):
     def test_baseline_retains_supplier_financial_and_contract_facts(self):
         path = SAMPLE_DIRECTORY / "supplier-pack-01.pdf"
-        fields = extract_document(read_pdf(path))
+        fields = extract_document(read_pdf(path)).fields
 
         self.assertEqual(fields["supplier_name"].value, "Padma Textile Mills Ltd")
         self.assertEqual(fields["item_code"].value, "A")

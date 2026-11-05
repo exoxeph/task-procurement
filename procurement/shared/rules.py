@@ -2,9 +2,12 @@
 
 import re
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP
 
-from procurement.shared.extraction import Evidence, ExtractedField
+from procurement.shared.extraction import (
+    Evidence, ExtractedField, ExtractionRun, NUMERIC_FIELDS,
+    explicit_penalty_absence, read_number, validate_fields,
+)
 from procurement.shared.pdf_text import PdfDocument
 
 REVIEW = "Needs a person to check"
@@ -25,12 +28,16 @@ class ReviewResult:
     fields: dict[str, ExtractedField]
     findings: tuple[Finding, ...]
     verdict: str
+    extraction_run: ExtractionRun | None = None
+    steps: tuple = ()
 
 
 def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) -> ReviewResult:
     """Convert values, check each rule, retain findings, then choose the verdict."""
     thresholds = policy["thresholds"]
     requirements = policy["requirements"]
+    validation = validate_fields(fields, document)
+    fields = validation.fields
     findings = []
     inspected_pages = tuple(Evidence(page.page_number, page.text) for page in document.pages)
 
@@ -45,6 +52,8 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
     # 1. Extraction uncertainty must never silently turn into approval.
     for issue in document.issues:
         add("pdf_issue", REVIEW, issue)
+    for issue in validation.issues:
+        add("extraction_issue", REVIEW, issue)
     required = ("supplier_name", "quotation_number", "quotation_date", "purchase_request_reference",
                 "item_code", "description", "quantity", "unit", "unit_price", "line_amount", "total",
                 "advance_percent", "payment_days", "delivery_days", "validity_days")
@@ -57,33 +66,42 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
         # below. The optional price note also needs an uncertainty check.
         if name == "unit_price_tax_note" and field.status in ("ambiguous", "unrecognized"):
             add(f"extraction_{name}", REVIEW, f"Cannot confidently read {name}: {field.status}.", name)
+        if (name.endswith("_clause_text") or name.endswith("_reference")) and field.status in ("ambiguous", "unrecognized"):
+            add(f"extraction_{name}", REVIEW, f"Conflicting or unsupported source interpretation for {name}.", name)
         if field.status == "found" and requirements["exact_evidence"] and not field.evidence:
             add("missing_evidence", REVIEW, f"No supporting excerpt for {name}.")
 
     # 2. Convert text locally. The extractor still retains the original strings.
     numbers = {}
-    numeric_fields = ("quantity", "unit_price", "line_amount", "subtotal", "vat_rate", "vat_amount",
-                      "total", "advance_percent", "payment_days", "delivery_days", "penalty_percent", "validity_days")
-    for name in numeric_fields:
+    for name in NUMERIC_FIELDS:
         field = fields[name]
-        if field.status != "found":
+        if field.status == "found":
+            # Shared validation has already checked the format and bounds.
+            numbers[name] = read_number(field.value, name)
+
+    # A duration must have the right starting event. Unresolved qualifications
+    # cannot be dropped merely because its numeric value looks compliant.
+    expected_events = {"payment_days": "delivery", "delivery_days": "purchase_order",
+                       "validity_days": "quotation_date"}
+    qualified_fields = set()
+    for name, fact in fields.items():
+        if fact.status != "found":
             continue
-        try:
-            value = Decimal(field.value.replace(",", ""))
-            if not value.is_finite() or value < 0:
-                raise ValueError("expected a finite nonnegative number")
-            # This baseline supports up to 12 integer and 6 fractional digits.
-            # Bounding input keeps multiplication/cent rounding within Decimal's
-            # default precision; larger values require a person, not a crash.
-            if value >= Decimal("1e12") or value.as_tuple().exponent < -6:
-                raise ValueError("number exceeds supported size or precision")
-            if name in ("quantity", "payment_days", "delivery_days", "validity_days") and value != value.to_integral_value():
-                raise ValueError("expected a whole number")
-            if name == "quantity" and value == 0:
-                raise ValueError("quantity must be positive")
-            numbers[name] = value
-        except (InvalidOperation, ValueError, AttributeError):
-            add(f"invalid_{name}", REVIEW, f"Unsupported numeric value for {name}.", name)
+        wrong_event = name in expected_events and fact.reference_event != expected_events[name]
+        has_range = (fact.minimum_value is not None and fact.maximum_value is not None
+                     and Decimal(fact.minimum_value.replace(',', '')) != Decimal(fact.maximum_value.replace(',', '')))
+        if wrong_event or fact.conditions or has_range:
+            qualified_fields.add(name)
+            add("payment" if name == "payment_days" else f"qualified_{name}", REVIEW,
+                f"Cannot apply {name} without resolving its reference event, conditions or range.", name)
+            numbers.pop(name, None)
+
+    currency = fields["currency"]
+    currency_supported = currency.status == "found" and currency.value == "BDT" and not currency.conditions
+    if not currency_supported:
+        add("currency", REVIEW, "Cannot compare monetary figures without an explicit supported BDT currency.", "currency")
+        for name in ("unit_price", "line_amount", "subtotal", "vat_amount", "total"):
+            numbers.pop(name, None)
 
     # 3. Match the request before comparing quantities or prices.
     item = items.get(fields["item_code"].value)
@@ -136,7 +154,8 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
     # 6. Penalty: reject confirmed absence, review an unclear or weak clause.
     if requirements["late_delivery_penalty"]:
         clause = fields["penalty_clause"]
-        absent = clause.value == "absent"
+        absent = (clause.status == "found" and clause.value == "absent"
+                  and "penalty_clause" not in qualified_fields and explicit_penalty_absence(clause.evidence))
         if absent:
             add("penalty_missing", REJECT, "Document explicitly states no late-delivery penalty.", "penalty_clause")
         elif clause.value != "present":

@@ -38,5 +38,50 @@ the plan uses Block headings and the current shell is PowerShell. Final independ
 review is due after the complete implementation, as specified by the native
 execution workflow.
 
-Next: Block 2, the shared fact contract, cautious term guards, JSON schema and
-general extraction prompt. Do not claim Ollama extraction is available yet.
+## Block 2: fact contract, guards, schema and prompt complete
+
+- Extended ExtractedField with optional original wording, reference event,
+  conditions and numeric bounds. Added ExtractionRun for facts, issues and run
+  metadata. Existing three-argument field construction remains valid.
+- Defined all 32 fact names centrally and added shared source/numeric validation.
+  Unsupported facts become unresolved. Exact evidence confirms traceability,
+  not semantic correctness; a dedicated test demonstrates that limit.
+- Adapted the baseline aggregator to return ExtractionRun and retain its known
+  reference events and explicitly supported BDT currency. The workflow carries
+  extraction issues into review and retains the run on the final result.
+- Added shared guards for reference events, ranges, conditions, currency and
+  contradictory reference fields. A 60-day interval after invoice does not become
+  a late-delivery rejection. Independent definite violations still reject.
+- Uncertain raw clauses cannot be hidden behind a simple parsed duration. Penalty
+  absence requires explicit evidence and cannot reject when qualified by unresolved
+  conditions. Human review remains conservative for missing registration/penalty.
+- Added approach2/schema.py: standard JSON Schema plus readable local validation,
+  including duplicate-key/nonfinite JSON rejection and per-field error reporting.
+- Added approach2/prompt.txt: zero-shot extraction instructions, preserving actual
+  figures, conditions, conflicts, page evidence and unresolved information. It has
+  no sample answers or company thresholds.
+- Report fields now display raw wording, reference events, bounds and conditions
+  with HTML escaping. Updated the README to describe current implementation status.
+
+Verification performed:
+
+- New schema/contract tests failed on missing APIs before implementation.
+- New policy tests reproduced false approvals for reference/condition/range
+  changes and false rejections for unsupported currency, then passed with guards.
+- Added regression cases for qualified penalty absence, conflicting references,
+  ambiguous raw clauses and escaped term metadata. Observed failures before fixes.
+- All 132 tests passed. Tests run without a model or network connection.
+- The real ten-PDF CLI still matches 6/10 verdicts and rule sets: three Reject,
+  seven human review. All previous fact values, statuses, evidence, findings and
+  decisions matched the pre-move snapshot; added metadata validates with no issues.
+- Original sample/config files remain unchanged. Whitespace checks passed.
+
+Ruling: test the prompt's integration into actual model requests in Block 3 rather
+than asserting literal wording in a test_prompt.py file. Reading the prompt and
+testing real request construction gives useful coverage without prose snapshot tests.
+Use a shared JSON Schema $defs fact definition to avoid repeating the same shape
+32 times in model input; verify provider acceptance during Block 3 integration.
+No schema or evidence check guarantees that the model understood the text correctly.
+
+Next: Block 3, local Ollama calls, bounded failure handling and saved runs. No AI
+extraction results have been measured yet.

@@ -82,8 +82,9 @@ Start at procurement/review.py, review_document(). It calls the following steps:
 
 `approach1/` contains the Python baseline extractors. `shared/` contains PDF
 reading, evidence records, policy checks, evaluation and reporting. The
-`approach2/` package is reserved for the planned local Ollama extractor; it is
-not implemented yet. Both approaches will use the same workflow and rules.
+`approach2/` package now defines the extraction prompt and JSON response schema.
+The Ollama connection is not implemented yet. Both approaches will use the same
+workflow and rules.
 
 | File | Responsibility |
 | --- | --- |
@@ -98,6 +99,8 @@ not implemented yet. Both approaches will use the same workflow and rules.
 | procurement/shared/evaluation.py | Compare actual results with unchanged manual labels |
 | procurement/shared/extraction.py | Shared value/status/evidence records and preview |
 | procurement/shared/references.py | Purchase request and policy configuration |
+| procurement/approach2/schema.py | AI JSON shape and strict response parsing |
+| procurement/approach2/prompt.txt | General extraction instructions, without sample answers |
 
 The main command remains `python -m procurement.review`. Individual previews now
 use their new module paths, for example:
@@ -114,6 +117,14 @@ supplies a value. found means extracted, not policy-compliant. Source excerpts a
 exact page text. Spatially read cells cite the entire original page because native
 PDF insertion order can differ from visual cell order; excerpts are not reconstructed
 or presented as invented contiguous quotations.
+
+The baseline now returns an ExtractionRun containing fields, validation issues
+and approach metadata. Facts can also retain original wording, reference events,
+conditions and numeric bounds. Shared validation checks exact source excerpts,
+numeric formats and conflicting references. It cannot prove that an interpretation
+is semantically correct. Policy checks keep unsupported conditions and ranges for
+human review and do not apply delivery-based thresholds to invoice-based deadlines.
+Missing or unsupported currency prevents monetary comparison against BDT limits.
 
 ## Limits and policy choices
 

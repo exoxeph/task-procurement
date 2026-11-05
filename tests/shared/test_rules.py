@@ -4,12 +4,11 @@ import unittest
 from pathlib import Path
 from dataclasses import replace
 
-from procurement.approach1.financial_details import extract_financial_details
 from procurement.shared.pdf_text import PdfDocument, PdfPage, read_pdf
 from procurement.shared.references import load_company_rules, load_purchase_request
 from procurement.shared.rules import check_rules
-from procurement.approach1.supplier_details import extract_supplier_details
-from procurement.approach1.terms import extract_terms
+from procurement.approach1.extractor import extract_document
+from procurement.shared.extraction import Evidence, ExtractedField
 
 SAMPLES = Path(__file__).resolve().parents[2] / 'sample-data/engineer/task1-procurement'
 
@@ -40,7 +39,7 @@ class RuleTests(unittest.TestCase):
                                        rows=tuple(tuple(change_cell(cell) for cell in row) for row in table.rows)) for table in tables)
                 outside = outside.replace(old,new) if outside is not None else None
             document = PdfDocument(Path('fixture.pdf'), (replace(page,text=text,tables=tables,outside_tables_text=outside),), ())
-        fields = {**extract_supplier_details(document), **extract_financial_details(document), **extract_terms(document)}
+        fields = extract_document(document).fields
         return check_rules(document, fields, self.items, self.policy)
 
     def codes(self, result):
@@ -182,6 +181,70 @@ class RuleTests(unittest.TestCase):
 
     def test_foreign_currency_summary_cannot_be_used_as_bdt(self):
         self.assertEqual(self.review([('Total','Total (USD)')]).verdict,'Needs a person to check')
+
+    def test_duration_reference_conditions_and_ranges_cannot_silently_pass(self):
+        original = self.review().fields
+        for name, changes in (
+            ('payment_days', {'reference_event': 'invoice'}),
+            ('delivery_days', {'reference_event': 'delivery'}),
+            ('validity_days', {'reference_event': 'purchase_order'}),
+            ('payment_days', {'reference_event': None}),
+            ('payment_days', {'conditions': ('after acceptance',)}),
+            ('delivery_days', {'minimum_value': '24', 'maximum_value': '42'}),
+        ):
+            with self.subTest(name=name, changes=changes):
+                fields = {**original, name: replace(original[name], **changes)}
+                if 'reference_event' in changes:
+                    reference_name = name.removesuffix('_days') + '_reference'
+                    event = changes['reference_event']
+                    fields[reference_name] = replace(fields[reference_name], value=event,
+                                                     status='found' if event else 'not_found')
+                result = check_rules(self.clean, fields, self.items, self.policy)
+                self.assertEqual(result.verdict, 'Needs a person to check')
+                self.assertNotIn('extraction_issue', self.codes(result))
+
+    def test_wrong_reference_cannot_produce_a_false_delivery_rejection(self):
+        fields = self.review().fields.copy()
+        fields['delivery_days'] = replace(fields['delivery_days'], value='60', reference_event='invoice',
+                                          minimum_value='60', maximum_value='60')
+        fields['delivery_reference'] = replace(fields['delivery_reference'], value='invoice')
+        result = check_rules(self.clean, fields, self.items, self.policy)
+        self.assertEqual(result.verdict, 'Needs a person to check')
+        fields['advance_percent'] = replace(fields['advance_percent'], value='40',
+                                            minimum_value='40', maximum_value='40')
+        self.assertEqual(check_rules(self.clean, fields, self.items, self.policy).verdict, 'Reject')
+
+    def test_unsupported_currency_does_not_trigger_bdt_price_rejection(self):
+        for currency in ('USD', None):
+            fields = self.review().fields.copy()
+            fields['currency'] = ExtractedField(currency, 'found' if currency else 'not_found',
+                                                (Evidence(1, self.clean.pages[0].text),) if currency else ())
+            fields['unit_price'] = replace(fields['unit_price'], value='999',
+                                           minimum_value='999', maximum_value='999')
+            result = check_rules(self.clean, fields, self.items, self.policy)
+            self.assertEqual(result.verdict, 'Needs a person to check')
+            self.assertNotIn('price', self.codes(result))
+            self.assertIn('currency', self.codes(result))
+
+    def test_supported_excerpt_alone_cannot_establish_penalty_absence(self):
+        fields = self.review().fields.copy()
+        fields['penalty_clause'] = replace(fields['penalty_clause'], value='absent')
+        result = check_rules(self.clean, fields, self.items, self.policy)
+        self.assertEqual(result.verdict, 'Needs a person to check')
+        self.assertNotIn('penalty_missing', self.codes(result))
+
+    def test_a_conditional_penalty_absence_is_review_not_a_definite_rejection(self):
+        original = self.review([('Late delivery penalty: 1% of order value for each full week of delay.',
+                                'No late delivery penalty applies.')])
+        fields = original.fields.copy()
+        fields['penalty_clause'] = replace(fields['penalty_clause'], conditions=('only during a strike',))
+        result = check_rules(original.document, fields, self.items, self.policy)
+        self.assertEqual(result.verdict, 'Needs a person to check')
+
+    def test_ambiguous_raw_clause_cannot_be_hidden_by_a_simple_duration(self):
+        fields = self.review().fields.copy()
+        fields['payment_clause_text'] = replace(fields['payment_clause_text'], status='ambiguous', value=None)
+        self.assertEqual(check_rules(self.clean, fields, self.items, self.policy).verdict, 'Needs a person to check')
 
 
 if __name__ == '__main__':
