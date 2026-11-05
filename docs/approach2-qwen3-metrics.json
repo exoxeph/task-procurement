@@ -1,0 +1,603 @@
+{
+  "scope": "Five development-visible PDFs, 01 through 05; extraction first, unchanged policy applied offline.",
+  "request_comparison": "Verified identical request objects except model; same system prompt, schema, options and document input.",
+  "thinking": "No explicit think parameter was sent; installed model/server behavior was used.",
+  "model_change_commit": "58770e6",
+  "reports_directory": "reports\\extraction-only-20261105T074751Z",
+  "runs": [
+    {
+      "model": "qwen2.5:7b",
+      "fact_matches": 112,
+      "facts_scored": 135,
+      "elapsed_seconds": 290.0562766000003,
+      "execution_failures": 0,
+      "verdict_matches": 2,
+      "rule_set_matches": 0,
+      "documents_scored": 5,
+      "prompt_tokens": 10318,
+      "output_tokens": 16882,
+      "by_field": {
+        "supplier_name": {
+          "matches": 5,
+          "total": 5
+        },
+        "quotation_date": {
+          "matches": 5,
+          "total": 5
+        },
+        "item_code": {
+          "matches": 2,
+          "total": 5
+        },
+        "description": {
+          "matches": 5,
+          "total": 5
+        },
+        "quantity": {
+          "matches": 3,
+          "total": 5
+        },
+        "unit": {
+          "matches": 5,
+          "total": 5
+        },
+        "unit_price": {
+          "matches": 5,
+          "total": 5
+        },
+        "line_amount": {
+          "matches": 5,
+          "total": 5
+        },
+        "vat_amount": {
+          "matches": 5,
+          "total": 5
+        },
+        "total": {
+          "matches": 5,
+          "total": 5
+        },
+        "tin": {
+          "matches": 5,
+          "total": 5
+        },
+        "bin": {
+          "matches": 5,
+          "total": 5
+        },
+        "advance_percent": {
+          "matches": 4,
+          "total": 5
+        },
+        "payment_days": {
+          "matches": 1,
+          "total": 5
+        },
+        "delivery_days": {
+          "matches": 3,
+          "total": 5
+        },
+        "penalty_percent": {
+          "matches": 5,
+          "total": 5
+        },
+        "validity_days": {
+          "matches": 3,
+          "total": 5
+        },
+        "quotation_number": {
+          "matches": 5,
+          "total": 5
+        },
+        "purchase_request_reference": {
+          "matches": 5,
+          "total": 5
+        },
+        "subtotal": {
+          "matches": 5,
+          "total": 5
+        },
+        "vat_rate": {
+          "matches": 5,
+          "total": 5
+        },
+        "currency": {
+          "matches": 5,
+          "total": 5
+        },
+        "penalty_clause": {
+          "matches": 2,
+          "total": 5
+        },
+        "penalty_basis": {
+          "matches": 5,
+          "total": 5
+        },
+        "payment_reference": {
+          "matches": 1,
+          "total": 5
+        },
+        "delivery_reference": {
+          "matches": 4,
+          "total": 5
+        },
+        "validity_reference": {
+          "matches": 4,
+          "total": 5
+        }
+      },
+      "documents": [
+        {
+          "file": "supplier-pack-01.pdf",
+          "fact_matches": 24,
+          "facts_scored": 27,
+          "issues": [
+            "payment_days: conflicting reference events"
+          ],
+          "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+          "run_id": "2f182ce9-f273-42d1-add1-56429071c676",
+          "request_sha256": "871689926c93ca78d6a818c0108736f658e407315aaceb7295804494e17e47d1",
+          "elapsed_seconds": 68.90081920000011
+        },
+        {
+          "file": "supplier-pack-02.pdf",
+          "fact_matches": 22,
+          "facts_scored": 27,
+          "issues": [
+            "penalty_clause: numeric bounds require both endpoints"
+          ],
+          "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+          "run_id": "9ec7aee8-c80d-4a46-9036-cd34c802b1e6",
+          "request_sha256": "1ffa2da148d0ccc511de5afda7d51b64c408ea8c2777154d91dbd523e8e2889c",
+          "elapsed_seconds": 55.437067200000456
+        },
+        {
+          "file": "supplier-pack-03.pdf",
+          "fact_matches": 23,
+          "facts_scored": 27,
+          "issues": [
+            "quantity: expected an unsigned decimal string",
+            "payment_days: conflicting reference events"
+          ],
+          "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+          "run_id": "582686b6-a344-48d2-be7d-0771423b2423",
+          "request_sha256": "f930c522ad66f4e714eed6fdf5015c5907427f6fbf68a3825184f8888d92e7a8",
+          "elapsed_seconds": 54.670285800000784
+        },
+        {
+          "file": "supplier-pack-04.pdf",
+          "fact_matches": 21,
+          "facts_scored": 27,
+          "issues": [
+            "quantity: expected an unsigned decimal string",
+            "payment_days: expected an unsigned decimal string",
+            "delivery_days: expected an unsigned decimal string",
+            "validity_days: expected an unsigned decimal string"
+          ],
+          "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+          "run_id": "dd6e67ce-bc55-474b-a39f-9aea6a1f8c73",
+          "request_sha256": "09a4ec1a9f7109eaafbb54b106ebd0c025758957ae07b10704d6d28e0d2e0286",
+          "elapsed_seconds": 54.430110799999966
+        },
+        {
+          "file": "supplier-pack-05.pdf",
+          "fact_matches": 22,
+          "facts_scored": 27,
+          "issues": [
+            "payment_days: evidence does not match an original page",
+            "penalty_clause: numeric bounds require both endpoints",
+            "payment_clause_text: evidence does not match an original page",
+            "payment_reference: evidence does not match an original page",
+            "delivery_reference: evidence does not match an original page"
+          ],
+          "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+          "run_id": "8c7a3139-f06c-4300-8fb1-048ab676bb22",
+          "request_sha256": "75922a569cec9286126e3ff260aca5cb3227a15a8a70594f4ef749fca5df908c",
+          "elapsed_seconds": 56.617993599998954
+        }
+      ],
+      "verdicts": [
+        {
+          "file": "supplier-pack-01.pdf",
+          "expected": "Approve",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [],
+          "actual_rules": [
+            "payment",
+            "pdf_issue",
+            "penalty_unclear"
+          ]
+        },
+        {
+          "file": "supplier-pack-02.pdf",
+          "expected": "Approve",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "extraction_issue",
+            "extraction_item_code",
+            "pdf_issue",
+            "penalty_unclear",
+            "qualified_validity_days",
+            "request_item"
+          ]
+        },
+        {
+          "file": "supplier-pack-03.pdf",
+          "expected": "Reject",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "price"
+          ],
+          "actual_rules": [
+            "extraction_item_code",
+            "extraction_quantity",
+            "payment",
+            "pdf_issue",
+            "request_item"
+          ]
+        },
+        {
+          "file": "supplier-pack-04.pdf",
+          "expected": "Needs a person to check",
+          "actual": "Needs a person to check",
+          "verdict_match": true,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "price"
+          ],
+          "actual_rules": [
+            "extraction_delivery_days",
+            "extraction_item_code",
+            "extraction_quantity",
+            "extraction_validity_days",
+            "payment",
+            "pdf_issue",
+            "request_item"
+          ]
+        },
+        {
+          "file": "supplier-pack-05.pdf",
+          "expected": "Reject",
+          "actual": "Reject",
+          "verdict_match": true,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "advance"
+          ],
+          "actual_rules": [
+            "advance",
+            "extraction_delivery_reference",
+            "extraction_issue",
+            "extraction_payment_clause_text",
+            "extraction_payment_reference",
+            "payment",
+            "pdf_issue",
+            "penalty_unclear",
+            "qualified_delivery_days"
+          ]
+        }
+      ]
+    },
+    {
+      "model": "qwen3:14b",
+      "fact_matches": 112,
+      "facts_scored": 135,
+      "elapsed_seconds": 1483.5085354999992,
+      "execution_failures": 0,
+      "verdict_matches": 2,
+      "rule_set_matches": 0,
+      "documents_scored": 5,
+      "prompt_tokens": 10328,
+      "output_tokens": 17853,
+      "by_field": {
+        "supplier_name": {
+          "matches": 5,
+          "total": 5
+        },
+        "quotation_date": {
+          "matches": 5,
+          "total": 5
+        },
+        "item_code": {
+          "matches": 4,
+          "total": 5
+        },
+        "description": {
+          "matches": 4,
+          "total": 5
+        },
+        "quantity": {
+          "matches": 4,
+          "total": 5
+        },
+        "unit": {
+          "matches": 4,
+          "total": 5
+        },
+        "unit_price": {
+          "matches": 4,
+          "total": 5
+        },
+        "line_amount": {
+          "matches": 4,
+          "total": 5
+        },
+        "vat_amount": {
+          "matches": 5,
+          "total": 5
+        },
+        "total": {
+          "matches": 5,
+          "total": 5
+        },
+        "tin": {
+          "matches": 5,
+          "total": 5
+        },
+        "bin": {
+          "matches": 5,
+          "total": 5
+        },
+        "advance_percent": {
+          "matches": 0,
+          "total": 5
+        },
+        "payment_days": {
+          "matches": 3,
+          "total": 5
+        },
+        "delivery_days": {
+          "matches": 5,
+          "total": 5
+        },
+        "penalty_percent": {
+          "matches": 2,
+          "total": 5
+        },
+        "validity_days": {
+          "matches": 5,
+          "total": 5
+        },
+        "quotation_number": {
+          "matches": 5,
+          "total": 5
+        },
+        "purchase_request_reference": {
+          "matches": 5,
+          "total": 5
+        },
+        "subtotal": {
+          "matches": 5,
+          "total": 5
+        },
+        "vat_rate": {
+          "matches": 0,
+          "total": 5
+        },
+        "currency": {
+          "matches": 5,
+          "total": 5
+        },
+        "penalty_clause": {
+          "matches": 5,
+          "total": 5
+        },
+        "penalty_basis": {
+          "matches": 5,
+          "total": 5
+        },
+        "payment_reference": {
+          "matches": 3,
+          "total": 5
+        },
+        "delivery_reference": {
+          "matches": 5,
+          "total": 5
+        },
+        "validity_reference": {
+          "matches": 5,
+          "total": 5
+        }
+      },
+      "documents": [
+        {
+          "file": "supplier-pack-01.pdf",
+          "fact_matches": 16,
+          "facts_scored": 27,
+          "issues": [
+            "item_code: evidence does not match an original page",
+            "description: evidence does not match an original page",
+            "quantity: evidence does not match an original page",
+            "unit: evidence does not match an original page",
+            "unit_price: evidence does not match an original page",
+            "line_amount: evidence does not match an original page",
+            "vat_rate: expected an unsigned decimal string",
+            "advance_percent: expected an unsigned decimal string",
+            "penalty_percent: expected an unsigned decimal string",
+            "payment_clause_text: evidence does not match an original page",
+            "payment_days: conflicting reference events"
+          ],
+          "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+          "run_id": "82741e6f-e219-4fe3-a5d0-bf63dd1da2bd",
+          "request_sha256": "84b8d5af2f94f1533f58874cd008e7039a730e1bd68297f610b8c508d85de633",
+          "elapsed_seconds": 327.5193035000011
+        },
+        {
+          "file": "supplier-pack-02.pdf",
+          "fact_matches": 25,
+          "facts_scored": 27,
+          "issues": [
+            "vat_rate: expected an unsigned decimal string",
+            "advance_percent: expected an unsigned decimal string"
+          ],
+          "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+          "run_id": "6bfdf7f6-0fe6-4eb3-afad-d92016686c71",
+          "request_sha256": "d57d0673590a55bbf742c4f900c332e6202cbb4b13a3a39768be9b3871f5752a",
+          "elapsed_seconds": 285.8091846999996
+        },
+        {
+          "file": "supplier-pack-03.pdf",
+          "fact_matches": 24,
+          "facts_scored": 27,
+          "issues": [
+            "vat_rate: expected an unsigned decimal string",
+            "advance_percent: expected an unsigned decimal string",
+            "penalty_percent: expected an unsigned decimal string"
+          ],
+          "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+          "run_id": "1979b5dc-b9df-4e36-b7e7-08a561fd2f0d",
+          "request_sha256": "199080cc811fc19aa1a948ffd35384a614672488a6a44d4fedad7323637822e3",
+          "elapsed_seconds": 297.5543744000006
+        },
+        {
+          "file": "supplier-pack-04.pdf",
+          "fact_matches": 25,
+          "facts_scored": 27,
+          "issues": [
+            "vat_rate: expected an unsigned decimal string",
+            "advance_percent: expected an unsigned decimal string"
+          ],
+          "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+          "run_id": "bb467323-65f6-4f5c-aeaa-a6ad2864bea0",
+          "request_sha256": "70b49afe61e259d4105a4dc20d517078199e8edaeae2f47fba65f0a54d516a70",
+          "elapsed_seconds": 280.9051473999989
+        },
+        {
+          "file": "supplier-pack-05.pdf",
+          "fact_matches": 22,
+          "facts_scored": 27,
+          "issues": [
+            "vat_rate: expected an unsigned decimal string",
+            "advance_percent: expected an unsigned decimal string",
+            "payment_days: evidence does not match an original page",
+            "penalty_percent: expected an unsigned decimal string",
+            "payment_clause_text: evidence does not match an original page",
+            "payment_reference: evidence does not match an original page"
+          ],
+          "model_digest": "bdbd181c33f2ed1b31c972991882db3cf4d192569092138a7d29e973cd9debe8",
+          "run_id": "ad6c09d7-1f72-4fa3-8115-0fcd735c53b3",
+          "request_sha256": "b863c36ca62c14d35c21dea029711fe6df0c4dd365f0e95034c9921a752f6095",
+          "elapsed_seconds": 291.720525499999
+        }
+      ],
+      "verdicts": [
+        {
+          "file": "supplier-pack-01.pdf",
+          "expected": "Approve",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "extraction_description",
+            "extraction_item_code",
+            "extraction_line_amount",
+            "extraction_payment_clause_text",
+            "extraction_quantity",
+            "extraction_unit",
+            "extraction_unit_price",
+            "payment",
+            "pdf_issue",
+            "penalty_rate",
+            "request_item",
+            "vat_display"
+          ]
+        },
+        {
+          "file": "supplier-pack-02.pdf",
+          "expected": "Approve",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "pdf_issue",
+            "vat_display"
+          ]
+        },
+        {
+          "file": "supplier-pack-03.pdf",
+          "expected": "Reject",
+          "actual": "Reject",
+          "verdict_match": true,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "price"
+          ],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "pdf_issue",
+            "penalty_rate",
+            "price",
+            "vat_display"
+          ]
+        },
+        {
+          "file": "supplier-pack-04.pdf",
+          "expected": "Needs a person to check",
+          "actual": "Needs a person to check",
+          "verdict_match": true,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "price"
+          ],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "pdf_issue",
+            "price",
+            "vat_display"
+          ]
+        },
+        {
+          "file": "supplier-pack-05.pdf",
+          "expected": "Reject",
+          "actual": "Needs a person to check",
+          "verdict_match": false,
+          "rule_match": false,
+          "input_error": false,
+          "extraction_error": false,
+          "expected_rules": [
+            "advance"
+          ],
+          "actual_rules": [
+            "extraction_advance_percent",
+            "extraction_payment_clause_text",
+            "extraction_payment_reference",
+            "payment",
+            "pdf_issue",
+            "penalty_rate",
+            "vat_display"
+          ]
+        }
+      ]
+    }
+  ]
+}
