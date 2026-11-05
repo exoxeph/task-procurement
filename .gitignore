@@ -4,3 +4,7 @@ __pycache__/
 .env
 .superpowers/
 reports/
+
+# slide deck build tooling
+deck/node_modules/
+deck/design-demos/shots/
