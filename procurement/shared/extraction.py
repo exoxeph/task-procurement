@@ -9,6 +9,7 @@ import re
 import sys
 
 from procurement.shared.pdf_text import PdfDocument, PdfReadError, read_pdf
+from procurement.shared.table_layout import item_columns
 
 
 FACT_NAMES = (
@@ -183,6 +184,20 @@ def validate_fields(fields: dict[str, ExtractedField], document: PdfDocument) ->
         if fact.status == "found" and reference.status == "found" and fact.reference_event != reference.value:
             checked[name] = replace(fact, value=None, status="unrecognized")
             issues.append(f"{name}: conflicting reference events")
+    # Source geometry is independent evidence: a model's row count cannot hide
+    # a second recognized item row, even when both rows have identical values.
+    item_tables = []
+    for page in document.pages:
+        for table in page.tables:
+            columns = item_columns(table)
+            if (columns and {'description', 'quantity'} <= set(columns)
+                    and ('unit_price' in columns or 'line_amount' in columns)):
+                item_tables.append(table)
+    row_count = sum(len(table.rows) for table in item_tables)
+    if item_tables and row_count != 1:
+        issues.append(f'This workflow requires exactly one item across detected item tables; found {row_count}.')
+        for name in ('item_code', 'description', 'quantity', 'unit', 'unit_price', 'line_amount'):
+            checked[name] = replace(checked[name], value=None, status='unrecognized')
     return ExtractionRun(checked, tuple(issues), {})
 
 

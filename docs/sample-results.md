@@ -43,3 +43,18 @@ generalization to new suppliers. Metadata parsing remains heuristic.
 Reproduce: `python -m procurement.review`. Add `--check-labels` to return exit1
 for these disclosed label differences; the HTML report is written either way.
 Run regression/property tests: `python -m unittest discover -s tests -q`.
+
+
+## Comparison with local AI
+
+The first full Qwen2.5:7b zero-shot run matched 5/10 verdicts, 0/10 complete
+triggered-rule sets and 224/270 source-audited whole facts, versus this baseline's
+6/10, 6/10 and 267/270. The model rejected packs 05 and 10 and escalated the other
+eight; it did not make approvals. Both approaches had zero execution failures in
+that run. See approach2-results.md for all per-file findings, repeats, timing,
+token usage and limits. The audit was performed by Codex, not independent humans;
+all ten documents were already development-visible.
+
+The baseline's large fact score mainly reflects straightforward template fields.
+Duration facts match 27/30 for baseline versus 15/30 for Qwen, including events and
+conditions. Higher field agreement is not the same as higher automatic coverage.

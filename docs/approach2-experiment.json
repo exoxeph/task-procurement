@@ -1,0 +1,50 @@
+{
+  "name": "qwen25-zero-shot-v1",
+  "frozen_at": "2026-11-05T06:10:00.975232+00:00",
+  "base_commit": "28a04cc294543142fda455ca00468c7002437677",
+  "model": "qwen2.5:7b",
+  "options": {
+    "temperature": 0,
+    "num_ctx": 16384,
+    "num_predict": 8192
+  },
+  "timeout_seconds": 180,
+  "repeat_count": 3,
+  "headline": "run1, first full attempted run, including failures",
+  "ollama": {
+    "version": "0.40.14"
+  },
+  "schema_sha256": "deefee89ba77a905ffe3f3726e37cfaef8084aea4e763d73ac91727cdedc8af9",
+  "files": {
+    "procurement\\approach2\\prompt.txt": "5f492ee63e20df239b89ee4ef582c81340522ff544769efafabb5a025c1aeb28",
+    "procurement\\approach2\\schema.py": "30548956a15eea435f6b0dc772175fc0bdd857a39993d49541c0a16c2f2b8513",
+    "procurement\\approach2\\extractor.py": "731c03c35bad91f9b2bfe743edbc2196f22137b3c3e278ceec1bc8548969739a",
+    "procurement\\shared\\extraction.py": "fee2388d223d89fb810d226e7b6c1d23ad0471b18ac04edb7e92dc32578d0d9f",
+    "config\\manual-facts.json": "e1974b7cef188e78dc26f5b5ccad1dc66b77c1dd9b320374938de0f3be2518fa",
+    "config\\manual-labels.json": "7bcca5bc550912b4b0a02b4d3801d7240493b3f5cbb31f1bad0d8370935891b8",
+    "config\\company-rules.json": "30dc5115d4c9e94f8f2d5bf660132efb309ca9e451c76f6eafc68e5c5573deca",
+    "sample-data\\engineer\\task1-procurement\\company-rules.md": "0fcfcf5c9ece4a01c05e71a0481351a39467d4bb9a4ec1169e68f6ef33bef1a5",
+    "sample-data\\engineer\\task1-procurement\\purchase-request.csv": "20e4da46bbbdcdc9e01abd48ffba6a8f5e62e8d4b88fd9fc64daa4cab043d9dc",
+    "sample-data\\engineer\\task1-procurement\\README.md": "a0942c18172dd8c597c503bb7f30d5de018e1e5a6d5493f4ab5df8e05366ffe7",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-01.pdf": "973d6250733bc9bd5a497db5d1611f271192789f05e1e3c22e7a675fdd988c68",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-02.pdf": "91d6d71b8df7e6288fb3719f46ff9290b2417d03eb8dc4dfb2581c309de434f0",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-03.pdf": "315870f07e3b4de40f12380b0c163fcc87df87757da48979360b8e90689179c4",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-04.pdf": "d187b72a03d5e93d7aa8562abd7f0ed8cd5c08852e619b393d9a5724673e26c9",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-05.pdf": "cad4d465398dafe31e45c8b099617f004bf71cd2d2ec9f5e36d9542d4efa6bbc",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-06.pdf": "92ce3d956151b53a5d224096823493cbe4d9f9e2e8dde84c3693edfcff40bbf0",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-07.pdf": "9d81eaf2c58fd5000b5d3a0756295845520e9fb4fda31496bc4f017d79cd7722",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-08.pdf": "319ef3280efc209db3f4a6153b7e6943d61bc0d9f05520c7dec6d541597cfd29",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-09.pdf": "b6ca30469ceb53c8cff569d47a394bd283e8472ab4f04025bf51ba658c97289b",
+    "sample-data\\engineer\\task1-procurement\\supplier-pack-10.pdf": "4214b79d067a151b04f240e6d7633722cb1eabc3d15ab24e680ccb6845e2b991"
+  },
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "post_experiment_hardening": {
+    "reason": "Independent review found synthetic multi-item, ambient proxy/redirect and HTTPException failure-containment gaps. All three inference processes imported the original frozen modules before these fixes. Prompt/schema/model/input/config unchanged; all artifacts rescored with final guards.",
+    "files": {
+      "procurement/approach2/extractor.py": "3f3707830754e5042364f830e7d72f4ab231d76070315fbb9fd088e5280b4ca2",
+      "procurement/shared/extraction.py": "28de6646eefba11e80d36f53a09c0e3619ed96bdb33c242c26b522c39ec0ce4e",
+      "procurement/shared/table_layout.py": "a06cb37acb608bfa37db5b75a3d5a8ec64f983d9719681fa5ada252b09176f08",
+      "procurement/approach1/financial_details.py": "587aa33fff3a14996f4d7d733d3ef0c8ff72146315dbbf22e1e80bc5b8fdbe03"
+    }
+  }
+}

@@ -75,7 +75,8 @@ class WorkflowTests(unittest.TestCase):
             if request.full_url.endswith('/chat'):
                 chats.append(request)
                 if len(chats) == 1:
-                    raise URLError('temporary service failure')
+                    from http.client import BadStatusLine
+                    raise BadStatusLine('temporary malformed HTTP response')
                 response = {'model': 'qwen2.5:7b', 'done': True, 'done_reason': 'stop',
                             'prompt_eval_count': 1000, 'eval_count': 2000,
                             'message': {'role': 'assistant', 'content': json.dumps(payload)}}
@@ -102,3 +103,8 @@ class WorkflowTests(unittest.TestCase):
             self.assertNotIn('This run uses no AI', ai_html)
             self.assertIn('Extraction failures: 1', console.getvalue())
             self.assertEqual(len(list((Path(directory) / 'runs').glob('*.json'))), 4)
+            self.assertIn('Procurement extraction comparison', output.read_text(encoding='utf-8'))
+            summary = json.loads(output.with_suffix('.json').read_text(encoding='utf-8'))
+            self.assertEqual(summary['approach2']['total'], 2)
+            self.assertEqual(summary['approach2']['fields']['total'], 54)
+            self.assertEqual(summary['approach2']['extraction_failures'], 1)

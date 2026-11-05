@@ -2,8 +2,8 @@
 
 **Read PDF -> Extract cautious facts -> Check policy -> Show evidence.**
 Approach 1 uses deterministic Python extraction. Approach 2 uses local Ollama
-extraction. Both use the same Python policy checks and evidence report. The human
-correction workflow and full AI comparison are still being implemented.
+extraction. Both use the same Python policy checks, evidence report and recorded human
+correction workflow. A measured comparison is documented below.
 
 ## Run
 
@@ -48,13 +48,16 @@ python -m procurement.review sample-data/engineer/task1-procurement/supplier-pac
 python -m procurement.review --approach both --output reports/comparison.html
 ```
 
-Both mode currently writes comparison-approach1.html and comparison-approach2.html.
-A combined comparison view is planned for Block 5. Each invocation saves unique
+Both mode writes comparison.html, comparison-approach1.html,
+comparison-approach2.html and machine-readable comparison.json. Each invocation saves unique
 JSON run artifacts under ignored reports/runs/, including original source, validated
 facts, raw model answer, document hash, model identity, timing and token usage.
 Use --artifacts PATH to choose a directory, --model to select an installed model,
 --ollama-url for a loopback base URL, and --timeout for the per-call limit (default
-180 seconds). No remote fallback, model download or extraction retry happens.
+180 seconds). No remote fallback, model download or extraction retry happens. The HTTP client
+ignores ambient proxies and refuses redirects, so validated local destinations
+remain local. Malformed HTTP responses become saved failed runs and do not stop
+the remaining documents.
 
 One extraction request is made per PDF. Optional version/model metadata requests
 are separate. Large inputs are refused rather than sliced, and token/completion
@@ -62,13 +65,39 @@ checks flag possible context pressure or truncated output. These are conservativ
 guards, not proof that the model understood every page. Local inference has no
 paid-token API bill; hardware and runtime costs still exist.
 
-The Block 3 integration run on pack 09 took about 69 seconds (including model load
-and metadata reads). It preserved the incorrect printed line amount as 322,000.
-The decision was human review, but exact evidence and reference validation caught
-additional AI mistakes, so its triggered-rule set did not match the manual label.
-This is one integration result, not an AI accuracy benchmark; full evaluation is
-planned after the human-review workflow. Failed extraction attempts stay in the
-sample denominator and are not counted as correct merely for returning review.
+## Measured comparison
+
+The first full attempted run is the headline; later repeats are reported separately.
+All ten PDFs were development-visible. No training occurred.
+
+| Metric | Python baseline | Local Qwen2.5 7B |
+| --- | --- | --- |
+| Exact verdict matches | 6/10 | 5/10 |
+| Exact complete rule-set matches | 6/10 | 0/10 |
+| Audited whole-fact matches, including timing qualifiers | 267/270 | 224/270 |
+| Automatic decisions | 3/10, all Reject | 2/10, all Reject |
+| Human reviews | 7/10 | 8/10 |
+| Wrong approvals / wrong rejections | 0 / 0 | 0 / 0 |
+| Input / extraction failures | 0 / 0 | 0 / 0 |
+| Sum of recorded extraction seconds | 0.04 | 573.71 |
+
+Across three repeats, Qwen verdict/rule-set scores stayed 5/10 and 0/10; whole-fact
+matches were 224, 220 and 220 out of 270. The first run stays the headline.
+Neither approach approved anything, so zero wrong approvals is limited evidence.
+Fact scores are strict agreements with a Codex source audit, not independent human
+annotation or unseen accuracy. Raw clause boundaries and price-note wording are
+excluded. The high baseline fact score is dominated by simple template fields;
+important timing clauses still remain unresolved. Complete rule-set matches include
+uncertainty findings, so extra review findings make a set mismatch.
+
+Qwen correctly interpreted one factory-delivery phrase the baseline could not,
+but also missed item codes, produced malformed numeric strings and confused
+payment anchors. This particular zero-shot local setup did not beat the baseline;
+it does not establish that AI is necessary for these ten PDFs.
+See docs/approach2-results.md for source-inspected errors, repeat results and exact
+measurement limits. Settings/input hashes are in docs/approach2-experiment.json;
+compact run metrics are in docs/approach2-metrics.json. Original manual verdict
+labels remain unchanged; failed extraction attempts stay in the denominator.
 
 ## Measured baseline results
 
@@ -199,7 +228,10 @@ The table reader supports simple ruled rectangular grids with shared vertical sp
 and horizontal row separators. Borderless, merged, rotated or incomplete grids need
 review. Column order, PDF insertion order, descriptions wrapping within a cell and
 harmless extra columns are supported. Multiple item rows require review because
-this version still has a single-item decision schema. Currency must explicitly be
+this version still has a single-item decision schema. Detected item tables are
+counted independently across pages, so an incorrect AI item_count cannot hide
+extra recognized rows. Unrecognized/borderless layouts still rely on reported
+uncertainty and are not guaranteed to be detected. Currency must explicitly be
 BDT. Unclear price qualifiers require review.
 
 The small English term-component grammar is intentionally cautious. It has no
@@ -217,14 +249,16 @@ Reject takes priority over review, and all findings remain visible.
 
 Tests cover policy boundaries, malformed/conflicting values, file errors, HTML
 escaping and structural transformations. Synthetic fixtures are property checks,
-not extra supplier evaluation documents or a held-out benchmark. A full ten-document
-AI comparison and repeatability measurements are planned for Block 5.
+not extra supplier evaluation documents or a held-out benchmark. The real ten-document
+AI comparison and repeatability measurements are documented in docs/approach2-results.md.
 
 ## Materials
 
 - docs/submission-note.md: one-page implementation/results/limitations note.
 - docs/presentation-script.md: suggested Loom walkthrough.
-- docs/sample-results.md: current outcomes and reasons.
+- docs/sample-results.md: baseline outcomes and reasons.
+- docs/approach2-results.md: first full AI comparison, repeats and source-inspected errors.
+- config/manual-facts.json: source-audited fact labels; never used during extraction.
 - docs/superpowers/specs/2026-11-05-structural-baseline-design.md: baseline design.
 - docs/superpowers/specs/2026-11-05-approach2-design.md: shared workflow and AI design.
 - docs/approach2-progress.md: implementation progress and actual integration results.

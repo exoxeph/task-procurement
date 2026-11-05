@@ -1,55 +1,58 @@
-# Procurement reviewer: one-page note
+# Procurement reviewer: submission note
 
-## What I built
+I built a local procurement review workflow with two interchangeable extractors:
+a cautious Python parser and a zero-shot Qwen2.5:7b model through Ollama. Both read
+the same PDF text/table aids, return the same fact contract, and use the same
+Python purchase-request and company-policy checks. The model extracts facts; it
+does not choose the business rules. The five steps are ordinary readable Python
+functions, so a graph framework is unnecessary for this fixed workflow.
 
-A deterministic Python comparison baseline: read PDF text and table geometry,
-extract cautious facts, check purchase-request/company rules, then show a local
-HTML report with decisions and original page evidence. Uncertain cases require
-human review. No autonomous agent or framework is needed for this fixed workflow.
-This version has no AI model; an AI extractor is still needed for the intended
-AI comparison and the brief's AI-system aspect.
+## Measured first full run
 
-## Why I changed the first baseline
+On the ten development-visible PDFs, Python matched 6/10 verdicts and 6/10 complete
+rule sets. Qwen matched 5/10 and 0/10. Source-audited whole-fact agreement was
+267/270 versus 224/270, including status, normalized values and timing qualifiers.
+Python made three rejections and seven reviews; Qwen made two rejections and eight
+reviews. Neither approved anything, and neither made a wrong automatic decision
+against the existing labels. Zero wrong approvals here does not establish safety.
 
-The previous parser matched native text positions and complete sample sentences.
-Its 10/10 development result did not demonstrate generalization. I replaced item
-reading with ruled-grid boundaries, word coordinates and semantic column labels.
-Contract extraction separates duration, unit, operator and reference event, with
-raw clauses retained. Unexplained wording stays unresolved. Sample-specific
-registration and missing-clause inference rules were removed. Policy conditions
-remain deterministic because they directly express the supplied business rules.
+Recorded extraction time summed to 0.04 seconds for Python and 573.71 seconds for
+Qwen. The model returned 20,526 prompt and 33,356 output tokens. Local inference
+has no paid-token API bill; hardware/runtime costs remain. The first attempted
+batch is the headline; repeated results, settings and hashes are recorded in
+approach2-results.md, approach2-metrics.json and approach2-experiment.json.
 
-## Actual results and tests
+## What the comparison teaches
 
-Manual gold policy labels are unchanged. On all ten development-visible PDFs,
-the revised baseline matches 6/10 verdicts and 6/10 triggered-rule sets. It makes
-three automatic rejections (03, 05, 10) and seven human-review decisions. Four are
-additional conservative escalations: 01, 02, 06, 08. Those are not counted as
-correct verdicts. There are zero wrong automatic decisions in this run and zero
-approvals; zero unsafe approvals therefore does not establish overall safety.
+Qwen interpreted pack 02's factory-delivery wording as 21 days after PO, which the
+small Python grammar left unresolved. It also missed item codes, produced numeric
+strings such as "s800", confused payment references and sometimes cited text that
+was not an exact PDF excerpt. Missing item codes prevented some request-price
+checks. A structured JSON response alone was not correct extraction. Extra
+uncertainty findings made complete rule sets mismatch even when some business
+checks were correct. This local setup did not beat the baseline; I would not make
+it the default from these measurements.
 
-01's delivery-and-acceptance payment condition and 02's factory-location wording
-are outside the small term grammar. 06's missing penalty and 08's missing TIN/BIN
-can be judged by a person, but the parser no longer assumes it can prove absence
-from a familiar template. Clear price, advance and delivery violations still reject.
+The earlier template-specific parser's 10/10 result is historical. The current
+baseline uses table geometry/column concepts and cautious term components, with
+property tests for structural changes. Its high fact score is dominated by simple
+shared-template fields; duration agreement is 27/30 versus Qwen's 15/30, and
+important ambiguities still need review.
 
-Tests cover policy boundaries, exact raw figures, missing/ambiguous values,
-conditional or malformed terms, PDF failures and HTML escaping. Structural
-transformations cover column reorder, reversed PDF insertion order, wrapped
-cells, aliases, extra columns, numeric changes and unsupported rows/currencies.
-Synthetic transformations are property tests, not unseen supplier examples.
+## Evidence, handoff and limits
 
-## Limitations and next steps
+The standalone HTML shows workflow states, findings, original excerpts and human
+questions. A single-document response can correct facts with reviewer, time,
+reason and exact evidence. The run ID and live PDF hash must match; the original
+answer stays saved and a separate assisted run passes through the same rules.
+Assisted results never enter AI-only scores. Reviewer identity is recorded,
+not authenticated. Waiting never automatically approves a document.
 
-Simple ruled BDT tables and a small English clause-component vocabulary are
-supported. Borderless/merged/skewed tables, multiple item rows, OCR, unfamiliar
-contract prose and legal registration verification are outside scope. Metadata
-extraction remains heuristic. Spatial fields cite original page text rather than
-invented reconstructed quotations. Weak penalty severity is unspecified in policy,
-so it requires review. Delivery is relative to PO, not a fabricated calendar date.
-
-This change reduces specific template dependencies; it does not prove general
-accuracy. Next compare AI fact extraction against this baseline using the same
-policy engine, labels and coverage metrics, then obtain genuinely new documents
-for independent evaluation. Record the Loom video and publish the code/demo
-separately. No source samples were changed.
+All ten PDFs were visible during development; no training or held-out evaluation
+occurred. Codex audited the fact labels from source; they are not independent
+human annotations. Original policy/verdict labels and supplied files were not
+changed to fit results. Missing extraction cannot prove real-world absence, so
+registration/penalty omissions can remain conservative reviews despite historical
+reject labels. Exact citations cannot prove semantic interpretation. OCR,
+multiple-item decisions, legal registration checks and unfamiliar layouts remain
+outside scope. The next meaningful evaluation needs genuinely new quotations.

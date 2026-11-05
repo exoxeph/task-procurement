@@ -1,6 +1,7 @@
 """Read simple ruled grids by coordinates, independently of PDF insertion order."""
 
 from dataclasses import dataclass
+import re
 
 
 @dataclass(frozen=True)
@@ -8,6 +9,31 @@ class PdfTable:
     headers: tuple[str, ...]
     rows: tuple[tuple[str, ...], ...]
     bounds: tuple[float, float, float, float]
+
+
+# This small vocabulary describes column concepts, not whole supplier templates.
+COLUMN_NAMES = {
+    "item_code": {"item", "item code", "sku", "code"},
+    "description": {"description", "product", "item description"},
+    "quantity": {"qty", "quantity"},
+    "unit": {"unit", "uom"},
+    "unit_price": {"unit price", "price per unit"},
+    "line_amount": {"amount", "line total", "line amount"},
+}
+
+
+def item_columns(table: PdfTable) -> dict | None:
+    """Recognize column concepts without interpreting cell values or choosing rows."""
+    columns = {}
+    for index, header in enumerate(table.headers):
+        label = re.sub(r"\([^)]*\)", "", header).strip().casefold()
+        label = " ".join(label.split())
+        for name, aliases in COLUMN_NAMES.items():
+            if label in aliases:
+                if name in columns:
+                    return None
+                columns[name] = index
+    return columns
 
 
 def words_to_text(words: list) -> str:

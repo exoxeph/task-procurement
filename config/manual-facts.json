@@ -1,0 +1,4484 @@
+{
+  "version": 1,
+  "audit": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test.",
+  "normalization": "Numeric Decimal equality, commas removed. Text case/whitespace normalized. Single durations imply equal bounds even if endpoints omitted. Conditions compare declared equivalent sets only; unknown qualifiers fail. Raw clause boundaries and price-note wording are not scored.",
+  "unscored_fields": [
+    "payment_clause_text",
+    "delivery_clause_text",
+    "penalty_clause_text",
+    "validity_clause_text",
+    "unit_price_tax_note"
+  ],
+  "documents": {
+    "supplier-pack-01.pdf": {
+      "document_sha256": "973d6250733bc9bd5a497db5d1611f271192789f05e1e3c22e7a675fdd988c68",
+      "facts": {
+        "supplier_name": {
+          "value": "Padma Textile Mills Ltd",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-21",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "A",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Cotton twill fabric, 280 gsm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "12000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "metre",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "472",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "5664000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "849600",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "6513600",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "101458013391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000170141-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "10",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "45",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            [
+              "acceptance of goods"
+            ],
+            [
+              "acceptance"
+            ],
+            [
+              "delivery and acceptance of goods"
+            ],
+            [
+              "after delivery and acceptance of goods"
+            ]
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "45",
+          "maximum_value": "45",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "24",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "24",
+          "maximum_value": "24",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "1",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "45",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "45",
+          "maximum_value": "45",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-901",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "5664000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 10% advance payable with the purchase order. Balance payable within 45 days after delivery and\nacceptance of goods.",
+        "delivery": "2. Delivery. Delivery within 24 days of receiving the purchase order.",
+        "delay": "3. Delay. Late delivery penalty: 1% of order value for each full week of delay.",
+        "validity": "4. Validity. This quotation is valid for 45 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-02.pdf": {
+      "document_sha256": "91d6d71b8df7e6288fb3719f46ff9290b2417d03eb8dc4dfb2581c309de434f0",
+      "facts": {
+        "supplier_name": {
+          "value": "Jamuna Trims and Accessories",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-22",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "B",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Metal zipper, 18 cm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "20000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "36",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "720000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "108000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "828000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "102458023391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000270241-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "0",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "21",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            [],
+            [
+              "at your factory"
+            ],
+            [
+              "delivery at your factory"
+            ]
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "21",
+          "maximum_value": "21",
+          "source_pages": [
+            1
+          ],
+          "disputed": false,
+          "audit_note": "Factory location is a destination, not a conditional delivery promise; retaining it as a qualifier is also acceptable."
+        },
+        "penalty_percent": {
+          "value": "0.75",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-902",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "720000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. No advance payment required. Full payment within 30 days of delivery.",
+        "delivery": "2. Delivery. Goods will be delivered at your factory within 21 days from the date of PO.",
+        "delay": "3. Delay. For late delivery the supplier shall pay 0.75% of the order value per week of delay.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-03.pdf": {
+      "document_sha256": "315870f07e3b4de40f12380b0c163fcc87df87757da48979360b8e90689179c4",
+      "facts": {
+        "supplier_name": {
+          "value": "Karnaphuli Yarn Traders",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-23",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "C",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Polyester sewing thread, cone",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "800",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "cone",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "229",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "183200",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "27480",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "210680",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "103458033391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000370341-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "40",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "40",
+          "maximum_value": "40",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "20",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "20",
+          "maximum_value": "20",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-903",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "183200",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 15% advance payable with the purchase order. Balance within 40 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 20 days of PO.",
+        "delay": "3. Delay. Delay in delivery will attract a penalty of 0.5% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-04.pdf": {
+      "document_sha256": "d187b72a03d5e93d7aa8562abd7f0ed8cd5c08852e619b393d9a5724673e26c9",
+      "facts": {
+        "supplier_name": {
+          "value": "Surma Packaging Industries",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-24",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "D",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Poly bag, 30 x 40 cm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "50000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "6.65",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "332500",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "49875",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "382375",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "104458043391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000470441-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "10",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "28",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "28",
+          "maximum_value": "28",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.6",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "40",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "40",
+          "maximum_value": "40",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-904",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "332500",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 10% advance payable with the purchase order. Payment within 30 days after delivery.",
+        "delivery": "2. Delivery. Delivery within 28 days of PO.",
+        "delay": "3. Delay. Late delivery penalty of 0.6% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 40 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-05.pdf": {
+      "document_sha256": "cad4d465398dafe31e45c8b099617f004bf71cd2d2ec9f5e36d9542d4efa6bbc",
+      "facts": {
+        "supplier_name": {
+          "value": "Meghna Carton Works",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-25",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "E",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Carton box, 5-ply",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "3000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "92",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "276000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "41400",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "317400",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "105458053391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000570541-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "40",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "25",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "25",
+          "maximum_value": "25",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "1",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-905",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "276000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 40% advance payable with the purchase order. 40% advance with the purchase order, balance 60%\nwithin 30 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 25 days of PO.",
+        "delay": "3. Delay. Late delivery penalty of 1% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-06.pdf": {
+      "document_sha256": "92ce3d956151b53a5d224096823493cbe4d9f9e2e8dde84c3693edfcff40bbf0",
+      "facts": {
+        "supplier_name": {
+          "value": "Teesta Fabrics Ltd",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-26",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "A",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Cotton twill fabric, 280 gsm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "12000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "metre",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "465",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "5580000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "837000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "6417000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "106458063391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000670641-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "10",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "60",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "60",
+          "maximum_value": "60",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "27",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "27",
+          "maximum_value": "27",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-906",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "5580000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 10% advance payable with the purchase order. Balance within 60 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 27 days of PO.",
+        "validity": "3. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-07.pdf": {
+      "document_sha256": "9d81eaf2c58fd5000b5d3a0756295845520e9fb4fda31496bc4f017d79cd7722",
+      "facts": {
+        "supplier_name": {
+          "value": "Rupsha Zipper Factory",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-20",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "B",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Metal zipper, 18 cm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "16500",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "35",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "577500",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "86625",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "664125",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "107458073391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000770741-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "0",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "45",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "45",
+          "maximum_value": "45",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "22",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "22",
+          "maximum_value": "22",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "35",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "35",
+          "maximum_value": "35",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-907",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "577500",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. No advance payment required. Payment within 45 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 22 days of PO.",
+        "delay": "3. Delay. Late delivery penalty: 0.5% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 35 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-08.pdf": {
+      "document_sha256": "319ef3280efc209db3f4a6153b7e6943d61bc0d9f05520c7dec6d541597cfd29",
+      "facts": {
+        "supplier_name": {
+          "value": "Bhairab Thread and Co",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-21",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "C",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Polyester sewing thread, cone",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "800",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "cone",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "205",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "164000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "24600",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "188600",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "10",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "18",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "18",
+          "maximum_value": "18",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-908",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "164000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": null,
+          "statuses": [
+            "not_found",
+            "unrecognized"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false,
+          "audit_note": "Weekly frequency is stated; percentage basis is not. Do not invent order value."
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 10% advance payable with the purchase order. Payment within 30 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 18 days of PO.",
+        "delay": "3. Delay. Late delivery penalty of 0.5% per week of delay.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-09.pdf": {
+      "document_sha256": "b6ca30469ceb53c8cff569d47a394bd283e8472ab4f04025bf51ba658c97289b",
+      "facts": {
+        "supplier_name": {
+          "value": "Dhaleshwari Poly Pack",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-22",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "D",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Poly bag, 30 x 40 cm",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "50000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "6.40",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "322000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": "48300",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "370300",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "109458093391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "000970941-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": null,
+          "statuses": [
+            "ambiguous"
+          ],
+          "conditions": [
+            [
+              "as agreed by both parties"
+            ],
+            [
+              "as agreed"
+            ],
+            [
+              "agreement by both parties"
+            ],
+            [
+              "agreed by both parties"
+            ]
+          ],
+          "reference_event": null,
+          "minimum_value": "30",
+          "maximum_value": "90",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "28",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "28",
+          "maximum_value": "28",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-909",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": "322000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": "15",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 5% advance payable with the purchase order. Payment within 30 to 90 days as agreed by both\nparties.",
+        "delivery": "2. Delivery. Delivery within 4 weeks of PO.",
+        "delay": "3. Delay. Late delivery penalty of 0.5% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    },
+    "supplier-pack-10.pdf": {
+      "document_sha256": "4214b79d067a151b04f240e6d7633722cb1eabc3d15ab24e680ccb6845e2b991",
+      "facts": {
+        "supplier_name": {
+          "value": "Kushiyara Box Industries",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_date": {
+          "value": "2026-10-23",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "item_code": {
+          "value": "E",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "description": {
+          "value": "Carton box, 5-ply",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quantity": {
+          "value": "3000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit": {
+          "value": "piece",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "unit_price": {
+          "value": "94",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "line_amount": {
+          "value": "282000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_amount": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "total": {
+          "value": "282000",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "tin": {
+          "value": "110458103391",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "bin": {
+          "value": "001071041-0101",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "advance_percent": {
+          "value": "10",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_days": {
+          "value": "45",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "delivery",
+          "minimum_value": "45",
+          "maximum_value": "45",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_days": {
+          "value": "60",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "purchase_order",
+          "minimum_value": "60",
+          "maximum_value": "60",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_percent": {
+          "value": "0.5",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_days": {
+          "value": "30",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": "quotation_date",
+          "minimum_value": "30",
+          "maximum_value": "30",
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "quotation_number": {
+          "value": "QT-2026-910",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "purchase_request_reference": {
+          "value": "PR-2026-114",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "subtotal": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "vat_rate": {
+          "value": null,
+          "statuses": [
+            "not_found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "currency": {
+          "value": "BDT",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_clause": {
+          "value": "present",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "penalty_basis": {
+          "value": "order_value_per_week",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "payment_reference": {
+          "value": "delivery",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "delivery_reference": {
+          "value": "purchase_order",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        },
+        "validity_reference": {
+          "value": "quotation_date",
+          "statuses": [
+            "found"
+          ],
+          "conditions": [
+            []
+          ],
+          "reference_event": null,
+          "minimum_value": null,
+          "maximum_value": null,
+          "source_pages": [
+            1
+          ],
+          "disputed": false
+        }
+      },
+      "source_clauses": {
+        "payment": "1. Payment. 10% advance payable with the purchase order. Payment within 45 days of delivery.",
+        "delivery": "2. Delivery. Delivery within 60 days of PO.",
+        "delay": "3. Delay. Late delivery penalty of 0.5% of order value per week.",
+        "validity": "4. Validity. This quotation is valid for 30 days from the date above."
+      },
+      "audit_note": "Printed figures retained without arithmetic repair. Missing fields mean not stated, not real-world absence."
+    }
+  }
+}

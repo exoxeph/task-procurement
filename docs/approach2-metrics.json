@@ -1,0 +1,2098 @@
+{
+  "experiment": "qwen25-zero-shot-v1",
+  "headline": "run1",
+  "runs": {
+    "run1": {
+      "approach1": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 6,
+        "rule_matches": 6,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "quantity"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "penalty_basis",
+              "registration_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "line_arithmetic",
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 3,
+        "conservative_escalations": 4,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 7,
+        "elapsed_seconds": 0.038883599999280705,
+        "prompt_tokens": 0,
+        "output_tokens": 0,
+        "run_ids": [
+          "4766c26d-d4a1-4545-ac48-f3ef69a10dc2",
+          "b734ceb8-ea95-4382-9165-0b3f454f383a",
+          "e0c681a3-812a-466b-a09a-e6a700c66d44",
+          "870663f7-2c40-46dd-b545-31c367d05047",
+          "d5dc7398-81ad-4aba-9728-95a3e99caccd",
+          "e464b7b1-edfd-4f56-9f35-89592ed0a4f1",
+          "b8ab81ef-2fae-4b93-b8a3-f5e7c45b4b1c",
+          "da03d6eb-2f8e-4ffa-a96c-9ecd52312274",
+          "9b066f81-1418-465e-b831-7409df690169",
+          "a5991604-d159-42ca-87b2-71d6761e65a9"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 3,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 267,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 10,
+              "total": 10
+            },
+            "description": {
+              "matches": 10,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 10,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 8,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 9,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 10,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      },
+      "approach2": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 5,
+        "rule_matches": 0,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment",
+              "pdf_issue",
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_issue",
+              "extraction_item_code",
+              "pdf_issue",
+              "penalty_unclear",
+              "qualified_validity_days",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_delivery_days",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance",
+              "extraction_delivery_reference",
+              "extraction_issue",
+              "extraction_payment_clause_text",
+              "extraction_payment_reference",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "qualified_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_delivery_days",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "extraction_issue",
+              "extraction_item_code",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "registration_unclear",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_payment_clause_text",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "extraction_item_code",
+              "payment",
+              "pdf_issue",
+              "request_item",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 2,
+        "conservative_escalations": 5,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 8,
+        "elapsed_seconds": 573.7051266000008,
+        "prompt_tokens": 20526,
+        "output_tokens": 33356,
+        "run_ids": [
+          "b9d5f93b-0696-463c-bec1-399910dc5bf6",
+          "8255e175-5aa5-4091-aeb5-f4e4d2cadc4e",
+          "b795f95a-39f3-4985-a60b-d6b5ef427ed5",
+          "a6dcf12b-2725-4f9e-910c-a435d15eef6a",
+          "f36c9d1f-d00c-47d0-9a61-4cd66d9954fa",
+          "b8071c12-20d3-4f60-addc-843bc772363c",
+          "7dcd3af4-955a-4a28-8d6f-b0bbf21fb69a",
+          "0b770e47-1e27-48cb-a76d-8a374a285e18",
+          "3d44347d-b456-419c-a614-762d5d2e24b0",
+          "9a444898-3f2d-4082-bd4a-4de96687e167"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 2,
+            "Needs a person to check": 3,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 224,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 3,
+              "total": 10
+            },
+            "description": {
+              "matches": 10,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 4,
+              "total": 10
+            },
+            "unit": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 10,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 8,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 1,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 9,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 6,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 9,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 2,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 9,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 9,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      }
+    },
+    "run2": {
+      "approach1": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 6,
+        "rule_matches": 6,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "quantity"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "penalty_basis",
+              "registration_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "line_arithmetic",
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 3,
+        "conservative_escalations": 4,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 7,
+        "elapsed_seconds": 0.04279269999915414,
+        "prompt_tokens": 0,
+        "output_tokens": 0,
+        "run_ids": [
+          "43ed2d67-8f9d-41d6-928a-bc256c505ffc",
+          "b21c190a-7f5b-40b2-a239-3a989f0997cc",
+          "5afe95b5-bb2d-4d58-90ff-e242eb30929f",
+          "50aad23a-2665-432e-8b7b-9a224c3fadb9",
+          "0e05e6fa-52a7-4d07-af69-c79aa2ca62a1",
+          "31531605-276c-46dd-a7af-0994799a0eec",
+          "4312831c-2dba-4548-9bde-fa248a4ef268",
+          "56d9934c-a6e7-40de-b162-5274d08ef2d8",
+          "a56d38d0-a7c0-4968-913f-f7fe17dbc45f",
+          "6e7da071-e2ce-41a7-b24b-5dfbfe984ba4"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 3,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 267,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 10,
+              "total": 10
+            },
+            "description": {
+              "matches": 10,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 10,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 8,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 9,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 10,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      },
+      "approach2": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 5,
+        "rule_matches": 0,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment",
+              "pdf_issue",
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_issue",
+              "extraction_item_code",
+              "pdf_issue",
+              "penalty_unclear",
+              "qualified_validity_days",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance",
+              "extraction_delivery_reference",
+              "extraction_payment_clause_text",
+              "extraction_payment_reference",
+              "payment",
+              "pdf_issue",
+              "qualified_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "currency",
+              "extraction_description",
+              "extraction_item_code",
+              "extraction_line_amount",
+              "extraction_quantity",
+              "extraction_unit",
+              "extraction_unit_price",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "request_item",
+              "vat_display"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_delivery_days",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "extraction_delivery_days",
+              "extraction_issue",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "registration_unclear",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_payment_clause_text",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "extraction_item_code",
+              "payment",
+              "pdf_issue",
+              "request_item",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 2,
+        "conservative_escalations": 5,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 8,
+        "elapsed_seconds": 555.4220519999999,
+        "prompt_tokens": 20526,
+        "output_tokens": 33414,
+        "run_ids": [
+          "66ed8f3f-b9a9-46c6-b5a8-58a3327daa38",
+          "65486a3d-12c0-4800-98ef-04ce8c0f6f4b",
+          "cd9eb6ec-1fe3-4ba4-98e5-cd4a0b64c944",
+          "055b9c34-400d-45b2-b442-241ef388a278",
+          "f31df10e-f93f-4c95-a5b5-28407e68d0d9",
+          "1cfbf0f0-2ef4-4963-86bc-f1fbecb4b010",
+          "d5798318-2cca-41f3-9f10-ec61596732ac",
+          "08a9ba97-a03c-4189-8b68-7ee6b54fafac",
+          "d443e5b7-0db3-4f27-80c7-b610181943c7",
+          "4e3230eb-d28d-4a55-9f91-57e7e0f06b1a"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 2,
+            "Needs a person to check": 3,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 220,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 2,
+              "total": 10
+            },
+            "description": {
+              "matches": 9,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 5,
+              "total": 10
+            },
+            "unit": {
+              "matches": 9,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 9,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 9,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 8,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 1,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 9,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 9,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 7,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 9,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 2,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 9,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 9,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      }
+    },
+    "run3": {
+      "approach1": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 6,
+        "rule_matches": 6,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "price"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "quantity"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "penalty_basis",
+              "registration_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "line_arithmetic",
+              "payment"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": true,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 3,
+        "conservative_escalations": 4,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 7,
+        "elapsed_seconds": 0.03922570000122505,
+        "prompt_tokens": 0,
+        "output_tokens": 0,
+        "run_ids": [
+          "187114b0-19ab-4446-9e4c-867a630e44de",
+          "e3ba332f-8095-4d39-99dc-de91de111665",
+          "ecb1bc4d-a117-4354-8599-765189f3880e",
+          "0dda385d-974e-4fac-9cd9-756673ab0204",
+          "2ffa6373-ee5f-428b-8351-a96117d0ed57",
+          "7e284659-bbd7-4214-b6fc-e0af40c41e1e",
+          "d2bbe68a-057d-4284-8974-b2b3f17b4a4d",
+          "9564fb52-e63d-4bd4-aaa7-5a3da2b892a0",
+          "f23ae0b8-8f30-457f-9450-dd150baa80ef",
+          "5a367efc-524b-446a-ae59-5abfd41334ad"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 3,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 267,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 10,
+              "total": 10
+            },
+            "description": {
+              "matches": 10,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit": {
+              "matches": 10,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 10,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 8,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 9,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 10,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 10,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 10,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 10,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      },
+      "approach2": {
+        "total": 10,
+        "assisted_excluded": 0,
+        "verdict_matches": 5,
+        "rule_matches": 0,
+        "rows": [
+          {
+            "file": "supplier-pack-01.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "payment",
+              "pdf_issue",
+              "penalty_unclear"
+            ]
+          },
+          {
+            "file": "supplier-pack-02.pdf",
+            "expected": "Approve",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_issue",
+              "extraction_item_code",
+              "pdf_issue",
+              "penalty_unclear",
+              "qualified_validity_days",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-03.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-04.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "price"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-05.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "advance"
+            ],
+            "actual_rules": [
+              "advance",
+              "extraction_delivery_reference",
+              "extraction_payment_clause_text",
+              "extraction_payment_reference",
+              "payment",
+              "pdf_issue",
+              "qualified_delivery_days"
+            ]
+          },
+          {
+            "file": "supplier-pack-06.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "penalty_missing"
+            ],
+            "actual_rules": [
+              "currency",
+              "extraction_description",
+              "extraction_item_code",
+              "extraction_line_amount",
+              "extraction_quantity",
+              "extraction_unit",
+              "extraction_unit_price",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "request_item",
+              "vat_display"
+            ]
+          },
+          {
+            "file": "supplier-pack-07.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "quantity"
+            ],
+            "actual_rules": [
+              "extraction_advance_percent",
+              "extraction_delivery_days",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-08.pdf",
+            "expected": "Reject",
+            "actual": "Needs a person to check",
+            "verdict_match": false,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "registration_missing",
+              "penalty_basis"
+            ],
+            "actual_rules": [
+              "extraction_delivery_days",
+              "extraction_issue",
+              "extraction_item_code",
+              "extraction_quantity",
+              "extraction_validity_days",
+              "payment",
+              "pdf_issue",
+              "penalty_unclear",
+              "registration_unclear",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-09.pdf",
+            "expected": "Needs a person to check",
+            "actual": "Needs a person to check",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "payment",
+              "line_arithmetic"
+            ],
+            "actual_rules": [
+              "extraction_item_code",
+              "extraction_payment_clause_text",
+              "extraction_quantity",
+              "payment",
+              "pdf_issue",
+              "request_item"
+            ]
+          },
+          {
+            "file": "supplier-pack-10.pdf",
+            "expected": "Reject",
+            "actual": "Reject",
+            "verdict_match": true,
+            "rule_match": false,
+            "input_error": false,
+            "extraction_error": false,
+            "expected_rules": [
+              "delivery",
+              "vat_display"
+            ],
+            "actual_rules": [
+              "delivery",
+              "extraction_item_code",
+              "payment",
+              "pdf_issue",
+              "request_item",
+              "vat_display"
+            ]
+          }
+        ],
+        "input_failures": 0,
+        "extraction_failures": 0,
+        "automatic_decisions": 2,
+        "conservative_escalations": 5,
+        "unsafe_approvals": 0,
+        "wrong_rejections": 0,
+        "review_count": 8,
+        "elapsed_seconds": 550.7253529,
+        "prompt_tokens": 20526,
+        "output_tokens": 33414,
+        "run_ids": [
+          "86090b40-a1b5-450d-b308-9ed137dc0af9",
+          "fb4b00e5-2ad8-459a-8a1c-b3421d2df0b7",
+          "bd83c74e-7dfb-4748-87b4-f4949c1abc9c",
+          "b42b7fa5-4cbd-42d6-8b01-f153ad8d7488",
+          "0d84eba1-6f6d-4365-9aef-1739f9934d26",
+          "ce2f561d-fede-4030-9072-1b694c7f2d0c",
+          "fe703400-1bae-451c-9109-99af7bb3de1f",
+          "b274d76e-1c70-41be-a678-fe2410ec2cdf",
+          "0d679118-0e95-460a-886a-983d8807ee15",
+          "755d4720-e5c0-4fc3-98a2-dfc68d0c7c90"
+        ],
+        "confusion": {
+          "Approve": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 2,
+            "Failed": 0
+          },
+          "Reject": {
+            "Approve": 0,
+            "Reject": 2,
+            "Needs a person to check": 3,
+            "Failed": 0
+          },
+          "Needs a person to check": {
+            "Approve": 0,
+            "Reject": 0,
+            "Needs a person to check": 3,
+            "Failed": 0
+          }
+        },
+        "incorrect_automatic_decisions": 0,
+        "note": "Manually read sample labels. All ten PDFs were visible during development; this is not a held-out benchmark.",
+        "fields": {
+          "total": 270,
+          "matches": 220,
+          "by_field": {
+            "supplier_name": {
+              "matches": 10,
+              "total": 10
+            },
+            "quotation_date": {
+              "matches": 10,
+              "total": 10
+            },
+            "item_code": {
+              "matches": 2,
+              "total": 10
+            },
+            "description": {
+              "matches": 9,
+              "total": 10
+            },
+            "quantity": {
+              "matches": 5,
+              "total": 10
+            },
+            "unit": {
+              "matches": 9,
+              "total": 10
+            },
+            "unit_price": {
+              "matches": 9,
+              "total": 10
+            },
+            "line_amount": {
+              "matches": 9,
+              "total": 10
+            },
+            "vat_amount": {
+              "matches": 10,
+              "total": 10
+            },
+            "total": {
+              "matches": 10,
+              "total": 10
+            },
+            "tin": {
+              "matches": 10,
+              "total": 10
+            },
+            "bin": {
+              "matches": 10,
+              "total": 10
+            },
+            "advance_percent": {
+              "matches": 8,
+              "total": 10
+            },
+            "payment_days": {
+              "matches": 1,
+              "total": 10
+            },
+            "delivery_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "penalty_percent": {
+              "matches": 10,
+              "total": 10
+            },
+            "validity_days": {
+              "matches": 7,
+              "total": 10
+            },
+            "quotation_number": {
+              "matches": 10,
+              "total": 10
+            },
+            "purchase_request_reference": {
+              "matches": 10,
+              "total": 10
+            },
+            "subtotal": {
+              "matches": 9,
+              "total": 10
+            },
+            "vat_rate": {
+              "matches": 10,
+              "total": 10
+            },
+            "currency": {
+              "matches": 9,
+              "total": 10
+            },
+            "penalty_clause": {
+              "matches": 7,
+              "total": 10
+            },
+            "penalty_basis": {
+              "matches": 9,
+              "total": 10
+            },
+            "payment_reference": {
+              "matches": 2,
+              "total": 10
+            },
+            "delivery_reference": {
+              "matches": 9,
+              "total": 10
+            },
+            "validity_reference": {
+              "matches": 9,
+              "total": 10
+            }
+          },
+          "disputed": 0,
+          "assisted_excluded": 0,
+          "note": "Codex source audit before the full AI experiment; not independently human-validated. Pack 09 was already visible in the earlier integration/correction demonstration. All ten are development-visible; no training or held-out test."
+        }
+      }
+    }
+  }
+}

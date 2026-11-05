@@ -200,3 +200,108 @@ unsupported input or unrelated ambiguity. Some cases therefore remain pending.
 
 Next: pause for explanation. Block 5 is the full AI comparison and interview
 materials; it has not been run as part of this block.
+
+
+## Block 5 completed: comparison and interview materials
+
+- Source-audited 270 facts (27/PDF) from all ten original PDFs before the full
+  experiment predictions; the earlier pack09 integration exposure is disclosed.
+  Raw clauses, source pages, normalization conventions and allowed equivalent
+  representations are recorded in config/manual-facts.json. Codex performed the
+  audit; this is not independent human annotation. No fact is flagged disputed.
+- Added whole-fact evaluation, per-field breakdowns, failure-inclusive denominators,
+  confusion counts, wrong decisions, coverage, reviews, timing and returned usage.
+  Same-basename uploads and assisted decisions remain excluded from sample scores.
+- Both mode now writes one combined comparison, separate source-evidence reports
+  and machine-readable metrics. All three batches are saved under reports/block5/.
+- Froze model/prompt/schema/options/config/inputs, ran three serial full batches,
+  and kept the first attempted batch as headline. Original artifacts and model
+  answers remain unchanged. Every saved prediction was rescored with one final
+  evaluator, without inference retries, replacement answers or prompt tuning.
+- Headline Python: 6/10 verdicts, 6/10 complete rule sets, 267/270 whole facts,
+  three rejects/seven reviews, zero wrong automatic decisions, zero failures.
+  Headline Qwen: 5/10 verdicts, 0/10 complete rule sets, 224/270 facts,
+  two rejects/eight reviews, zero wrong automatic decisions, zero failures.
+  Neither approved anything; zero wrong approvals is not proof of safety.
+- Qwen repeat2/repeat3: 5/10 verdicts and 0/10 rule sets in both; 220/270 facts
+  in both. Verdicts stayed identical, but actual finding sets changed in packs
+  04,05,06,08 versus run1. Temperature zero did not eliminate variability.
+- Qwen recorded extraction seconds: 573.71, 555.42, 550.73. Prompt tokens 20,526
+  each; output tokens 33,356, 33,414, 33,414. Parent-observed wall seconds:
+  574.67, 556.39, 551.72. Local API token bill is absent; hardware/runtime costs
+  remain. GPU name observed locally: AMD Radeon RX 7700 XT; not a controlled
+  hardware performance benchmark.
+- Qwen recovered pack02's 21-day factory-delivery clause, but missed item codes,
+  generated malformed numeric strings and confused payment references. The
+  source-inspected errors and limits are in docs/approach2-results.md. This setup
+  did not outperform Python; no claim that AI is necessary for these ten PDFs.
+- README, one-page submission note and five-minute presentation guide now reflect
+  the measured comparison, human workflow and limitations. Compact metrics and
+  frozen settings/hashes are tracked in docs/approach2-metrics.json and
+  docs/approach2-experiment.json; raw reports/artifacts remain Git-ignored.
+
+Independent final review checked all270 labels against the source PDFs, reproduced
+headline metrics, and confirmed all three repeat records and documentation.
+It found three Important synthetic/adversarial gaps (none observed on the ten
+originals): model row-count claims could hide extra detected rows, ambient proxies
+or redirects could defeat loopback-only routing, and HTTPException could escape
+batch failure handling. All three were reproduced RED then fixed GREEN in one
+pass. Shared source row-count validation now uses generic column concepts across
+pages/tables; the network opener disables proxies and redirects; transport and
+optional-metadata handlers contain HTTPException. Unrecognized/borderless layouts
+still cannot be guaranteed detected. Shared column recognition moved from the
+baseline into table_layout.py without adding baseline fact fallback to AI.
+
+Ruling: retain historical frozen inference code hashes and append explicit
+post-experiment hardening hashes. All three inference processes imported the
+original frozen modules before the defensive edits. Prompt/schema/model/input/
+config stayed unchanged. All30 stored raw responses were parsed using the final
+validator: every stored field remained identical. No model output was replaced.
+A separate final hardened-client smoke on pack02 completed with no execution
+failures, retained its review result, and is excluded from benchmark repeats.
+
+Ruling: the field score covers status, normalized value, duration anchors, numeric
+bounds and declared condition alternatives. Redundant equal bounds normalize to
+scalars; non-duration event metadata is not scored separately from reference-field
+values. Raw clause boundary/price-note wording is unscored. Strict condition text
+can still undercount equivalent paraphrases; disclose this as whole-fact agreement,
+not an automatic semantic-truth proof. Incorrect scoring conventions would limit
+comparability, which is why conventions and source labels are explicit.
+
+Ruling: no new independent dataset or external human audit is invented. The
+reviewer's declined-to-judge items (unseen accuracy and independent human
+annotation quality) remain explicit limitations, with future new-document testing
+recommended. No deferred minor findings.
+
+Final verification: 173 tests passed; actual final baseline CLI unchanged; actual
+final local AI CLI succeeded (review is a valid outcome); proxy/redirect loopback
+HTTP integration checks passed. Original PDFs/purchase request/company rules/
+manual verdict labels/config policy compare unchanged against 46c7bf5. All30
+model digests match the frozen digest; all have zero metadata warnings. No
+unrelated video, generated reports, credentials or scratch files are staged.
+
+Block 5 is ready for its verified main commit and user explanation. All planned
+implementation blocks are complete; no recording or publication was requested.
+
+
+Execution decisions retained from the completed scratch ledger:
+- Native PowerShell/Python bookkeeping replaced Bash-only skill helpers; progress
+  was preserved in tracked documentation. Cost: fewer automatic helper checks,
+  compensated by explicit test/commit records.
+- Main-branch commits and pauses follow the user's preference. Cost: no branch
+  isolation; verified commits provide the review/recovery boundaries.
+- Actual HTTP request/schema integration tests replaced brittle prompt-text checks;
+  compact schema references were verified against the installed Ollama. Cost:
+  behavior checks do not certify every natural-language instruction.
+- Conservative input-byte and returned-token guards refuse uncertain large inputs;
+  optional metadata failures remain warnings. Cost: some usable inputs can be
+  escalated and missing metadata cannot prove a frozen model identity.
+- Human correction requires an explicit saved-run path and removes only that
+  correction's field-local errors. Cost: an extra flag and intentionally pending
+  unrelated/global issues.
+- The first full batch is headline, all batches are rescored consistently, and
+  strict whole-fact scoring conventions remain explicit. Cost: scores are limited
+  to these development documents and declared equivalence conventions.
+- Post-review defensive fixes retain original inference hashes and raw outputs.
+  Cost: reproducing historical inference code uses the recorded base commit;
+  current code includes the separately recorded guards.

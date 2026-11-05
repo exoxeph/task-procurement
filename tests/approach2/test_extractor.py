@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from io import BytesIO
+from http.client import BadStatusLine
 import json
 from pathlib import Path
 import unittest
@@ -69,7 +70,7 @@ class ExtractorTests(unittest.TestCase):
         self.assertEqual(run.raw_response, self.response['message']['content'])
 
     def test_provider_failures_make_all_facts_unresolved_without_retry(self):
-        for error in (URLError('connection refused'), TimeoutError('timed out'),
+        for error in (URLError('connection refused'), TimeoutError('timed out'), BadStatusLine('broken HTTP'),
                       HTTPError('http://localhost:11434/api/chat', 404, 'model not found', {}, BytesIO(b'not found'))):
             calls = []
             def fail(request, timeout):
@@ -80,6 +81,16 @@ class ExtractorTests(unittest.TestCase):
             self.assertEqual(len(calls), 1)
             self.assertEqual(run.metadata['status'], 'failed')
             self.assertTrue(all(f.status == 'unrecognized' and f.value is None for f in run.fields.values()))
+
+    def test_malformed_metadata_http_is_only_a_warning(self):
+        def bad_metadata(request, timeout):
+            if not request.full_url.endswith('/chat'):
+                raise BadStatusLine('broken HTTP metadata')
+            return http_response(self.response)
+        with patch('procurement.approach2.extractor.urlopen', side_effect=bad_metadata):
+            run = extract_document(self.document)
+        self.assertNotEqual(run.metadata['status'], 'failed')
+        self.assertEqual(len(run.metadata['metadata_warnings']), 2)
 
     def test_refusal_bad_json_duplicate_keys_and_wrong_schema_are_failures(self):
         for content in ('I cannot process this', '{"fields":{},"fields":{}}', '{}', '[]'):

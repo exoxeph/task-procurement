@@ -9,13 +9,39 @@ from pathlib import Path
 
 from procurement.shared.evaluation import evaluate_samples
 from procurement.shared.references import load_company_rules, load_purchase_request, SAMPLE_DIRECTORY
-from procurement.shared.report import render_report
+from procurement.shared.report import render_report, render_comparison
 from procurement.review import review_document
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 class ReportTests(unittest.TestCase):
+    def test_comparison_shows_both_approaches_confusion_and_field_denominator(self):
+        result = review_document(SAMPLE_DIRECTORY / 'supplier-pack-01.pdf', load_purchase_request(), load_company_rules())
+        baseline = evaluate_samples([result])
+        baseline['fields'] = {'matches': 20, 'total': 27, 'disputed': 0, 'rows': [], 'note': 'development audit'}
+        ai = {**baseline, 'verdict_matches': 0, 'fields': {**baseline['fields'], 'matches': 18}}
+        html = render_comparison({'approach1': baseline, 'approach2': ai},
+                                 {'approach1': '<baseline>.html', 'approach2': 'ai.html'})
+        self.assertIn('20/27', html)
+        self.assertIn('18/27', html)
+        self.assertIn('supplier-pack-01.pdf', html)
+        self.assertIn('Confusion', html)
+        self.assertIn('&lt;baseline&gt;.html', html)
+        self.assertNotIn('<baseline>', html)
+
+    def test_single_cli_writes_machine_readable_field_metrics(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'report.html'
+            completed = subprocess.run([sys.executable, '-m', 'procurement.review',
+                str(SAMPLE_DIRECTORY / 'supplier-pack-01.pdf'), '--output', str(output),
+                '--artifacts', str(Path(directory) / 'runs')], capture_output=True, text=True)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            summary = json.loads(output.with_suffix('.json').read_text(encoding='utf-8'))
+            self.assertEqual(summary['approach1']['fields']['total'], 27)
+            self.assertIn('confusion', summary['approach1'])
+
     def test_actual_results_preserve_gold_labels_and_report_escalations(self):
         results = [review_document(path, load_purchase_request(), load_company_rules())
                    for path in sorted(SAMPLE_DIRECTORY.glob('supplier-pack-*.pdf'))]

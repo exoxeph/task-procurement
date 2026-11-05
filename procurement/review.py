@@ -3,16 +3,17 @@
 import argparse
 from dataclasses import replace
 import math
+import json
 from pathlib import Path
 from time import perf_counter
 
-from procurement.shared.evaluation import evaluate_samples
+from procurement.shared.evaluation import evaluate_fields, evaluate_samples
 from procurement.shared.extraction import parse_json, validate_fields
 from procurement.shared.human_review import apply_corrections
 from procurement.approach1.extractor import extract_document as extract_baseline
 from procurement.shared.pdf_text import PdfReadError, read_pdf
-from procurement.shared.references import SAMPLE_DIRECTORY, load_company_rules, load_purchase_request
-from procurement.shared.report import render_report
+from procurement.shared.references import PROJECT_ROOT, SAMPLE_DIRECTORY, load_company_rules, load_purchase_request
+from procurement.shared.report import render_comparison, render_report
 from procurement.shared.rules import check_rules
 from procurement.shared.runs import read_run, stamp_run, write_run
 
@@ -85,6 +86,7 @@ def main() -> int:
     try:
         items = load_purchase_request()
         policy = load_company_rules()
+        fact_labels = parse_json((PROJECT_ROOT / 'config/manual-facts.json').read_text(encoding='utf-8'))
     except (OSError, ValueError) as error:
         parser.exit(1, f'Cannot load references: {error}\n')
     paths = arguments.paths or sorted(SAMPLE_DIRECTORY.glob('supplier-pack-*.pdf'))
@@ -92,6 +94,7 @@ def main() -> int:
         parser.exit(1, 'No supplier PDFs found.\n')
     approaches = ('approach1', 'approach2') if arguments.approach == 'both' else (arguments.approach,)
     failed = False
+    groups, report_paths = {}, {}
     for approach in approaches:
         results, errors = [], []
         for path in paths:
@@ -109,10 +112,13 @@ def main() -> int:
                 print(f'{path.name}: Needs a person to check - {error}', flush=True)
         # Failed human corrections also stay outside unassisted extraction scores.
         evaluation = evaluate_samples(results, () if arguments.review_response else errors)
+        evaluation['fields'] = evaluate_fields(results, fact_labels, () if arguments.review_response else errors)
+        groups[approach] = evaluation
         print_evaluation(evaluation)
         output = arguments.output
         if arguments.approach == 'both':
             output = output.with_name(f'{output.stem}-{approach}{output.suffix}')
+        report_paths[approach] = output.name
         try:
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_text(render_report(results, errors, evaluation), encoding='utf-8')
@@ -122,6 +128,13 @@ def main() -> int:
         execution_error = bool(errors) or any(r.extraction_run.metadata.get('status') == 'failed' for r in results)
         mismatch = evaluation['verdict_matches'] != evaluation['total'] or evaluation['rule_matches'] != evaluation['total']
         failed |= execution_error or (arguments.check_labels and mismatch)
+    try:
+        arguments.output.with_suffix('.json').write_text(json.dumps(groups, indent=2), encoding='utf-8')
+        if arguments.approach == 'both':
+            arguments.output.write_text(render_comparison(groups, report_paths), encoding='utf-8')
+            print(f'Comparison: {arguments.output.resolve()}')
+    except OSError as error:
+        parser.exit(1, f'Cannot write comparison metrics: {error}\n')
     return int(failed)
 
 

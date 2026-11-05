@@ -1,6 +1,7 @@
 """One local Ollama extraction call, followed by strict response validation."""
 
 from dataclasses import replace
+from http.client import HTTPException
 import hashlib
 import json
 import math
@@ -8,7 +9,7 @@ from pathlib import Path
 from time import perf_counter
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from procurement.approach2.schema import OUTPUT_SCHEMA, SCHEMA_VERSION, parse_json, parse_response
 from procurement.shared.extraction import ExtractedField, ExtractionRun, FACT_NAMES
@@ -18,6 +19,17 @@ from procurement.shared.runs import stamp_run
 
 OPTIONS = {'temperature': 0, 'num_ctx': 16384, 'num_predict': 8192}
 PROMPT_PATH = Path(__file__).with_name('prompt.txt')
+
+
+class NoRedirects(HTTPRedirectHandler):
+    """A validated local URL must never redirect document data elsewhere."""
+
+    def redirect_request(self, request, response, code, message, headers, new_url):
+        raise ValueError('Ollama redirects are not allowed.')
+
+
+# Do not inherit HTTP_PROXY/HTTPS_PROXY from the surrounding environment.
+urlopen = build_opener(ProxyHandler({}), NoRedirects()).open
 
 
 def _local_endpoint(endpoint: str) -> str:
@@ -63,7 +75,7 @@ def _server_metadata(endpoint: str, model: str, timeout: float) -> dict:
             else:
                 metadata['model_digest'] = next((entry.get('digest') for entry in response['models']
                                                   if entry.get('name') == model), None)
-        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+        except (OSError, HTTPException, ValueError, KeyError, TypeError, AttributeError) as error:
             metadata['metadata_warnings'].append(f'{route}: {error}')
     return metadata
 
@@ -118,7 +130,7 @@ def extract_document(document: PdfDocument, *, model='qwen2.5:7b',
         issues = tuple(dict.fromkeys(document.issues + run.issues))
         metadata['status'] = 'needs_review' if issues else 'completed'
         run = replace(run, issues=issues)
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, URLError) as error:
+    except (OSError, HTTPException, ValueError, KeyError, TypeError, AttributeError, URLError) as error:
         # Keep the original answer for inspection, including malformed JSON.
         if isinstance(error, HTTPError):
             provider_text = error.read(65536).decode('utf-8', errors='replace')

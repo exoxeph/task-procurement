@@ -4,6 +4,7 @@ import re
 
 from procurement.shared.extraction import Evidence, ExtractedField, preview, resolve_field
 from procurement.shared.pdf_text import PdfDocument
+from procurement.shared.table_layout import COLUMN_NAMES, item_columns
 
 
 ITEM_FIELDS = ("item_code", "description", "quantity", "unit", "unit_price", "line_amount")
@@ -19,29 +20,10 @@ SUMMARY = re.compile(
     r"(?:[ \t]*:[ \t]*(?P<colon>.*)|[ \t]+(?P<inline>[+-]?[0-9].*)|[ \t]*)$", re.I,
 )
 VAT_LABEL = re.compile(r"^VAT(?:[ \t]*:|[ \t]*$|[ \t]+[+-]?[0-9]|\b.*%)", re.I)
-# This small vocabulary describes column concepts, not whole supplier templates.
-COLUMN_NAMES = {
-    "item_code": {"item", "item code", "sku", "code"},
-    "description": {"description", "product", "item description"},
-    "quantity": {"qty", "quantity"},
-    "unit": {"unit", "uom"},
-    "unit_price": {"unit price", "price per unit"},
-    "line_amount": {"amount", "line total", "line amount"},
-}
-
-
 def _read_table(table) -> dict | None:
     """Map labelled columns, whatever their order; reject an uncertain mapping."""
-    columns = {}
-    for index, header in enumerate(table.headers):
-        label = re.sub(r"\([^)]*\)", "", header).strip().casefold()
-        label = " ".join(label.split())
-        for name, aliases in COLUMN_NAMES.items():
-            if label in aliases:
-                if name in columns:
-                    return None
-                columns[name] = index
-    if set(columns) != set(ITEM_FIELDS) or len(table.rows) != 1:
+    columns = item_columns(table)
+    if columns is None or set(columns) != set(ITEM_FIELDS) or len(table.rows) != 1:
         return None  # Multiple rows need a future item-list schema, not selection.
     for name in ("unit_price", "line_amount"):
         header = table.headers[columns[name]]

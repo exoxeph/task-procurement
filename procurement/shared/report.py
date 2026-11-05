@@ -57,6 +57,10 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
                      f" · Extraction failures: {evaluation.get('extraction_failures', 0)}</p>")
     if evaluation and evaluation.get('assisted_excluded'):
         parts.append(f"<p>Assisted runs excluded from unassisted sample scores: {evaluation['assisted_excluded']}</p>")
+    if evaluation and evaluation.get('fields', {}).get('total'):
+        audit = evaluation['fields']
+        parts.append(f"<p>Audited fact matches, including qualifiers: {audit['matches']}/{audit['total']}"
+                     f" · Disputed facts excluded: {audit['disputed']}</p><p>{escape(audit['note'])}</p>")
     parts.append('</div><div class="scroll"><table><tr><th>Document</th><th>Supplier</th><th>Decision</th><th>Findings</th></tr>')
     for index, result in enumerate(results):
         supplier = result.fields['supplier_name'].value or 'Unresolved supplier'
@@ -147,3 +151,83 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
                  'absence has no invented quotation. Policy: company-rules.md, with manually transcribed JSON settings.'
                  '</footer></html>')
     return '\n'.join(parts)
+
+
+def render_comparison(groups: dict, report_paths: dict) -> str:
+    """One side-by-side view; preserve per-approach evidence reports separately."""
+    names = list(groups)
+    parts = ['<!doctype html><html lang="en"><meta charset="utf-8">'
+             '<meta name="viewport" content="width=device-width, initial-scale=1">'
+             '<title>Procurement extraction comparison</title><style>'
+             'body{font:16px system-ui;max-width:1200px;margin:auto;padding:24px;color:#18312f}'
+             'table{border-collapse:collapse;width:100%;margin:20px 0}td,th{border:1px solid #ccd9d5;'
+             'padding:10px;text-align:left;vertical-align:top}pre{white-space:pre-wrap;overflow-wrap:anywhere}'
+             'details{margin:16px 0}.scroll{overflow:auto}</style><h1>Procurement extraction comparison</h1>'
+             '<p>Same documents and Python rules; different fact extractors. All ten samples were '
+             'development-visible. No training or held-out testing occurred. Human-assisted results '
+             'are excluded. Valid JSON and exact citations do not prove correct interpretation.</p>']
+    for name in names:
+        parts.append(f'<p><a href="{escape(report_paths[name], quote=True)}">'
+                     f'{escape(name)}: full findings, workflow stages and source evidence</a></p>')
+    metrics = [('Verdict matches', 'verdict_matches'), ('Rule-set matches', 'rule_matches'),
+               ('Automatic decisions', 'automatic_decisions'), ('Human review', 'review_count'),
+               ('Conservative escalations', 'conservative_escalations'), ('Wrong approvals', 'unsafe_approvals'),
+               ('Wrong rejections', 'wrong_rejections'), ('Input failures', 'input_failures'),
+               ('Extraction failures', 'extraction_failures'), ('Extraction seconds', 'elapsed_seconds'),
+               ('Returned prompt tokens', 'prompt_tokens'), ('Returned output tokens', 'output_tokens')]
+    parts.append('<div class="scroll"><table><tr><th>Metric</th>' + ''.join(
+        f'<th>{escape(name)}</th>' for name in names) + '</tr>')
+    for title, key in metrics:
+        parts.append(f'<tr><th>{title}</th>')
+        for name in names:
+            group = groups[name]
+            value = group.get(key, 0)
+            if key in ('verdict_matches', 'rule_matches', 'automatic_decisions', 'review_count'):
+                value = f"{value}/{group['total']}"
+            if key == 'elapsed_seconds':
+                value = f'{value:.2f}'
+            parts.append(f'<td>{escape(str(value))}</td>')
+        parts.append('</tr>')
+    parts.append('<tr><th>Audited facts incl. qualifiers</th>')
+    for name in names:
+        audit = groups[name].get('fields', {})
+        parts.append(f"<td>{audit.get('matches', 0)}/{audit.get('total', 0)}; "
+                     f"disputed excluded: {audit.get('disputed', 0)}</td>")
+    parts.append('</tr></table></div><p>Local inference has no paid-token API bill; '
+                 'runtime and hardware still have costs. Times are recorded per extraction, '
+                 'not a controlled hardware benchmark. Unresolved expected facts remain in the denominator.</p>')
+    if names:
+        note = groups[names[0]].get('fields', {}).get('note', '')
+        parts.append(f'<p>{escape(note)}</p><p>Fact scoring includes status, normalized value, '
+                     'duration starting events, bounds and conditions. Raw clause boundaries and '
+                     'price-note wording are excluded from these 27 audited facts per PDF.</p>')
+    files = sorted({row['file'] for group in groups.values() for row in group['rows']})
+    parts.append('<h2>Per-document decisions and rules</h2><div class="scroll"><table><tr><th>PDF</th>'
+                 + ''.join(f'<th>{escape(name)}</th>' for name in names) + '</tr>')
+    for filename in files:
+        parts.append(f'<tr><th>{escape(filename)}</th>')
+        for name in names:
+            row = next((row for row in groups[name]['rows'] if row['file'] == filename), None)
+            value = ('Not attempted' if row is None else
+                     f"{row['actual']} (label: {row['expected']}); rules: {', '.join(row['actual_rules']) or 'none'}")
+            parts.append(f'<td>{escape(value)}</td>')
+        parts.append('</tr>')
+    parts.append('</table></div>')
+    for name in names:
+        group = groups[name]
+        parts.append(f'<h2>Confusion: {escape(name)}</h2><table><tr><th>Expected / actual</th>'
+                     '<th>Approve</th><th>Reject</th><th>Needs a person to check</th><th>Failed</th></tr>')
+        for expected, outcomes in group['confusion'].items():
+            parts.append(f'<tr><th>{escape(expected)}</th>' + ''.join(
+                f'<td>{count}</td>' for count in outcomes.values()) + '</tr>')
+        parts.append('</table><details><summary>Matches by audited field</summary><table>'
+                     '<tr><th>Field</th><th>Matches / attempted</th></tr>')
+        for field, counts in group.get('fields', {}).get('by_field', {}).items():
+            parts.append(f"<tr><td>{escape(field)}</td><td>{counts['matches']}/{counts['total']}</td></tr>")
+        parts.append('</table></details><details><summary>Audited fact mismatches</summary>')
+        for row in group.get('fields', {}).get('rows', []):
+            if not row['match']:
+                parts.append(f"<h3>{escape(row['file'])}: {escape(row['field'])}</h3>"
+                             f"<pre>{escape(json.dumps({'expected': row['expected'], 'actual': row['actual']}, indent=2))}</pre>")
+        parts.append('</details>')
+    return '\n'.join(parts) + '</html>'
