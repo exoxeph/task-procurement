@@ -215,7 +215,9 @@ export function LiveRun({ mock: buildMock }: { mock: boolean }) {
       <div className="workspace-heading">
         <strong className="replay-label">
           {mock
-            ? "Mock API / recorded answers"
+            ? buildMock
+              ? "Mock API / recorded answers"
+              : "Mock / recorded answers"
             : "Live API / bring your own key"}
         </strong>
         <span className="tag">
@@ -442,7 +444,9 @@ export function LiveRun({ mock: buildMock }: { mock: boolean }) {
                 <h4>A decision with a paper trail.</h4>
                 <p>
                   {mock
-                    ? "Run the mock API to inspect a real saved answer through the streaming contract, or replay it without a server."
+                    ? buildMock
+                      ? "Run the mock API to inspect a real saved answer through the streaming contract, or replay it without a server."
+                      : "Run a mock check to replay a saved answer in your browser. No backend or AI call is made."
                     : "Choose a sample and run a check. The result will show its reasons and exact source quotes."}
                 </p>
                 <span className="muted">

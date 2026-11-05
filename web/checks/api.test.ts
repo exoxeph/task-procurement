@@ -39,7 +39,7 @@ test("NDJSON survives arbitrary chunks, CRLF and final line without newline", as
 test("unfinished and malformed streams fail rather than inventing success", async () => {
   await assert.rejects(
     consumeEvents(stream([]), () => {}),
-    /provider_error/,
+    /^Error: empty_response$/,
   );
   await assert.rejects(
     consumeEvents(stream(["not json\n"]), () => {}),
@@ -48,6 +48,39 @@ test("unfinished and malformed streams fail rather than inventing success", asyn
   await assert.rejects(
     consumeEvents(stream(['{"event":"result","verdict":"Maybe"}\n']), () => {}),
     /provider_error/,
+  );
+});
+test("empty 200 responses finish with a clear, safe error", async () => {
+  for (const response of [
+    new Response(null),
+    new Response(""),
+    stream(["\n  \r\n"]),
+  ]) {
+    await assert.rejects(
+      consumeEvents(response, () => assert.fail("No event expected")),
+      /^Error: empty_response$/,
+    );
+  }
+  assert.match(friendlyError("empty_response").message, /no answer/i);
+  assert.match(friendlyError("empty_response").action, /replay/i);
+});
+test("provider errors use fixed startup guidance and discard supplied text", async () => {
+  await assert.rejects(
+    consumeEvents(
+      stream([
+        '{"event":"error","code":"provider_error","message":"secret-key"}\n',
+      ]),
+      () => assert.fail("No event expected"),
+    ),
+    /^Error: provider_error$/,
+  );
+  assert.equal(
+    friendlyError("provider_error").message,
+    "The check could not start.",
+  );
+  assert.equal(
+    friendlyError("provider_error").action,
+    "Try again, or use the recorded replay.",
   );
 });
 test("error events discard provider message and never reveal the key", async () => {

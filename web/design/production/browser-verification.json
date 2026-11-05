@@ -12,7 +12,23 @@
     "passed": true
   },
   {
-    "check": "live HTTPS header only, baseline omission, memory only, forget/reload, mapped 401/402/429/500/504",
+    "check": "live build axe dark Mock (no key)",
+    "violations": []
+  },
+  {
+    "check": "live build axe dark Live (your key)",
+    "violations": []
+  },
+  {
+    "check": "live build axe light Mock (no key)",
+    "violations": []
+  },
+  {
+    "check": "live build axe light Live (your key)",
+    "violations": []
+  },
+  {
+    "check": "live build Mock never posts, key disabled, keyboard switch, HTTPS headers for approaches 2–4 only, baseline omission, memory only, forget/reload, mapped HTTP/provider/empty-body errors",
     "passed": true
   }
 ]

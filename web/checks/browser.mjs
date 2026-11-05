@@ -146,7 +146,18 @@ try {
         headers: request.headers(),
         body: request.postData(),
       });
-      if (failure) await route.fulfill({ status: failure, body: key });
+      if (failure === "empty") await route.fulfill({ status: 200, body: "" });
+      else if (failure === "provider_error")
+        await route.fulfill({
+          contentType: "application/x-ndjson",
+          body:
+            JSON.stringify({
+              event: "error",
+              code: "provider_error",
+              message: key,
+            }) + "\n",
+        });
+      else if (failure) await route.fulfill({ status: failure, body: key });
       else
         await route.fulfill({
           contentType: "application/x-ndjson",
@@ -165,6 +176,70 @@ try {
     }
   });
   await live.goto("https://review.test", { waitUntil: "networkidle" });
+  const mockMode = live.getByRole("button", {
+    name: "Mock (no key)",
+    exact: true,
+  });
+  const liveMode = live.getByRole("button", {
+    name: "Live (your key)",
+    exact: true,
+  });
+  const keyInput = live.getByLabel("OpenRouter API key", { exact: true });
+  assert.equal(await mockMode.getAttribute("aria-pressed"), "true");
+  assert.ok(await keyInput.isDisabled());
+  await live
+    .getByRole("button", { name: "Run mock check", exact: false })
+    .click();
+  await live
+    .getByRole("status")
+    .filter({ hasText: "Saved answer ready" })
+    .waitFor();
+  assert.equal(
+    captured.length,
+    0,
+    "Mock in a live build must not call /api/run",
+  );
+
+  // Tab and Space exercise the actual keyboard controls and visible focus ring.
+  await mockMode.focus();
+  await live.keyboard.press("Tab");
+  assert.ok(
+    await liveMode.evaluate((button) => button === document.activeElement),
+  );
+  assert.ok(
+    await liveMode.evaluate(
+      (button) =>
+        button.matches(":focus-visible") &&
+        parseFloat(getComputedStyle(button).outlineWidth) >= 3,
+    ),
+  );
+  await live.keyboard.press("Space");
+  assert.equal(await liveMode.getAttribute("aria-pressed"), "true");
+  assert.ok(await keyInput.isEnabled());
+  for (const theme of ["dark", "light"]) {
+    await live.evaluate(
+      (theme) => (document.documentElement.dataset.theme = theme),
+      theme,
+    );
+    for (const mode of [mockMode, liveMode]) {
+      await mode.click();
+      const accessibility = await new AxeBuilder({ page: live })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+        .analyze();
+      assert.deepEqual(
+        accessibility.violations.map((v) => v.id),
+        [],
+      );
+      evidence.push({
+        check: `live build axe ${theme} ${await mode.innerText()}`,
+        violations: [],
+      });
+    }
+  }
+  await live.screenshot({
+    path: "design/production/review-room-mode-switch.png",
+    fullPage: true,
+  });
   const run = live.getByRole("button", {
     name: "Run document check",
     exact: false,
@@ -174,14 +249,30 @@ try {
   await live.getByRole("button", { name: "Show key", exact: true }).click();
   assert.equal(await live.locator("#api-key").getAttribute("type"), "text");
   await live.getByRole("button", { name: "Hide key", exact: true }).click();
-  await run.click();
+  // Returning to Mock must not send even a previously entered key.
+  await mockMode.click();
+  assert.ok(await keyInput.isDisabled());
+  await live
+    .getByRole("button", { name: "Run mock check", exact: false })
+    .click();
   await live
     .getByRole("status")
-    .filter({ hasText: "Check complete" })
+    .filter({ hasText: "Saved answer ready" })
     .waitFor();
-  assert.equal(captured.at(-1).headers["x-openrouter-key"], key);
-  assert.ok(!captured.at(-1).url.includes(key));
-  assert.ok(!captured.at(-1).body.includes(key));
+  assert.equal(captured.length, 0);
+  await liveMode.click();
+  for (const approach of ["approach2", "approach3", "approach4"]) {
+    await live.getByLabel("Approach", { exact: true }).selectOption(approach);
+    await run.click();
+    await live
+      .getByRole("status")
+      .filter({ hasText: "Check complete" })
+      .waitFor();
+    assert.equal(captured.at(-1).headers["x-openrouter-key"], key);
+    assert.ok(!captured.at(-1).url.includes(key));
+    assert.ok(!captured.at(-1).body.includes(key));
+    assert.equal(JSON.parse(captured.at(-1).body).approach, approach);
+  }
   assert.deepEqual(
     await live.evaluate(() => ({
       local: { ...localStorage },
@@ -200,6 +291,19 @@ try {
     assert.ok(!(await live.locator(".error-box").innerText()).includes(key));
     assert.equal(await live.locator(".run-output .report").count(), 0);
   }
+  for (const code of ["provider_error", "empty"]) {
+    failure = code;
+    await run.click();
+    await live.locator(".error-box").waitFor();
+    const text = await live.locator(".error-box").innerText();
+    assert.ok(!text.includes(key));
+    assert.match(
+      text,
+      code === "empty" ? /returned no answer/ : /could not start/,
+    );
+    assert.match(text, /recorded replay/);
+    assert.ok(await run.isEnabled());
+  }
   failure = null;
   await live.getByLabel("Approach", { exact: true }).selectOption("approach1");
   await run.click();
@@ -211,9 +315,10 @@ try {
   await live.getByLabel("Approach", { exact: true }).selectOption("approach4");
   await live.reload({ waitUntil: "networkidle" });
   assert.equal(await live.locator("#api-key").inputValue(), "");
+  assert.ok(await keyInput.isDisabled());
   evidence.push({
     check:
-      "live HTTPS header only, baseline omission, memory only, forget/reload, mapped 401/402/429/500/504",
+      "live build Mock never posts, key disabled, keyboard switch, HTTPS headers for approaches 2–4 only, baseline omission, memory only, forget/reload, mapped HTTP/provider/empty-body errors",
     passed: true,
   });
   await context.close();

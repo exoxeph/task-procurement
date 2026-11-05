@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLES = {f'supplier-pack-{n:02d}' for n in range(1, 11)}
@@ -43,17 +44,29 @@ class handler(BaseHTTPRequestHandler):
             env['OPENROUTER_API_KEY'] = key
         env.setdefault('OPENROUTER_MODEL', 'qwen/qwen3-14b')
         env.setdefault('OPENROUTER_JUDGE_MODEL', 'anthropic/claude-haiku-5.5')
-        process = subprocess.Popen([sys.executable, '-m', 'procurement.stream_run', sample, approach], cwd=str(ROOT),
-                                   env=env, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        self._start()
-        try:
-            for line in process.stdout:
-                self.wfile.write(line)
-                self.wfile.flush()
-        except BrokenPipeError:
-            process.kill()
-        finally:
-            process.wait()
+        with tempfile.TemporaryFile() as errors:
+            process = subprocess.Popen([sys.executable, '-m', 'procurement.stream_run', sample, approach], cwd=str(ROOT),
+                                       env=env, stdout=subprocess.PIPE, stderr=errors)
+            self._start()
+            sent = False
+            try:
+                for line in process.stdout:
+                    sent = True
+                    self.wfile.write(line)
+                    self.wfile.flush()
+            except BrokenPipeError:
+                process.kill()
+            finally:
+                process.wait()
+            if not sent and process.returncode:
+                # The child died before emitting anything: say so, with a redacted tail of its stderr for the logs.
+                errors.seek(0)
+                tail = errors.read()[-1500:].decode('utf-8', errors='replace')
+                if key:
+                    tail = tail.replace(key, '[redacted]')
+                print(f'stream_run exited {process.returncode}: {tail}', file=sys.stderr)
+                self.wfile.write((json.dumps({'event': 'error', 'code': 'provider_error',
+                                              'message': 'The check could not start.'}) + chr(10)).encode())
 
     def log_message(self, *args):  # never log requests: headers carry the visitor's key
         pass

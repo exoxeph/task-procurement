@@ -289,8 +289,14 @@ def describe(approach: str, corrected: bool = False) -> list:
 
 
 def mermaid(approach: str, corrected: bool = False) -> str:
-    """The graph as Mermaid text, generated from the real nodes and edges."""
-    return build_graph(approach, corrected).get_graph().draw_mermaid()
+    """The graph as plain Mermaid (renders on GitHub), built from the real nodes and edges."""
+    graph = build_graph(approach, corrected).get_graph()
+    def label(name: str) -> str:
+        return f'{name}["{name} (AI)"]' if NODE_INFO.get(name, ('code',))[0] == 'ai' else name
+    lines = ['flowchart LR']
+    lines += [f'    {label(edge.source)} --> {label(edge.target)}' for edge in graph.edges
+              if not edge.source.startswith('__') and not edge.target.startswith('__')]
+    return chr(10).join(lines) + chr(10)
 
 
 def run_workflow(path, items, policy, *, approach='approach1', model=None, endpoint='http://localhost:11434',

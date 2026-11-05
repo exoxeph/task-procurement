@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-11-05T14:59:34.915Z",
+  "backend": "https://task-procurement.vercel.app",
+  "apiRewrite": "https://task-procurement.vercel.app/api/:path*",
+  "pageStatus": 200,
+  "samplesStatus": 404,
+  "samplesLoaded": 0,
+  "savedSamplesFallback": true,
+  "mockPosts": 0,
+  "baselinePosts": 1,
+  "baselineStatus": 404,
+  "baselineResponseBytes": 8383,
+  "outcome": "friendly error",
+  "displayedMessage": "The check service is unavailable.\n\nUse recorded replay; the results explorer still works.",
+  "paidModelCalls": 0
+}

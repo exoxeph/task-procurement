@@ -15,8 +15,12 @@ const messages: Record<string, { message: string; action: string }> = {
     action: "Wait a moment, then try again.",
   },
   provider_error: {
-    message: "The provider returned an incomplete or unreadable answer.",
-    action: "Try again, or explore the recorded replay.",
+    message: "The check could not start.",
+    action: "Try again, or use the recorded replay.",
+  },
+  empty_response: {
+    message: "The check service returned no answer.",
+    action: "Try again, or use the recorded replay.",
   },
   timeout: {
     message: "This check took too long.",
@@ -141,18 +145,19 @@ export async function consumeEvents(
     };
     throw new Error(codes[response.status] ?? "backend_unavailable");
   }
-  if (
-    !response.body ||
-    !response.headers.get("content-type")?.includes("application/x-ndjson")
-  ) {
-    throw new Error("provider_error");
-  }
+  if (!response.body) throw new Error("empty_response");
+  const isNdjson = response.headers
+    .get("content-type")
+    ?.includes("application/x-ndjson");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
   let finished = false;
+  let receivedLine = false;
   function parseLine(line: string) {
     if (!line.trim()) return;
+    receivedLine = true;
+    if (!isNdjson) throw new Error("provider_error");
     let data: Record<string, unknown>;
     try {
       data = JSON.parse(line);
@@ -193,6 +198,7 @@ export async function consumeEvents(
       if (done) break;
     }
     parseLine(buffer);
+    if (!receivedLine) throw new Error("empty_response");
     if (!finished) throw new Error("provider_error");
   } finally {
     await reader.cancel().catch(() => {});

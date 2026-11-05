@@ -1177,15 +1177,34 @@ summary {
 
 .mode-switch {
   display: inline-flex;
-  gap: 0;
+  gap: 4px;
   margin: 0 0 16px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
 }
 .mode-switch button {
   font-size: 13px;
-  padding: 7px 14px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 8px 16px;
+  color: var(--muted);
+  background: transparent;
+  border-color: transparent;
+}
+.mode-switch button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--muted);
 }
 .mode-switch button[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
+  background: var(--button);
+  color: var(--button-ink);
+  border-color: var(--button);
+}
+.mode-switch button[aria-pressed="true"]:hover:not(:disabled) {
+  color: var(--button-ink);
+}
+.mode-switch button:focus-visible {
+  outline-offset: 2px;
 }

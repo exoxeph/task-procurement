@@ -4,8 +4,6 @@ import { Verdict } from "../components/verdict";
 import { ResultsExplorer } from "../components/results-explorer";
 import { LiveRun } from "../components/live-run";
 
-export const dynamic = "force-dynamic";
-
 function SectionHeading({
   label,
   title,

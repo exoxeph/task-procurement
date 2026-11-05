@@ -65,8 +65,9 @@ Visitors can paste their own OpenRouter key; it is sent for one check and never 
 cd web; npm install; npm run dev        # mock mode at http://127.0.0.1:3000
 ```
 
-To host it, make two Vercel projects from this repo: the repo root (Python API), and `web/` with
-`API_MODE=live` and `BACKEND_ORIGIN=<the API project URL>`. Live AI needs HTTPS.
+To host it, create one Vercel project from this repo with Root Directory `./` and preset **Other**.
+`vercel.json` builds `web/` as static files and serves the Python API from `api/` on the same address,
+so no extra settings are needed. Live AI needs HTTPS, which Vercel provides.
 
 ## The fixed workflow
 
