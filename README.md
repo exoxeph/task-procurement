@@ -35,7 +35,7 @@ Python 3.11+.
 ```powershell
 python -m pip install -r requirements.txt
 python -m procurement.review                       # approach 1, all ten PDFs, no AI and no key
-Invoke-Item reports/procurement-review.html        # the report
+Invoke-Item reports/procurement-review.html        # the report (macOS: open, Linux: xdg-open)
 python -m unittest discover -s tests -q            # 249 tests, no model needed
 ```
 
@@ -54,6 +54,16 @@ Approaches 2 to 4 need a model service:
 - **Ollama (local):** install it, `ollama pull qwen3:14b`, use `--provider ollama`. Nothing leaves your machine.
 - **Gemini (approach 2 only):** `GEMINI_API_KEY` in `.env`.
 
+Create a file named `.env` in the repo root (next to `requirements.txt`). Fill in only what you use:
+
+```
+OPENROUTER_API_KEY=your-key-here
+OPENROUTER_MODEL=qwen/qwen3-14b
+OPENROUTER_JUDGE_MODEL=anthropic/claude-haiku-5.5
+OPENROUTER_IGNORE_PROVIDERS=NextBit
+GEMINI_API_KEY=
+```
+
 `.env` is git-ignored. Every run is saved under `reports/runs/` with the source text, the model's raw answer,
 timings and tokens.
 
@@ -63,9 +73,15 @@ timings and tokens.
 Visitors can paste their own OpenRouter key; it is sent for one check and never stored. A switch chooses
 **Mock** (saved answers, no key, no AI) or **Live** (real run with your key).
 
+Needs Node.js 20.9 or newer (built and tested on Node 24).
+
 ```powershell
 cd web; npm install; npm run dev        # mock mode at http://127.0.0.1:3000
 ```
+
+Locally the page supports **Mock** and approach 1 only. Real AI through the web page works only on the HTTPS
+deployment, because a visitor's key is never sent over plain `http://localhost`. To run approaches 2 to 4 for real on your own
+machine, use the command line with `--provider` (see above).
 
 To host it, create one Vercel project from this repo with Root Directory `./` and preset **Other**.
 `vercel.json` builds `web/` as static files and serves the Python API from `api/` on the same address,
