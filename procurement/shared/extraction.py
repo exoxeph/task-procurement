@@ -128,6 +128,40 @@ def read_number(value: str, name: str) -> Decimal:
         raise ValueError("invalid decimal") from error
 
 
+PERCENT_FIELDS = ("vat_rate", "advance_percent", "penalty_percent")
+DURATION_FIELDS = ("payment_days", "delivery_days", "validity_days")
+
+
+def locate_excerpt(text: str, page_text: str) -> str | None:
+    """Return the exact page text a quote refers to, or None if it is not in the page.
+
+    Only whitespace may differ (a space where the page has a line break). Words,
+    digits and punctuation must match, so an invented quote is still refused."""
+    if text.strip() and text in page_text:
+        return text
+    words = text.split()
+    if not words:
+        return None
+    match = re.search(r"\s+".join(re.escape(word) for word in words), page_text)
+    return match.group(0) if match else None
+
+
+def clean_unit_marker(name: str, value: str, raw_value: str | None) -> str:
+    """Drop a '%' or 'days' marker, but only if the printed text has the same number.
+
+    '15%' with raw '15%' becomes '15'; raw_value keeps the printed wording. Any other
+    mismatch is left alone so the strict number check still rejects it."""
+    if name in PERCENT_FIELDS:
+        match = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*%", value.strip())
+    elif name in DURATION_FIELDS:
+        match = re.fullmatch(r"([0-9]+)\s*days?", value.strip(), re.I)
+    else:
+        return value
+    if match and raw_value and re.search(r"(?<![0-9.,])" + re.escape(match.group(1)) + r"(?![0-9])", raw_value):
+        return match.group(1)
+    return value
+
+
 def explicit_penalty_absence(evidence: tuple[Evidence, ...]) -> bool:
     """A missing extraction alone cannot establish absence of a penalty."""
     pattern = (r"\bno (?:late delivery )?penalty(?: applies|required)?[.\s]*$"
@@ -150,12 +184,21 @@ def validate_fields(fields: dict[str, ExtractedField], document: PdfDocument) ->
                 raise ValueError("unresolved facts must have a null value")
             if fact.status == "found" and not fact.evidence:
                 raise ValueError("found requires source evidence")
+            # A malformed quote is an error. A quote that is not in the page is
+            # dropped; the fact survives only if some quote is really in the page.
+            resolved = []
             for excerpt in fact.evidence:
                 if (type(excerpt.page_number) is not int or excerpt.page_number not in pages
-                        or not isinstance(excerpt.text, str) or not excerpt.text.strip()
-                        or excerpt.text not in pages[excerpt.page_number]):
+                        or not isinstance(excerpt.text, str) or not excerpt.text.strip()):
                     raise ValueError("evidence does not match an original page")
+                exact = locate_excerpt(excerpt.text, pages[excerpt.page_number])
+                if exact is not None:
+                    resolved.append(Evidence(excerpt.page_number, exact))
+            if fact.evidence and not resolved:
+                raise ValueError("evidence does not match an original page")
+            fact = replace(fact, evidence=tuple(resolved))
             if name in NUMERIC_FIELDS and fact.value is not None:
+                fact = replace(fact, value=clean_unit_marker(name, fact.value, fact.raw_value))
                 read_number(fact.value, name)
             bounds = (fact.minimum_value, fact.maximum_value)
             if any(value is not None for value in bounds):
@@ -172,10 +215,11 @@ def validate_fields(fields: dict[str, ExtractedField], document: PdfDocument) ->
         except ValueError as error:
             # Keep original source excerpts only if they really exist; do not
             # display a model's invented citation as document evidence.
-            valid_evidence = tuple(excerpt for excerpt in fact.evidence
-                                   if type(excerpt.page_number) is int and excerpt.page_number in pages
-                                   and isinstance(excerpt.text, str) and excerpt.text.strip()
-                                   and excerpt.text in pages[excerpt.page_number])
+            valid_evidence = tuple(
+                Evidence(excerpt.page_number, exact) for excerpt in fact.evidence
+                if type(excerpt.page_number) is int and excerpt.page_number in pages
+                and isinstance(excerpt.text, str) and excerpt.text.strip()
+                and (exact := locate_excerpt(excerpt.text, pages[excerpt.page_number])) is not None)
             checked[name] = replace(fact, value=None, status="unrecognized", evidence=valid_evidence)
             issues.append(f"{name}: {error}")
     for kind in ("payment", "delivery", "validity"):

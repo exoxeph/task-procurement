@@ -8,7 +8,7 @@ from pathlib import Path
 from time import perf_counter
 
 from procurement.shared.evaluation import evaluate_fields, evaluate_samples
-from procurement.shared.extraction import parse_json, validate_fields
+from procurement.shared.extraction import FACT_NAMES, parse_json, validate_fields
 from procurement.shared.human_review import apply_corrections
 from procurement.approach1.extractor import extract_document as extract_baseline
 from procurement.shared.pdf_text import PdfReadError, read_pdf
@@ -16,6 +16,11 @@ from procurement.shared.references import PROJECT_ROOT, SAMPLE_DIRECTORY, load_c
 from procurement.shared.report import render_comparison, render_report
 from procurement.shared.rules import check_rules
 from procurement.shared.runs import read_run, stamp_run, write_run
+
+
+def document_level_issues(issues):
+    """Keep run issues about the document or whole run; drop one-fact ("quantity: ...") issues."""
+    return tuple(issue for issue in issues if issue.split(': ', 1)[0] not in FACT_NAMES)
 
 
 def review_document(path, items, policy, *, approach='approach1', model=None,
@@ -45,7 +50,8 @@ def review_document(path, items, policy, *, approach='approach1', model=None,
     if artifact_dir is not None:
         artifact_path = write_run(run, document, artifact_dir)
         run = replace(run, metadata={**run.metadata, 'artifact_path': str(artifact_path.resolve())})
-    checked_document = replace(document, issues=tuple(dict.fromkeys(document.issues + run.issues)))
+    document_level = document_level_issues(run.issues)
+    checked_document = replace(document, issues=tuple(dict.fromkeys(document.issues + document_level)))
     result = check_rules(checked_document, run.fields, items, policy)
     extraction_status = (run.metadata.get('source_status') if run.metadata.get('assisted')
                          else run.metadata.get('status'))

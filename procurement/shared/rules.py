@@ -67,7 +67,14 @@ def check_rules(document: PdfDocument, fields: dict, items: dict, policy: dict) 
         # below. The optional price note also needs an uncertainty check.
         if name == "unit_price_tax_note" and field.status in ("ambiguous", "unrecognized"):
             add(f"extraction_{name}", REVIEW, f"Cannot confidently read {name}: {field.status}.", name)
-        if (name.endswith("_clause_text") or name.endswith("_reference")) and field.status in ("ambiguous", "unrecognized"):
+        # delivery_reference and validity_reference only repeat the event already stored on
+        # delivery_days / validity_days, which the rules check directly (expected_events
+        # below). A failure of the repeat adds no information, so it raises no finding.
+        # payment_reference keeps its check because payment_days has no fixed expected event
+        # beyond that, and the clause texts keep theirs.
+        redundant_reference = name in ("delivery_reference", "validity_reference")
+        if ((name.endswith("_clause_text") or name.endswith("_reference")) and not redundant_reference
+                and field.status in ("ambiguous", "unrecognized")):
             add(f"extraction_{name}", REVIEW, f"Conflicting or unsupported source interpretation for {name}.", name)
         if field.status == "found" and requirements["exact_evidence"] and not field.evidence:
             add("missing_evidence", REVIEW, f"No supporting excerpt for {name}.")

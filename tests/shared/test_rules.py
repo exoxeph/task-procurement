@@ -55,6 +55,36 @@ class RuleTests(unittest.TestCase):
                 for finding in result.findings:
                     self.assertTrue(finding.evidence)
 
+    def test_failed_delivery_or_validity_reference_repeat_raises_no_finding_but_payment_one_does(self):
+        document = read_pdf(SAMPLES / 'supplier-pack-03.pdf')
+        fields = extract_document(document).fields
+        unresolved = ExtractedField(None, 'unrecognized', ())
+        for name, code, expected in (('delivery_reference', 'extraction_delivery_reference', False),
+                                     ('validity_reference', 'extraction_validity_reference', False),
+                                     ('payment_reference', 'extraction_payment_reference', True)):
+            with self.subTest(name=name):
+                result = check_rules(document, {**fields, name: unresolved}, self.items, self.policy)
+                self.assertEqual(code in self.codes(result), expected)
+
+    def test_wrong_delivery_event_is_still_caught_through_the_days_fact(self):
+        document = read_pdf(SAMPLES / 'supplier-pack-03.pdf')
+        fields = extract_document(document).fields
+        wrong = replace(fields['delivery_days'], reference_event='invoice')
+        # With the repeat fact found, the cross-check catches the disagreement...
+        result = check_rules(document, {**fields, 'delivery_days': wrong}, self.items, self.policy)
+        self.assertIn('extraction_delivery_days', self.codes(result))
+        # ...and with the repeat fact unresolved, the days fact's own event is still checked.
+        unresolved = ExtractedField(None, 'unrecognized', ())
+        result = check_rules(document, {**fields, 'delivery_days': wrong, 'delivery_reference': unresolved},
+                             self.items, self.policy)
+        self.assertIn('qualified_delivery_days', self.codes(result))
+
+    def test_one_fact_issues_are_not_repeated_as_pdf_issues(self):
+        from procurement.review import document_level_issues
+        issues = ('quantity: expected an unsigned decimal string', 'delivery_reference: evidence does not match an original page',
+                  'Multiple items not supported', 'Ollama extraction failed: timeout', 'page 2 is unreadable')
+        self.assertEqual(document_level_issues(issues), issues[2:])
+
     def test_price_boundary_uses_exact_decimal_math(self):
         # A's maximum is 480; exactly 3% above is 494.40.
         for price, code, severity in [('480.00',None,None), ('480.01','price','Needs a person to check'),

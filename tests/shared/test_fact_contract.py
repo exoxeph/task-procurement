@@ -58,6 +58,44 @@ class FactContractTests(unittest.TestCase):
         self.assertEqual(run.fields["supplier_name"].status, "not_found")
         self.assertIsNone(run.fields["supplier_name"].value)
 
+    def test_whitespace_only_differences_in_a_quote_are_accepted_and_repaired_to_page_text(self):
+        document = PdfDocument(Path("fixture.pdf"), (PdfPage(1, "Balance within 40 days\nof delivery."),), ())
+        field = replace(self.field, value="40", evidence=(Evidence(1, "Balance within 40 days of delivery."),))
+        parsed = validate_fields({"payment_days": field}, document).fields["payment_days"]
+        self.assertEqual(parsed.status, "found")
+        self.assertEqual(parsed.evidence[0].text, "Balance within 40 days\nof delivery.")  # exact page text
+
+    def test_changed_words_or_numbers_in_a_quote_are_still_refused(self):
+        for quote in ("Payment 54 days after delivery.", "Payment 45 days after invoice.", "purchase_order"):
+            field = replace(self.field, evidence=(Evidence(1, quote),))
+            with self.subTest(quote=quote):
+                parsed = validate_fields({"payment_days": field}, self.document).fields["payment_days"]
+                self.assertEqual(parsed.status, "unrecognized")
+
+    def test_one_bad_quote_is_dropped_when_another_quote_is_real(self):
+        field = replace(self.field, evidence=(Evidence(1, "Payment 45 days after delivery."),
+                                              Evidence(1, "an invented sentence")))
+        run = validate_fields({"payment_days": field}, self.document)
+        self.assertEqual(run.fields["payment_days"].status, "found")
+        self.assertEqual([e.text for e in run.fields["payment_days"].evidence],
+                         ["Payment 45 days after delivery."])
+        self.assertFalse(run.issues)
+
+    def test_unit_marker_is_removed_only_when_the_printed_text_has_that_number(self):
+        for name, value, raw, expected in (("vat_rate", "15%", "15%", "15"),
+                                           ("advance_percent", "10 %", "10% advance", "10"),
+                                           ("payment_days", "30 days", "30 days", "30")):
+            with self.subTest(name=name):
+                field = replace(self.field, value=value, raw_value=raw)
+                parsed = validate_fields({name: field}, self.document).fields[name]
+                self.assertEqual((parsed.status, parsed.value, parsed.raw_value), ("found", expected, raw))
+        for name, value, raw in (("advance_percent", "0%", "No advance payment required"),
+                                 ("advance_percent", "1%", "10% advance"),
+                                 ("quantity", "5%", "5%"), ("vat_rate", "15%", None)):
+            with self.subTest(name=name, value=value, raw=raw):
+                field = replace(self.field, value=value, raw_value=raw)
+                self.assertEqual(validate_fields({name: field}, self.document).fields[name].status, "unrecognized")
+
     def test_conflicting_reference_fields_are_not_silently_accepted(self):
         fields = {"payment_days": replace(self.field, reference_event="delivery"),
                   "payment_reference": replace(self.field, value="invoice")}
