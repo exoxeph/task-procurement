@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Supplier Document Checker — Open report</title>
+<style>
+:root{color-scheme:light dark;--paper:#fff;--ink:#172029;--muted:#53616f;--line:#d6dfe7;--wash:#f1f5f8;--blue:#174fc8;--bluewash:#edf2ff;--good:#116039;--bad:#a22525;--warn:#7b5406;--focus:#be5700;--nav:rgba(255,255,255,.96)}
+
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--paper:#111820;--ink:#edf2f8;--muted:#abb8c7;--line:#364452;--wash:#1b2631;--blue:#9bbaff;--bluewash:#1b2d50;--good:#83d9ad;--bad:#ffa3a3;--warn:#f2ce87;--focus:#ffbd80;--nav:rgba(17,24,32,.96)}
+}
+
+:root[data-theme=dark]{--paper:#111820;--ink:#edf2f8;--muted:#abb8c7;--line:#364452;--wash:#1b2631;--blue:#9bbaff;--bluewash:#1b2d50;--good:#83d9ad;--bad:#ffa3a3;--warn:#f2ce87;--focus:#ffbd80;--nav:rgba(17,24,32,.96)}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+a{color:inherit;text-underline-offset:4px}
+button,a,select,summary{touch-action:manipulation}
+button{cursor:pointer}
+button:disabled{cursor:wait;opacity:.65}
+a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:5px}
+button,select{color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:3px}
+button{padding:10px 15px}
+button:hover{border-color:var(--blue)}
+.skip{position:fixed;top:-100px;left:15px;z-index:30;background:var(--paper);padding:12px}
+.skip:focus{top:12px}
+.wrap{width:min(1280px,calc(100% - 96px));margin:auto}
+.nav{position:sticky;top:0;z-index:10;background:var(--nav);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;min-height:75px;gap:24px}
+.brand{font-size:14px;font-weight:750;letter-spacing:-.2px;text-decoration:none;display:flex;align-items:center;gap:11px}
+.brandmark{width:24px;height:24px;border:2px solid var(--blue);display:grid;place-items:center;color:var(--blue);font-size:15px}
+.navlinks{display:flex;align-items:center;gap:28px;font-size:14px}
+.navlinks a{text-decoration:none}
+.theme{font-size:14px;padding:7px 11px;white-space:nowrap}
+.eyebrow{font-size:14px;letter-spacing:1.7px;text-transform:uppercase;font-weight:750;color:var(--muted);display:flex;align-items:center;gap:12px}
+.eyebrow:before{content:"";width:25px;height:2px;background:var(--blue)}
+.hero{padding-top:53px}
+.hero-top{display:grid;grid-template-columns:1.9fr 1fr;gap:80px;align-items:end;margin:22px 0 40px}
+h1{font-size:clamp(50px,6.2vw,88px);line-height:.99;letter-spacing:-5px;max-width:820px;margin:0;font-weight:750}
+h1 span{color:var(--blue)}
+.hero-note{font-size:17px;line-height:1.6;margin:0 0 3px}
+.hero-note a{display:inline-block;color:var(--blue);font-size:14px;font-weight:700;margin-top:20px}
+.chart{border-top:2px solid var(--ink);padding-top:18px}
+.chart-caption{display:flex;justify-content:space-between;font-size:14px;gap:20px;color:var(--muted)}
+.chart-caption strong{color:var(--ink)}
+.bars{height:220px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;align-items:end;margin-top:23px;border-bottom:1px solid var(--line)}
+.barcol{height:100%;display:flex;justify-content:end;flex-direction:column;position:relative}
+.bar{background:var(--bluewash);border-top:3px solid var(--blue);height:var(--height);padding:8px 18px;position:relative;color:var(--blue)}
+.bar.last{background:var(--blue);color:var(--paper)}
+:root[data-theme=dark] .bar.last{color:#111820}
+.value{font-size:56px;line-height:1;letter-spacing:-3px;font-weight:650}
+.value small{font-size:17px;font-weight:400;letter-spacing:0;margin-left:5px}
+.barlabel{font-size:14px;font-weight:650;margin-top:12px}
+.barlabel span{font-weight:400;opacity:1;margin-right:8px}
+.chart-bottom{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:18px 0 0;font-size:14px}
+.chart-bottom p{margin:0;color:var(--muted)}
+.chart-bottom p:last-child{border-left:2px solid var(--blue);padding-left:16px;color:var(--ink)}
+.facts{display:flex;gap:55px;margin:30px 0 0;padding:24px 0 38px;border-bottom:1px solid var(--line)}
+.fact{font-size:14px;color:var(--muted)}
+.fact strong{font-size:25px;letter-spacing:-1px;color:var(--ink);margin-right:9px}
+.fact .asterisk{font-size:15px;color:var(--blue)}
+section.content{padding:74px 0;border-bottom:1px solid var(--line)}
+.sectionhead{display:grid;grid-template-columns:170px 1fr 1fr;gap:25px;align-items:start;margin-bottom:38px}
+.sectionno{font-size:14px;color:var(--blue);padding-top:9px}
+.sectionhead h2{font-size:37px;letter-spacing:-1.5px;line-height:1.1;margin:0;max-width:480px}
+.sectionhead p{color:var(--muted);font-size:14px;margin:0;max-width:400px}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:0;padding:0;list-style:none}
+.pipeline li{border-top:1px solid var(--line);padding:19px 20px 0 0;position:relative}
+.pipeline li+li{padding-left:20px;border-left:1px solid var(--line)}
+.stepnum{font-size:14px;color:var(--blue)}
+.pipeline h3{font-size:16px;margin:13px 0 8px;line-height:1.25}
+.pipeline p{font-size:14px;color:var(--muted);margin:0;max-width:180px}
+.journey-row{display:grid;grid-template-columns:170px 1.1fr 1.2fr 1fr;gap:25px;border-top:1px solid var(--line);padding:24px 0}
+.approach-index{color:var(--blue);font-size:14px}
+.approach-index span{display:block;font-size:35px;line-height:1.2;font-weight:650;letter-spacing:-1px}
+.journey-row h3{font-size:22px;line-height:1.25;letter-spacing:-.5px;margin:0 0 10px}
+.journey-row p{font-size:14px;color:var(--muted);margin:0}
+.journey-row .question{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:9px}
+.metricblock{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;align-content:start;font-size:14px;color:var(--muted)}
+.metricblock strong{display:block;font-size:16px;color:var(--ink);font-weight:650}
+.metricblock .wide{grid-column:1/-1}
+.aside-note{background:var(--wash);padding:17px 20px;font-size:14px;margin-top:8px}
+.aside-note strong{color:var(--blue)}
+.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;margin-bottom:18px}
+.approve{color:var(--good)}
+.reject{color:var(--bad)}
+.review{color:var(--warn)}
+.matrix-scroll{overflow:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;text-align:left;font-size:14px}
+th{font-size:14px;font-weight:600;color:var(--muted);background:var(--wash)}
+th,td{padding:14px 17px;border-bottom:1px solid var(--line)}
+thead th{white-space:nowrap}
+.matrix{min-width:1020px}
+.matrix th:first-child{width:245px}
+.matrix tr:last-child td{border-bottom:0}
+.packbutton{padding:0;border:0;background:none;text-align:left;color:var(--ink);line-height:1.5}
+.packbutton strong{font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.packbutton span{display:block;font-size:14px;color:var(--muted);max-width:200px}
+.verdict{display:inline-flex;gap:5px;align-items:baseline;font-weight:600;font-size:14px}
+.mismatch{display:block;color:var(--bad);font-size:14px;font-weight:650;margin-top:2px}
+.matrix td.wrong{background:color-mix(in srgb,var(--bad) 4%,var(--paper))}
+.matrix-note{font-size:14px;color:var(--muted);margin:13px 0 0}
+.livebox{display:grid;grid-template-columns:1fr 1.4fr;border:1px solid var(--line)}
+.runform{padding:28px;border-right:1px solid var(--line)}
+.runform label{display:block;font-size:14px;font-weight:650;margin:0 0 8px}
+.runform select{width:100%;padding:11px;margin-bottom:22px;font-size:14px}
+.mock-label{color:var(--blue);font-size:14px;font-weight:750;letter-spacing:1.2px;text-transform:uppercase}
+.runform h3{font-size:25px;letter-spacing:-.7px;margin:12px 0}
+.runform p{font-size:14px;color:var(--muted)}
+.primary{background:var(--blue);color:var(--paper);border-color:var(--blue);font-weight:650;font-size:14px}
+.runform .primary{width:100%;margin-top:8px}
+:root[data-theme=dark] .primary{color:#111820}
+.runoutput{padding:28px;background:var(--wash)}
+.output-top{display:flex;justify-content:space-between;gap:15px;font-size:14px;color:var(--muted)}
+.progress{list-style:none;padding:0;margin:24px 0;display:flex;gap:5px}
+.progress li{flex:1;font-size:14px;border-top:3px solid var(--line);padding-top:8px;color:var(--muted)}
+.progress li.active{border-color:var(--blue);color:var(--blue)}
+.progress li.done{border-color:var(--good)}
+.result{background:var(--paper);padding:23px;border:1px solid var(--line);min-height:205px}
+.result h3{font-size:23px;line-height:1.25;margin:0 0 14px}
+.result p{font-size:14px;color:var(--muted)}
+blockquote{font-size:24px;font-weight:650;margin:14px 0;letter-spacing:-.5px}
+mark{background:var(--bluewash);color:var(--blue);padding:1px 7px}
+.evidence-label{font-size:14px;color:var(--muted)}
+details{border-top:1px solid var(--line);font-size:14px;margin-top:18px;padding-top:12px}
+summary{cursor:pointer;font-weight:650}
+.limits{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+.limit{border-top:2px solid var(--line);padding-top:17px}
+.limit span{font-size:14px;color:var(--blue)}
+.limit h3{font-size:17px;letter-spacing:-.25px;margin:9px 0}
+.limit p{font-size:14px;color:var(--muted);margin:0}
+footer{padding:28px 0 35px}
+.footerrow{display:flex;justify-content:space-between;gap:30px;font-size:14px;color:var(--muted)}
+.footerlinks{display:flex;gap:25px}
+.draftnote{font-size:14px;color:var(--muted);margin-top:20px}
+dialog{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:28px;width:min(660px,calc(100% - 28px));max-height:85vh;overflow:auto}
+dialog::backdrop{background:#07121db3}
+.dialoghead{display:flex;justify-content:space-between;align-items:start;gap:15px}
+.dialoghead h2{font-size:26px;letter-spacing:-1px;margin:10px 0}
+dialog p{font-size:14px;color:var(--muted)}
+.dialoganswers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dialoganswer{border:1px solid var(--line);padding:13px;font-size:14px}
+.dialoganswer b{display:block;font-size:14px;color:var(--muted);margin-bottom:7px}
+.dialogexpected{background:var(--wash);padding:14px;margin:18px 0;font-size:14px}
+.dialogfoot{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}
+.dialogfoot h3{font-size:15px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+@media(min-width:1600px){h1{font-size:92px}
+.hero{padding-top:65px}
+}
+
+@media(max-width:1000px){.wrap{width:calc(100% - 48px)}
+.hero-top{gap:35px;grid-template-columns:1.7fr 1fr}
+h1{letter-spacing:-3px}
+.sectionhead{grid-template-columns:110px 1.2fr 1fr}
+.journey-row{grid-template-columns:110px 1fr 1fr}
+.metricblock{grid-column:2/-1;display:flex;gap:28px}
+.limits{grid-template-columns:repeat(2,1fr)}
+.navlinks{gap:16px}
+.bar{padding:10px}
+.barlabel{font-size:14px}
+}
+
+@media(max-width:650px){.wrap{width:calc(100% - 36px)}
+.nav .wrap{min-height:66px;gap:10px}
+.brand{font-size:14px;max-width:170px;line-height:1.2}
+.brandmark{flex-shrink:0}
+.navlinks>a{display:none}
+.theme{font-size:14px;padding:6px 8px}
+.hero{padding-top:33px}
+.eyebrow{font-size:14px;letter-spacing:1.1px}
+.hero-top{display:block;margin:24px 0 30px}
+h1{font-size:53px;letter-spacing:-3px}
+.hero-note{font-size:14px;max-width:340px;margin-top:22px}
+.hero-note a{margin-top:13px}
+.chart-caption{font-size:14px;gap:15px}
+.chart-caption span{max-width:110px;text-align:right}
+.bars{gap:9px;height:183px;margin-top:22px}
+.bar{padding:10px 6px}
+.value{font-size:39px;letter-spacing:-2px}
+.value small{font-size:14px;margin-left:2px}
+.barlabel{font-size:14px;line-height:1.3;margin-top:10px}
+.barlabel span{display:block;margin:0 0 4px}
+.chart-bottom{grid-template-columns:1fr;gap:15px;font-size:14px}
+.facts{gap:12px;justify-content:space-between;padding:22px 0 28px;margin-top:12px}
+.fact{font-size:14px;max-width:95px}
+.fact strong{display:block;font-size:24px}
+section.content{padding:45px 0}
+.sectionhead{display:block;margin-bottom:26px}
+.sectionno{padding:0;margin-bottom:13px}
+.sectionhead h2{font-size:30px}
+.sectionhead p{font-size:14px;margin-top:16px}
+.pipeline{display:block}
+.pipeline li,.pipeline li+li{border-left:0;padding:13px 0;display:grid;grid-template-columns:30px 1fr;gap:0 10px}
+.pipeline h3{margin:0;font-size:15px}
+.pipeline p{grid-column:2;max-width:none;margin-top:4px}
+.stepnum{padding-top:2px}
+.journey-row{grid-template-columns:45px 1fr;gap:16px;padding:22px 0}
+.approach-index{font-size:14px}
+.approach-index span{font-size:27px}
+.journey-row h3{font-size:22px}
+.journey-row .story{grid-column:2}
+.metricblock{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.aside-note{padding:15px;font-size:14px}
+.legend{font-size:14px;gap:10px}
+.livebox{display:block}
+.runform{padding:20px;border-right:0;border-bottom:1px solid var(--line)}
+.runoutput{padding:20px}
+.result{padding:18px}
+.progress{gap:4px}
+.progress li{font-size:14px}
+.limits{grid-template-columns:1fr;gap:24px}
+.limit p{font-size:14px}
+.footerrow{display:block}
+.footerlinks{margin-top:18px}
+.dialoganswers{grid-template-columns:1fr}
+dialog{padding:22px}
+}
+
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
+*{transition:none!important;animation:none!important}
+}
+
+
+/* Comfortable reading size; compact table labels remain at 12px. */
+.chart-bottom,.chart-bottom p,.aside-note,.matrix-note,.runform p,.result p,.limit p,.draftnote,dialog p,.dialogfoot p,.pipeline p{font-size:14px}
+
+.barlabel{font-size:14px}
+
+.evidence-label,.footerrow{font-size:14px}
+
+
+.eyebrow,.packbutton span,.result summary{font-size:14px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap"><a class="brand" href="#main"><span class="brandmark" aria-hidden="true">≡</span>Supplier Document Checker</a><nav class="navlinks" aria-label="Main navigation"><a href="#workflow">How it works</a><a href="#journey">The experiments</a><a href="#results">Results</a><a href="#live">Try replay ↗</a><button class="theme" id="themeToggle" type="button" aria-label="Theme follows system. Switch to light theme">Theme: system</button></nav></div></header>
+<main id="main" class="wrap">
+<section class="hero" aria-labelledby="hero-title">
+<div class="eyebrow">A procurement experiment / Development report</div>
+<div class="hero-top"><h1 id="hero-title">Read the quote.<br><span>Check the rules.</span></h1><p class="hero-note">Turn a supplier quotation into a decision you can inspect. Approve, reject, or ask a person—with reasons and source evidence.<br><a href="#results">Explore the ten fictional quotations ↘</a></p></div>
+<figure class="chart" style="margin:0" aria-labelledby="chart-title"><figcaption class="chart-caption"><strong id="chart-title">Verdicts matching the expected answer</strong><span>Four approaches · 10 development PDFs</span></figcaption><div class="bars">
+<div class="barcol"><div class="bar" style="--height:60%"><div class="value">6<small>/10</small></div><div class="barlabel"><span>01</span>Plain rules</div></div></div>
+<div class="barcol"><div class="bar" style="--height:50%"><div class="value">5<small>/10</small></div><div class="barlabel"><span>02</span>First AI attempt</div></div></div>
+<div class="barcol"><div class="bar" style="--height:70%"><div class="value">7<small>/10</small></div><div class="barlabel"><span>03</span>Strict contract</div></div></div>
+<div class="barcol"><div class="bar last" style="--height:90%"><div class="value">9<small>/10*</small></div><div class="barlabel"><span>04</span>Reader + judge</div></div></div>
+</div><div class="chart-bottom"><p>We started with plain code, then tested where AI could help. The result is a clearer review process—and a set of very real trade-offs.</p><p><strong>*A policy change is included in 9/10.</strong> Approaches 1–3 did not receive that change. This is not a like-for-like comparison or unseen-document accuracy.</p></div></figure>
+<div class="facts"><div class="fact"><strong>10</strong>fictional PDF samples</div><div class="fact"><strong>4</strong>approaches compared</div><div class="fact"><strong>9/10<span class="asterisk">*</span></strong>final development matches</div></div>
+</section>
+<section class="content" id="workflow" aria-labelledby="workflow-title"><div class="sectionhead"><div class="sectionno">01 / THE PROCESS</div><h2 id="workflow-title">One fixed order.<br>Room for doubt.</h2><p>The intended behavior is to make uncertainty visible and route unclear cases to a person. The system still needs human oversight.</p></div><ol class="pipeline"><li><span class="stepnum">01 →</span><h3>Read PDF</h3><p>Start with the supplier’s quotation text.</p></li><li><span class="stepnum">02 →</span><h3>Extract facts</h3><p>Record the values and their source evidence.</p></li><li><span class="stepnum">03 →</span><h3>Check</h3><p>Compare with the purchase request and company rules.</p></li><li><span class="stepnum">04 →</span><h3>Decide</h3><p>Approve, reject, or flag uncertainty.</p></li><li><span class="stepnum">05</span><h3>Report / ask</h3><p>Show why. Ask a person when the answer needs review.</p></li></ol></section>
+<section class="content" id="journey" aria-labelledby="journey-title"><div class="sectionhead"><div class="sectionno">02 / THE EXPERIMENTS</div><h2 id="journey-title">Better questions.<br>Different answers.</h2><p>Each version tested a different idea. Every metric below covers the same ten development PDFs, with the policy caveat on the final approach.</p></div>
+<article class="journey-row"><div class="approach-index">APPROACH<span>01</span></div><div><p class="question">Do we even need AI?</p><h3>Plain rules</h3><p>Read and check the quotation using Python rules. No AI.</p></div><p class="story">Plain code recovered 267 of 270 facts. Strong extraction did not resolve every wording difference: only 6 verdicts matched.</p><div class="metricblock"><div><strong>6/10</strong>verdicts</div><div><strong>6/10</strong>rule sets</div><div><strong>267/270</strong>facts</div><div><strong>0.04 s · $0</strong>10 PDFs</div></div></article>
+<article class="journey-row"><div class="approach-index">APPROACH<span>02</span></div><div><p class="question">Where does AI help?</p><h3>First AI attempt</h3><p>Ask a model to understand and report the document.</p></div><p class="story">The model understood the documents, but the hand-off failed: right answers could arrive in the wrong shape. Verdict matches fell to 5.</p><div class="metricblock"><div><strong>5/10</strong>verdicts</div><div><strong>3/10</strong>rule sets</div><div><strong>246/270</strong>facts</div><div><strong>~374 s · cents</strong>10 PDFs</div></div></article>
+<article class="journey-row"><div class="approach-index">APPROACH<span>03</span></div><div><p class="question">Can it be dependable?</p><h3>Strict contract</h3><p>Give the AI and code a tighter output contract.</p></div><p class="story">The model stayed the same; the contract changed. Verdict matches rose to 7 and fact recovery to 262. Some ambiguous and missing clauses remained unresolved.</p><div class="metricblock"><div><strong>7/10</strong>verdicts</div><div><strong>7/10</strong>rule sets</div><div><strong>262/270</strong>facts</div><div><strong>~356 s · cents</strong>10 PDFs</div></div></article>
+<article class="journey-row"><div class="approach-index">APPROACH<span>04</span></div><div><p class="question">Can it judge safely?</p><h3>Reader + judge</h3><p>One agent records facts and doubts. A second applies the rules.</p></div><p class="story">The judge reads the full document and explains each rule. It matched 9 verdicts, including a policy change after reviewing packs 06 and 08. It took longer and still missed pack 01.</p><div class="metricblock"><div><strong>9/10*</strong>verdicts</div><div><strong>8/10</strong>rule sets</div><div><strong>261/270</strong>facts</div><div><strong>~816 s · ~$0.04</strong>10 PDFs</div></div></article>
+<div class="aside-note"><strong>0 unsafe approvals in each of the four observed runs.</strong> That is narrow development evidence, not a safety guarantee. Approach 4 has no code guard on approvals. <a href="#limits">Read the limits ↓</a></div></section>
+<section class="content" id="results" aria-labelledby="results-title"><div class="sectionhead"><div class="sectionno">03 / THE RESULTS</div><h2 id="results-title">Every pack.<br>Every answer.</h2><p>Select a pack to inspect its test, expected verdict and four recorded answers. A mismatch is marked explicitly, including cautious answers that differ from the expected decision.</p></div><div class="legend"><span class="approve">✓ Approve</span><span class="reject">× Reject</span><span class="review">? Needs a person to check</span><span>≠ Mismatch with expected</span></div><div class="matrix-scroll" tabindex="0" role="region" aria-label="Pack result matrix; scroll horizontally on small screens"><table class="matrix"><caption class="sr-only">Recorded verdicts for ten packs and four approaches, compared with expected verdict</caption><thead><tr><th scope="col">Sample / expected verdict</th><th scope="col">01 Plain rules</th><th scope="col">02 First AI attempt</th><th scope="col">03 Strict contract</th><th scope="col">04 Reader + judge*</th></tr></thead><tbody id="matrixBody"></tbody></table></div><p class="matrix-note">*The final approach includes the policy change for packs 06 and 08. On mobile, scroll the table to compare all four approaches.</p></section>
+<section class="content" id="live" aria-labelledby="live-title"><div class="sectionhead"><div class="sectionno">04 / TRY THE PROCESS</div><h2 id="live-title">Follow a check.<br>Inspect the evidence.</h2><p>This visual draft plays back supplied recorded answers in an accelerated demonstration. There are no live model calls or charges. No API key is needed; do not enter a real key.</p></div><div class="livebox"><form class="runform" id="replayForm"><div class="mock-label">Recorded-answer demonstration</div><h3>Your review desk</h3><p>Pick a fictional sample and an approach. Replay timing is illustrative; it is not a measured model runtime.</p><label for="sampleSelect">Sample PDF</label><select id="sampleSelect" name="sample"></select><label for="approachSelect">Approach</label><select id="approachSelect" name="approach"><option value="0">01 — Plain rules (no AI)</option><option value="1">02 — First AI attempt</option><option value="2">03 — Strict contract</option><option value="3" selected>04 — Reader + judge</option></select><button class="primary" id="runButton" type="submit">Replay recorded answer ↗</button><p>Preview mode · local interaction only · no live charges</p></form><div class="runoutput"><div class="output-top"><span id="outputSample">SUPPLIER-PACK-03</span><span id="replayStatus" role="status">Ready to replay</span></div><ol class="progress" id="progress" aria-label="Recorded check stages"><li>Read PDF</li><li>Agent 1 extracts</li><li>Code annotates</li><li>Agent 2 judges</li><li>Report</li></ol><div class="result" id="runResult" aria-live="polite"><div class="mock-label">Evidence preview / Approach 4</div><h3 class="reject" style="margin-top:12px">× Reject</h3><p>The quoted unit price is above the requested maximum of 210.</p><blockquote><mark>229.00</mark></blockquote><div class="evidence-label">Exact supplied source excerpt · unit_price: 229.00</div><details><summary>Extracted fact available in this preview</summary><table><thead><tr><th>Fact</th><th>Value</th><th>Source quote</th></tr></thead><tbody><tr><td>unit_price</td><td>229.00</td><td>“229.00”</td></tr></tbody></table><p>Other fact statuses, warnings, model names and per-pack run costs or times were not supplied.</p></details></div></div></div></section>
+<section class="content" id="limits" aria-labelledby="limits-title"><div class="sectionhead"><div class="sectionno">05 / HONEST LIMITS</div><h2 id="limits-title">Useful evidence.<br>Limited claims.</h2><p>This is a small experiment in supplier document review. These qualifications are part of the result, not fine print.</p></div><div class="limits"><article class="limit"><span>01 / DATA</span><h3>Development-visible samples</h3><p>All ten PDFs were visible while building. These scores are not accuracy on unseen documents.</p></article><article class="limit"><span>02 / COMPARISON</span><h3>The policy changed</h3><p>The 9/10 includes a decision made after viewing packs 06 and 08: read the rules literally. Approaches 1–3 did not get it. 9 versus 7 is not like for like.</p></article><article class="limit"><span>03 / EVALUATION</span><h3>Single runs, limited audit</h3><p>Model output can vary. An AI assistant audited fact labels; independent humans did not.</p></article><article class="limit"><span>04 / SAFETY</span><h3>No approval code guard</h3><p>Approach 4 relies on its judge, fail-closed handling and a prompt-injection rule. Injection testing covered only two packs and one model.</p></article><article class="limit"><span>05 / PRIVACY</span><h3>Hosted means third-party</h3><p>Hosted models send document text to a third party. All samples shown here are fictional.</p></article><article class="limit"><span>06 / LOCAL INFERENCE</span><h3>Hardware was a constraint</h3><p>Fully local inference exceeded ten minutes per call on a 12 GB GPU in the reported local experiment. This is separate from the five-PDF rerun.</p></article></div></section>
+</main>
+<footer class="wrap"><div class="footerrow"><span>Supplier Document Checker · An experiment in accountable review.</span><div class="footerlinks"><a href="#" aria-label="GitHub repository placeholder">GitHub ↗</a><a href="../public/roadmap.md">Roadmap ↗</a><a href="#main">Back to top ↑</a></div></div><div class="draftnote">OPEN REPORT / Visual direction E · Standalone visual draft pending approval. The final Next.js application and live API are not implemented here.</div></footer>
+<dialog id="packDialog" aria-labelledby="dialogTitle"><div class="dialoghead"><div><div class="mock-label">Recorded sample / detail</div><h2 id="dialogTitle">Supplier pack</h2></div><button id="closeDialog" type="button" aria-label="Close pack details">Close ×</button></div><p id="dialogTest"></p><div class="dialogexpected" id="dialogExpected"></div><div class="dialoganswers" id="dialogAnswers"></div><div class="dialogfoot" id="dialogEvidence"></div></dialog>
+<script>
+(()=>{'use strict';
+const packs=[
+{n:'01',label:'Payment after delivery and acceptance',test:'Payment “after delivery and acceptance of goods”.',expected:'A',answers:['?','?','?','?']},
+{n:'02',label:'Delivery at your factory',test:'Delivery “at your factory”.',expected:'A',answers:['?','?','A','A']},
+{n:'03',label:'Price far above maximum',test:'The unit price is far above the requested maximum.',expected:'R',answers:['R','?','R','R']},
+{n:'04',label:'Price slightly above maximum',test:'The unit price is slightly above the maximum.',expected:'?',answers:['?','?','?','?']},
+{n:'05',label:'40% advance payment',test:'The quotation requests 40% advance.',expected:'R',answers:['R','R','R','R']},
+{n:'06',label:'Missing late-delivery penalty',test:'No late-delivery penalty clause.',expected:'R',answers:['?','?','?','R']},
+{n:'07',label:'Quantity differs',test:'The quoted quantity differs.',expected:'?',answers:['?','?','?','?']},
+{n:'08',label:'TIN/BIN available on request',test:'No TIN/BIN is supplied; it is “available on request”.',expected:'R',answers:['?','?','?','R']},
+{n:'09',label:'Ambiguous payment and arithmetic',test:'Payment “30 to 90 days as agreed” and wrong arithmetic.',expected:'?',answers:['?','?','?','?']},
+{n:'10',label:'60-day delivery, VAT included',test:'Delivery 60 days and VAT “included”.',expected:'R',answers:['R','R','R','R']}];
+const names=['Plain rules','First AI attempt','Strict contract','Reader + judge'];
+const states={A:{label:'Approve',icon:'✓',class:'approve'},R:{label:'Reject',icon:'×',class:'reject'},'?':{label:'Needs a person to check',icon:'?',class:'review'}};
+const $=id=>document.getElementById(id);
+function verdict(code){const s=states[code];const span=document.createElement('span');span.className='verdict '+s.class;span.textContent=s.icon+' '+s.label;return span}
+packs.forEach((p,i)=>{const row=document.createElement('tr');const first=document.createElement('td');const button=document.createElement('button');button.type='button';button.className='packbutton';button.dataset.pack=p.n;const strong=document.createElement('strong');strong.textContent='Supplier pack '+p.n+' ↗';const label=document.createElement('span');label.textContent=p.label;button.append(strong,label);button.addEventListener('click',()=>openPack(i));first.append(button,verdict(p.expected));row.append(first);p.answers.forEach(a=>{const td=document.createElement('td');td.append(verdict(a));if(a!==p.expected){td.className='wrong';const mismatch=document.createElement('span');mismatch.className='mismatch';mismatch.textContent='≠ Mismatch';td.append(mismatch)}row.append(td)});$('matrixBody').append(row);const option=document.createElement('option');option.value=String(i);option.textContent=p.n+' — '+p.label;$('sampleSelect').append(option)});
+$('sampleSelect').value='2';
+function evidence(parent,p,approach){parent.replaceChildren();const h=document.createElement('h3');h.textContent='Approach '+(approach+1)+' · recorded answer';h.className=states[p.answers[approach]].class;const s=states[p.answers[approach]];h.textContent=s.icon+' '+s.label;parent.append(h);const text=document.createElement('p');if(p.n==='03'&&p.answers[approach]==='R'){text.textContent='The quoted unit price is 229.00; the requested maximum is 210. The supplied source excerpt is shown below.';parent.append(text);const quote=document.createElement('blockquote');const mark=document.createElement('mark');mark.textContent='229.00';quote.append(mark);parent.append(quote);const note=document.createElement('p');note.textContent='Known source fact: unit_price = 229.00. Exact excerpt: “229.00”.';parent.append(note)}else{text.textContent='Test case: '+p.test;parent.append(text)}const note=document.createElement('p');note.textContent='Recorded verdict only. Full findings, fact statuses, model names and per-pack measured time or cost were not supplied; the final API will populate these details.';parent.append(note);if(approach===3){const caveat=document.createElement('p');caveat.textContent='Approach 4 includes the policy change after packs 06 and 08. Its score is not like for like with earlier approaches.';parent.append(caveat)}}
+function openPack(i){const p=packs[i];$('dialogTitle').textContent='Supplier pack '+p.n;$('dialogTest').textContent=p.test;$('dialogExpected').replaceChildren(document.createTextNode('Expected: '),verdict(p.expected));$('dialogAnswers').replaceChildren();p.answers.forEach((a,n)=>{const block=document.createElement('div');block.className='dialoganswer';const b=document.createElement('b');b.textContent=(n+1)+' / '+names[n];block.append(b,verdict(a));if(a!==p.expected){const m=document.createElement('span');m.className='mismatch';m.textContent='≠ Mismatch with expected';block.append(m)}$('dialogAnswers').append(block)});evidence($('dialogEvidence'),p,3);$('packDialog').showModal()}
+$('closeDialog').addEventListener('click',()=>$('packDialog').close());
+const themes=['system','light','dark'];let theme=0;$('themeToggle').addEventListener('click',()=>{theme=(theme+1)%3;const t=themes[theme];if(t==='system')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;$('themeToggle').textContent='Theme: '+t;$('themeToggle').setAttribute('aria-label','Theme '+t+'. Switch to '+themes[(theme+1)%3]+' theme')});
+const stages4=['Read PDF','Agent 1 extracts','Code annotates warnings','Agent 2 judges','Report'];const stagesOther=['Read PDF','Extract facts','Check rules','Decide','Report'];let running=false;
+function refreshStages(){const stages=$('approachSelect').value==='3'?stages4:stagesOther;$('progress').replaceChildren();stages.forEach(t=>{const li=document.createElement('li');li.textContent=t;$('progress').append(li)})}
+$('approachSelect').addEventListener('change',()=>{if(!running)refreshStages()});
+$('replayForm').addEventListener('submit',async event=>{event.preventDefault();if(running)return;running=true;const p=packs[Number($('sampleSelect').value)];const a=Number($('approachSelect').value);$('runButton').disabled=true;$('sampleSelect').disabled=true;$('approachSelect').disabled=true;$('runButton').textContent='Replaying recorded answer…';$('outputSample').textContent='SUPPLIER-PACK-'+p.n;refreshStages();$('runResult').setAttribute('aria-busy','true');$('runResult').replaceChildren();const pre=document.createElement('p');pre.textContent='Accelerated recorded-answer demonstration. The stage sequence is illustrative; no model is running.';$('runResult').append(pre);const lis=[...$('progress').children];for(let i=0;i<lis.length;i++){lis[i].className='active';$('replayStatus').textContent='Replay stage '+(i+1)+' of 5';await new Promise(resolve=>setTimeout(resolve,420));lis[i].className='done'}evidence($('runResult'),p,a);$('runResult').setAttribute('aria-busy','false');$('replayStatus').textContent='Recorded answer ready · no live charges';$('runButton').disabled=false;$('sampleSelect').disabled=false;$('approachSelect').disabled=false;$('runButton').textContent='Replay recorded answer ↗';running=false});
+})();
+</script>
+</body>
+</html>

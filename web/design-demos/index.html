@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose a direction — Supplier Document Checker</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 36px; background: #eef0ed; color: #1c2521; font: 16px/1.55 system-ui, sans-serif; }
+    h1 { font-size: 32px; margin: 0 0 8px; letter-spacing: -1px; }
+    p { max-width: 850px; }
+    main { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 32px 0; }
+    article { min-width: 0; }
+    img { display: block; width: 100%; border: 1px solid #c5ccc6; }
+    h2 { font-size: 20px; margin: 18px 0 6px; }
+    a { color: #184e37; text-underline-offset: 4px; }
+    a:focus-visible { outline: 3px solid #1d57bc; outline-offset: 5px; }
+    article p { margin: 0 0 16px; }
+    .note { border-top: 1px solid #b9c4bd; padding-top: 20px; }
+    @media (max-width: 850px) { main { grid-template-columns: 1fr; } body { padding: 24px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p>Supplier Document Checker / visual direction previews</p>
+    <h1>One project. Three directions.</h1>
+    <p>Each draft includes the full story, ten-pack results explorer, theme controls and a local recorded-answer replay. Open a draft to try it. No API key or backend is needed.</p>
+  </header>
+  <main>
+    <article>
+      <a href="dir-1.html"><img src="dir-1-hero.png" alt="Evidence desk: warm paper, serif headline, quotation and decision side by side."></a>
+      <h2><a href="dir-1.html">1. Evidence desk</a></h2>
+      <p>Calm editorial layout. The quotation and its finding tell the story together. Recommended for the interview audience.</p>
+      <a href="dir-1-mobile.png">Mobile screenshot</a>
+    </article>
+    <article>
+      <a href="dir-2.html"><img src="dir-2-hero.png" alt="Review room: dark workspace showing source evidence, fixed procedure and decision in three columns."></a>
+      <h2><a href="dir-2.html">2. Review room</a></h2>
+      <p>A precise product workspace. Source, procedure and result share one view. Shown in dark mode; both themes work.</p>
+      <a href="dir-2-mobile.png">Mobile screenshot</a>
+    </article>
+    <article>
+      <a href="dir-3.html"><img src="dir-3-hero.png" alt="Open report: oversized headline and blue bars showing six, five, seven and nine matched verdicts."></a>
+      <h2><a href="dir-3.html">3. Open report</a></h2>
+      <p>A chart-led presentation. The four experiments and the comparison caveat appear immediately.</p>
+      <a href="dir-3-mobile.png">Mobile screenshot</a>
+    </article>
+  </main>
+  <p class="note">These are visual drafts. The Next.js application, mock API and live-run integration follow the direction choice. All changes are inside <code>web/</code>.</p>
+  <p><a href="thumbs.html">View all six candidate thumbnails</a> — the three additional candidates can also be developed.</p>
+</body>
+</html>
