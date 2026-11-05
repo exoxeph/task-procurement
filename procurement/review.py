@@ -4,6 +4,7 @@ import argparse
 from dataclasses import replace
 import math
 import json
+import os
 from pathlib import Path
 from time import perf_counter
 
@@ -51,21 +52,46 @@ def review_document(path, items, policy, *, approach='approach1', model=None,
     elif approach == 'approach3' and provider == 'openrouter':
         from procurement.approach3.openrouter import extract_document as extract_openrouter3
         run = extract_openrouter3(document, model=model, timeout=timeout)
+    elif approach == 'approach4':
+        from procurement.approach4.extractor import extract_document as extract_ai4
+        run = extract_ai4(document, model=model, timeout=timeout, provider=provider, endpoint=endpoint)
     elif approach == 'approach3':
         from procurement.approach3.extractor import extract_document as extract_ai3
         run = extract_ai3(document, model=model or 'qwen2.5:7b', endpoint=endpoint, timeout=timeout)
     else:
         raise ValueError(f'Unknown extraction approach: {approach}')
-    validation = validate_fields(run.fields, document)
-    run = replace(run, fields=validation.fields,
-                  issues=tuple(dict.fromkeys(run.issues + validation.issues)))
+    if approach != 'approach4':
+        # Approach 4 keeps the extractor's facts and carries code warnings instead of erasing values.
+        validation = validate_fields(run.fields, document)
+        run = replace(run, fields=validation.fields,
+                      issues=tuple(dict.fromkeys(run.issues + validation.issues)))
     run = stamp_run(run, document)
+    # pdf_issue is for problems with the document or the whole run (unreadable page,
+    # several items, a failed model call). A problem with one fact ("quantity: ...") is
+    # already shown by that fact's own finding, so it is not repeated as a pdf_issue.
+    document_level = document_level_issues(run.issues)
+    checked_document = replace(document, issues=tuple(dict.fromkeys(document.issues + document_level)))
+    decision = None
+    if approach == 'approach4' and run.metadata.get('status') != 'failed':
+        # The judge checks the facts against the source and applies the company rules, alone.
+        from procurement.approach4.judge import judge
+        # Same service as the extractor. On OpenRouter the judge model may differ (OPENROUTER_JUDGE_MODEL).
+        judge_model = run.metadata.get('model')
+        if provider == 'openrouter':
+            judge_model = (os.environ.get('OPENROUTER_JUDGE_MODEL') or os.environ.get('OPENROUTER_DECIDER_MODEL')
+                           or judge_model)
+        decision, decision_meta = judge(checked_document, run, items, policy, model=judge_model,
+                                        key=os.environ.get('OPENROUTER_API_KEY', '') if provider == 'openrouter' else '',
+                                        timeout=timeout, provider=provider, endpoint=endpoint)
+        metadata = {**run.metadata, 'judge': decision_meta,
+                    'elapsed_seconds': (run.metadata.get('elapsed_seconds') or 0) + decision_meta['elapsed_seconds']}
+        if decision_meta['status'] == 'failed':
+            metadata['status'] = 'failed'
+        run = replace(run, metadata=metadata)
     if artifact_dir is not None:
         artifact_path = write_run(run, document, artifact_dir)
         run = replace(run, metadata={**run.metadata, 'artifact_path': str(artifact_path.resolve())})
-    document_level = document_level_issues(run.issues)
-    checked_document = replace(document, issues=tuple(dict.fromkeys(document.issues + document_level)))
-    result = check_rules(checked_document, run.fields, items, policy)
+    result = decision if decision is not None else check_rules(checked_document, run.fields, items, policy)
     extraction_status = (run.metadata.get('source_status') if run.metadata.get('assisted')
                          else run.metadata.get('status'))
     steps = (
@@ -78,6 +104,17 @@ def review_document(path, items, policy, *, approach='approach1', model=None,
         {'name': 'Report decision and human handoff',
          'status': 'needs_review' if result.verdict == 'Needs a person to check' else 'completed'},
     )
+    if approach == 'approach4':
+        steps = (
+            {'name': 'Read PDF', 'status': 'needs_review' if document.issues else 'completed'},
+            {'name': 'Agent 1: extract facts step by step', 'status': extraction_status or 'completed'},
+            {'name': 'Code: annotate quote and format warnings (nothing erased)',
+             'status': 'needs_review' if run.metadata.get('warnings') else 'completed'},
+            {'name': 'Agent 2: check facts against the source and apply the rules',
+             'status': 'needs_review' if result.verdict == 'Needs a person to check' else 'completed'},
+            {'name': 'Report decision and human handoff',
+             'status': 'needs_review' if result.verdict == 'Needs a person to check' else 'completed'},
+        )
     return replace(result, extraction_run=run, steps=steps)
 
 
@@ -86,10 +123,12 @@ def main() -> int:
     parser.add_argument('paths', nargs='*', type=Path, help='Defaults to the ten supplied PDFs.')
     parser.add_argument('--output', type=Path, default=Path('reports/procurement-review.html'))
     parser.add_argument('--check-labels',action='store_true',help='Exit 1 if development results differ from manual labels.')
-    parser.add_argument('--approach', choices=('approach1', 'approach2', 'approach3', 'both'), default='approach1')
+    parser.add_argument('--approach', choices=('approach1', 'approach2', 'approach3', 'approach4', 'both'), default='approach1')
     parser.add_argument('--provider', choices=('ollama', 'gemini', 'openrouter'), default='ollama',
-                        help='Model service for approach2; hosted providers need their API key in .env.')
-    parser.add_argument('--model', help='Installed local Ollama model (Approach 2 defaults to qwen3:14b).')
+                        help='Model service for approach2. gemini and openrouter send document text to a hosted service '
+                             'and need GEMINI_API_KEY / OPENROUTER_API_KEY in .env.')
+    parser.add_argument('--model', help='Installed local Ollama model (Approach 2 defaults to qwen3:14b), '
+                                        'a Gemini model (GEMINI_MODEL) or an OpenRouter slug (OPENROUTER_MODEL) from .env.')
     parser.add_argument('--ollama-url', default='http://localhost:11434')
     parser.add_argument('--timeout', type=float, default=600.0, help='Seconds per extraction call.')
     parser.add_argument('--artifacts', type=Path, default=Path('reports/runs'))
@@ -98,9 +137,9 @@ def main() -> int:
     load_env()
     arguments = parser.parse_args()
     if arguments.provider != 'ollama' and arguments.approach == 'approach1':
-        parser.error('--provider gemini/openrouter applies to approach2 or approach3')
-    if arguments.provider == 'gemini' and arguments.approach == 'approach3':
-        parser.error('approach3 supports --provider ollama (default) or openrouter, not gemini')
+        parser.error('--provider gemini/openrouter applies to approach2, approach3 or approach4')
+    if arguments.provider == 'gemini' and arguments.approach in ('approach3', 'approach4'):
+        parser.error('approach3 and approach4 support --provider ollama (default) or openrouter, not gemini')
     if bool(arguments.source_run) != bool(arguments.review_response):
         parser.error('--source-run and --review-response must be supplied together')
     if arguments.review_response and (len(arguments.paths) != 1 or arguments.approach == 'both'):

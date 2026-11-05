@@ -32,6 +32,8 @@ Every displayed excerpt comes from the document; an exact excerpt alone does not
     approaches = {result.extraction_run.metadata.get('approach') for result in results if result.extraction_run}
     if 'approach2' in approaches:
         parts.append('<p class="intro">Approach 2: local Ollama extracts facts; Python applies company rules.</p>')
+    elif 'approach4' in approaches:
+        parts.append('<p class="intro">Approach 4: AI agent 1 extracts step by step, code annotates warnings, AI agent 2 checks the facts against the source and applies the company rules.</p>')
     elif 'approach3' in approaches:
         parts.append('<p class="intro">Approach 3: local Ollama with a typed schema and format-focused prompt; Python applies company rules.</p>')
     else:
