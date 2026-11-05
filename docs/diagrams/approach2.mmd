@@ -1,0 +1,24 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	extract_ai(extract_ai)
+	validate(validate)
+	decide_rules(decide_rules)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	decide_rules --> persist;
+	extract_ai --> validate;
+	persist --> report;
+	read_pdf --> extract_ai;
+	validate --> decide_rules;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

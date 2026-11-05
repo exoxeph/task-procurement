@@ -142,6 +142,136 @@ accuracy. All ten PDFs remained visible during development.
 - Policy thresholds, Decimal calculations and decision priority remain ordinary
   Python. Clear violations can reject even when other facts require review.
 
+## The fixed workflow (LangGraph)
+
+Each approach runs as a small [LangGraph](https://github.com/langchain-ai/langgraph) graph in `procurement/workflow.py`.
+Every graph is a straight line (no branches, no loops, no tools), and a test checks exactly that, so the code decides the
+order and a model only fills in an answer inside its step. The diagrams below are generated from the real nodes and
+edges, so they cannot drift from the code:
+
+```
+python -m procurement.workflow --mermaid approach4      # print one diagram
+python -m procurement.workflow --write docs/diagrams    # write all four as .mmd files
+```
+
+The same graph reports a progress event after each step (name, whether code or an AI call did it, and how long it took).
+
+**Approach 1**
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	extract_python(extract_python)
+	validate(validate)
+	decide_rules(decide_rules)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	decide_rules --> persist;
+	extract_python --> validate;
+	persist --> report;
+	read_pdf --> extract_python;
+	validate --> decide_rules;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+```
+
+**Approach 2**
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	extract_ai(extract_ai)
+	validate(validate)
+	decide_rules(decide_rules)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	decide_rules --> persist;
+	extract_ai --> validate;
+	persist --> report;
+	read_pdf --> extract_ai;
+	validate --> decide_rules;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+```
+
+**Approach 3**
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	extract_ai_typed(extract_ai_typed)
+	validate(validate)
+	decide_rules(decide_rules)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	decide_rules --> persist;
+	extract_ai_typed --> validate;
+	persist --> report;
+	read_pdf --> extract_ai_typed;
+	validate --> decide_rules;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+```
+
+**Approach 4**
+
+```mermaid
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	agent1_extract(agent1_extract)
+	annotate_warnings(annotate_warnings)
+	agent2_judge(agent2_judge)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	agent1_extract --> annotate_warnings;
+	agent2_judge --> persist;
+	annotate_warnings --> agent2_judge;
+	persist --> report;
+	read_pdf --> agent1_extract;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
+```
+
 ## Read the code
 
 Start at procurement/review.py, review_document(). It calls the following steps:

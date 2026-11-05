@@ -1,0 +1,24 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
+graph TD;
+	__start__([<p>__start__</p>]):::first
+	read_pdf(read_pdf)
+	agent1_extract(agent1_extract)
+	annotate_warnings(annotate_warnings)
+	agent2_judge(agent2_judge)
+	persist(persist)
+	report(report)
+	__end__([<p>__end__</p>]):::last
+	__start__ --> read_pdf;
+	agent1_extract --> annotate_warnings;
+	agent2_judge --> persist;
+	annotate_warnings --> agent2_judge;
+	persist --> report;
+	read_pdf --> agent1_extract;
+	report --> __end__;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc
