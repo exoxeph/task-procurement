@@ -2,8 +2,16 @@
   "buildCommand": "cd web && npm ci && STATIC_EXPORT=1 API_MODE=live npm run build",
   "outputDirectory": "web/out",
   "functions": {
-    "api/run.py": { "maxDuration": 300, "includeFiles": "{procurement,config,sample-data}/**" },
-    "api/samples.py": { "maxDuration": 30, "includeFiles": "{procurement,config,sample-data}/**" }
+    "api/run.py": {
+      "maxDuration": 300,
+      "includeFiles": "{procurement,config,sample-data}/**",
+      "excludeFiles": "{web,deck,video,docs,tests,reports,.git,.github,node_modules}/**"
+    },
+    "api/samples.py": {
+      "maxDuration": 30,
+      "includeFiles": "{procurement,config,sample-data}/**",
+      "excludeFiles": "{web,deck,video,docs,tests,reports,.git,.github,node_modules}/**"
+    }
   },
   "headers": [
     {
