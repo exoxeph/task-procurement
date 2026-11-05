@@ -8,6 +8,7 @@ from pathlib import Path
 from time import perf_counter
 
 from procurement.shared.evaluation import evaluate_fields, evaluate_samples
+from procurement.shared.env import load_env
 from procurement.shared.extraction import FACT_NAMES, parse_json, validate_fields
 from procurement.shared.human_review import apply_corrections
 from procurement.approach1.extractor import extract_document as extract_baseline
@@ -25,7 +26,7 @@ def document_level_issues(issues):
 
 def review_document(path, items, policy, *, approach='approach1', model=None,
                     endpoint='http://localhost:11434', timeout=600.0, artifact_dir=None,
-                    source_run=None, review_response=None):
+                    source_run=None, review_response=None, provider='ollama'):
     started = perf_counter()
     document = read_pdf(path)
     if (source_run is None) != (review_response is None):
@@ -38,6 +39,12 @@ def review_document(path, items, policy, *, approach='approach1', model=None,
         run = extract_baseline(document)
         run = replace(run, metadata={**run.metadata, 'status': 'needs_review' if run.issues else 'completed',
                                      'elapsed_seconds': perf_counter() - started})
+    elif approach == 'approach2' and provider == 'gemini':
+        from procurement.approach2.gemini import extract_document as extract_gemini
+        run = extract_gemini(document, model=model, timeout=timeout)
+    elif approach == 'approach2' and provider == 'openrouter':
+        from procurement.approach2.openrouter import extract_document as extract_openrouter
+        run = extract_openrouter(document, model=model, timeout=timeout)
     elif approach == 'approach2':
         from procurement.approach2.extractor import extract_document as extract_ai
         run = extract_ai(document, model=model or 'qwen3:14b', endpoint=endpoint, timeout=timeout)
@@ -74,13 +81,18 @@ def main() -> int:
     parser.add_argument('--output', type=Path, default=Path('reports/procurement-review.html'))
     parser.add_argument('--check-labels',action='store_true',help='Exit 1 if development results differ from manual labels.')
     parser.add_argument('--approach', choices=('approach1', 'approach2', 'both'), default='approach1')
+    parser.add_argument('--provider', choices=('ollama', 'gemini', 'openrouter'), default='ollama',
+                        help='Model service for approach2; hosted providers need their API key in .env.')
     parser.add_argument('--model', help='Installed local Ollama model (Approach 2 defaults to qwen3:14b).')
     parser.add_argument('--ollama-url', default='http://localhost:11434')
     parser.add_argument('--timeout', type=float, default=600.0, help='Seconds per extraction call.')
     parser.add_argument('--artifacts', type=Path, default=Path('reports/runs'))
     parser.add_argument('--source-run', type=Path, help='Saved extraction JSON to correct; does not call AI again.')
     parser.add_argument('--review-response', type=Path, help='Attributed, source-backed corrections JSON.')
+    load_env()
     arguments = parser.parse_args()
+    if arguments.provider != 'ollama' and arguments.approach == 'approach1':
+        parser.error('--provider gemini/openrouter applies to approach2')
     if bool(arguments.source_run) != bool(arguments.review_response):
         parser.error('--source-run and --review-response must be supplied together')
     if arguments.review_response and (len(arguments.paths) != 1 or arguments.approach == 'both'):
@@ -108,7 +120,7 @@ def main() -> int:
             print(f'{label}: reading {path.name}...', flush=True)
             try:
                 result = review_document(path, items, policy, approach=approach, model=arguments.model,
-                                         endpoint=arguments.ollama_url, timeout=arguments.timeout,
+                                         provider=arguments.provider, endpoint=arguments.ollama_url, timeout=arguments.timeout,
                                          artifact_dir=arguments.artifacts, source_run=arguments.source_run,
                                          review_response=arguments.review_response)
                 results.append(result)
